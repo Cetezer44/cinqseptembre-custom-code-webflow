@@ -64,8 +64,13 @@
 }
 .cs-loader__mot svg { display: block; width: 100%; height: 100%; }
 
-.cs-loader__mot--cinq      { left: 0;  width: 27.50%; transform: translateX(-31.12%); }
-.cs-loader__mot--septembre { right: 0; width: 67.98%; transform: translateX(31.12%); }
+/* La course se mesure sur le lockup, pas sur le mot : un pourcentage dans
+   translateX() se rapporterait a la largeur de l'element lui-meme, et les deux
+   mots ne parcourraient pas la meme distance. */
+.cs-loader__logo { --cs-course-x: calc(var(--cs-logo-w) * 0.3112); }
+
+.cs-loader__mot--cinq      { left: 0;  width: 27.50%; transform: translateX(calc(-1 * var(--cs-course-x))); }
+.cs-loader__mot--septembre { right: 0; width: 67.98%; transform: translateX(var(--cs-course-x)); }
 
 /* Les mots apparaissent, ecartes */
 .cs-loader[data-visible] .cs-loader__mot { opacity: 1; }
