@@ -40,6 +40,12 @@ CS.config = {
     logo: true,                    // logo fixe au centre (false sur la page Projets)
 
     motif: { w: 1206, h: 3249 },
+    /* Espace vertical ajoute entre deux repetitions. Sans lui, la derniere
+       tuile du motif (en bas a gauche) et la premiere de la repetition
+       suivante partagent exactement le bord a y 3249 et se touchent sur 73 px.
+       160 px correspond a l'ecart le plus serre a l'interieur du motif : le
+       raccord n'est donc pas plus serre qu'ailleurs. */
+    margeRaccord: 160,
     partLargeur: 0.8375,           // 1206 / 1440 : le motif occupe 83,75 % de la largeur
     largeurMax: 1600,              // px — au-dela, les images cesseraient de grandir
 

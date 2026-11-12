@@ -15,7 +15,8 @@
 
   var racine, piste, motifs = [], projets = [];
   var cible = 0, courant = 0, anime = false;
-  var hMotif = 0;
+  var hMotif = 0;   // hauteur d'une repetition
+  var hPas = 0;     // distance entre deux repetitions = hMotif + marge de raccord
 
   /* ---- Lecture de la liste CMS ---- */
   function lireSource() {
@@ -75,8 +76,9 @@
     var large = Math.min(window.innerWidth * C.partLargeur, C.largeurMax);
     racine.style.setProperty('--cs-motif-w', large + 'px');
     hMotif = large * (C.motif.h / C.motif.w);
+    hPas = hMotif + large * (C.margeRaccord / C.motif.w);
 
-    var besoin = Math.ceil(window.innerHeight / hMotif) + 2;
+    var besoin = Math.ceil(window.innerHeight / hPas) + 2;
     while (motifs.length < besoin) motifs.push(construireMotif(motifs.length));
     motifs.forEach(function (m) { remplir(m); });
     placer();
@@ -88,9 +90,9 @@
     var vh = window.innerHeight, k = motifs.length;
     motifs.forEach(function (m) {
       var rang = +m.dataset.rang;
-      var y = rang * hMotif - courant;
-      if (y + hMotif < -hMotif) { rang += k; m.dataset.rang = rang; remplir(m); y = rang * hMotif - courant; }
-      else if (y > vh + hMotif) { rang -= k; m.dataset.rang = rang; remplir(m); y = rang * hMotif - courant; }
+      var y = rang * hPas - courant;
+      if (y + hMotif < -hPas) { rang += k; m.dataset.rang = rang; remplir(m); y = rang * hPas - courant; }
+      else if (y > vh + hPas) { rang -= k; m.dataset.rang = rang; remplir(m); y = rang * hPas - courant; }
       m.style.transform = 'translate3d(0,' + y.toFixed(1) + 'px,0)';
     });
   }
