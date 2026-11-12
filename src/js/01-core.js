@@ -8,38 +8,27 @@ window.CS = window.CS || {};
    Partages par le loader et par le logo fixe du collage. */
 CS.svg = {
   cinq:      /*@include:svg/cinq.svg*/'',
-  septembre: /*@include:svg/septembre.svg*/'',
-  /* Mots de la roulette du loader, traces dans la police du logotype
-     (tools/tracer-mots.py) : meme echelle, meme ligne de base que CINQ. */
-  un:        /*@include:svg/un.svg*/'',
-  deux:      /*@include:svg/deux.svg*/'',
-  trois:     /*@include:svg/trois.svg*/'',
-  quatre:    /*@include:svg/quatre.svg*/''
+  septembre: /*@include:svg/septembre.svg*/''
 };
 
 CS.config = {
-  /* ---- Loader : roulette UN, DEUX, TROIS, QUATRE -> CINQ ----
-     1. Au centre de l'ecran, les mots defilent vers le haut comme un compteur
-        et s'arretent sur CINQ.
-     2. CINQ glisse a gauche, a sa place dans le logotype, pendant que
-        SEPTEMBRE se devoile a droite : le logo est forme, a la place exacte
-        de celui de l'accueil.
-     3. Le voile s'efface et les images du collage apparaissent en masque
-        (voir collage.entree). */
+  /* ---- Loader ----
+     Comme sur la maquette : CINQ et SEPTEMBRE apparaissent ecartes, devoiles
+     par un masque qui remonte, puis se rapprochent jusqu'a former le logotype,
+     a la place exacte de celui de l'accueil. Le voile s'efface alors et les
+     images du collage font leur entree (voir collage.entree). */
   loader: {
     actif: true,
     pages: ['accueil'],   // pages ou le loader apparait ; [] = partout, null = nulle part
     uneFoisParSession: false,   // false = a chaque chargement de la page (pas aux retours par transition)
-    mots: ['un', 'deux', 'trois', 'quatre', 'cinq'],   // cles de CS.svg, dans l'ordre ; le dernier reste
-    apparition: 250,      // ms — le premier mot apparait
-    pause: 80,            // ms — temps d'arret avant le premier cran
-    pas: 220,             // ms — duree d'un cran de roulette
-    pasPause: 30,         // ms — arret sur chaque mot
-    pasDernier: 340,      // ms — le dernier cran, celui qui amene CINQ, un peu plus pose
-    jonction: 650,        // ms — CINQ se decale, SEPTEMBRE se devoile
+    apparition: 700,      // ms — les deux mots se devoilent en masque
+    decalage: 120,        // ms — SEPTEMBRE part un peu apres CINQ
+    pause: 150,           // ms — temps d'arret avant le rapprochement
+    course: 900,          // ms — les mots se rejoignent
     repos: 150,           // ms — temps d'arret une fois le logo forme
     sortie: 400           // ms — disparition du voile
   },
+
 
 
 

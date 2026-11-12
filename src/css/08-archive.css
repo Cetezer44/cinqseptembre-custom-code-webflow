@@ -25,9 +25,8 @@
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
-  cursor: grab;
+  cursor: default;               /* curseur normal partout : ni main, ni poing ferme */
 }
-.cs-archive.is-tire { cursor: grabbing; }
 
 .cs-archive__tuile {
   position: absolute;
@@ -37,11 +36,9 @@
   height: var(--cs-tuile-h);
   overflow: hidden;
   background-color: #141414;
-  cursor: pointer;
   will-change: transform;
   outline: none;
 }
-.cs-archive.is-tire .cs-archive__tuile { cursor: grabbing; }
 .cs-archive__tuile:focus-visible { outline: 1px solid #fff; outline-offset: 3px; }
 
 /* L'opacite est sur l'image, pas sur la tuile : le transform de position

@@ -1,13 +1,14 @@
 /* ===== Loader =====
-   Fond clair. La roulette (UN, DEUX, TROIS, QUATRE, CINQ) joue au centre de
-   l'ecran, les mots cales a droite ; arrivee sur CINQ, le logotype glisse a
-   gauche d'un bloc et SEPTEMBRE se devoile a sa droite. Le logo forme est a la place et
-   a la taille exactes de celui de l'accueil : quand le voile s'efface, il
-   semble rester en place.
+   Fond clair. Les deux mots du logotype apparaissent ecartes, devoiles par un
+   masque qui remonte, puis se rapprochent jusqu'a former le logo exact de
+   l'accueil, a la meme place et a la meme taille. Le voile s'efface ensuite :
+   le logo semble rester en place.
 
    Geometrie reprise de la maquette (lockup de 257,82 x 36,02 px) :
      CINQ      -> 27,62 % du lockup, a gauche
-     SEPTEMBRE -> 68,32 % du lockup, a droite */
+     SEPTEMBRE -> 68,32 % du lockup, a droite
+     ecart final = 10,47 px, ecart au depart = 172,10 px (maquette du loader)
+     course de chaque mot = (172,10 - 10,47) / 2 = 80,8 px -> 31,35 % du lockup */
 .cs-loader {
   position: fixed;
   inset: 0;
@@ -35,62 +36,40 @@
      taille intrinseque au lieu de remplir son span. */
   aspect-ratio: 257.82 / 36.02;
 }
+/* Deux niveaux par mot, un par mouvement : le mot porte le rapprochement
+   (translateX), le masque interieur porte le devoilement. */
 .cs-loader__mot {
   position: absolute;
   top: 0;
   height: 100%;
+  transition: transform var(--cs-loader-course, 900ms) var(--cs-ease-in-out);
 }
 .cs-loader__mot svg { display: block; width: 100%; height: 100%; }
-.cs-loader__mot--cinq      { left: 0;  width: 27.62%; }
-.cs-loader__mot--septembre { right: 0; width: 68.32%; }
 
-/* ---- Roulette ----
-   La case de CINQ sert de fenetre : on ne voit qu'un mot a la fois. Elle coupe
-   en haut et en bas seulement — a gauche elle laisse depasser les mots plus
-   longs que CINQ (QUATRE fait 1,7 fois sa largeur). */
-.cs-loader__mot--cinq {
-  clip-path: inset(0 0 0 -200%);
-  opacity: 0;
-  transition: opacity var(--cs-loader-apparition, 250ms) var(--cs-ease-out);
-}
-.cs-loader[data-visible] .cs-loader__mot--cinq { opacity: 1; }
+/* La course se mesure sur le lockup, pas sur le mot : un pourcentage dans
+   translateX() se rapporterait a la largeur de l'element lui-meme, et les deux
+   mots ne parcourraient pas la meme distance. */
+.cs-loader__logo { --cs-course-x: calc(var(--cs-logo-w) * 0.3135); }
+.cs-loader__mot--cinq      { left: 0;  width: 27.62%; transform: translateX(calc(-1 * var(--cs-course-x))); }
+.cs-loader__mot--septembre { right: 0; width: 68.32%; transform: translateX(var(--cs-course-x)); }
+.cs-loader[data-joint] .cs-loader__mot { transform: translateX(0); }
 
-/* Tant que la roulette tourne, c'est le logotype ENTIER qui est decale pour
-   amener la case de CINQ au centre de l'ecran : son centre est a 13,81 % du
-   lockup, celui du lockup a 50 %, d'ou 36,19 % de sa largeur. A la jonction le
-   logotype revient d'un bloc a sa place : CINQ et SEPTEMBRE se deplacent
-   ensemble, a distance constante, et ne peuvent donc pas se chevaucher.
-   (Si CINQ glissait seul, il traverserait la zone ou SEPTEMBRE se devoile.) */
-.cs-loader__logo {
-  transform: translateX(36.19%);
-  transition: transform var(--cs-loader-jonction, 650ms) var(--cs-ease-in-out);
-}
-.cs-loader[data-joint] .cs-loader__logo { transform: translateX(0); }
-
-/* La bande monte d'un cran a la fois : --cs-i est le numero du mot affiche.
-   Un cran = 120 % de la hauteur, pour qu'aucun mot voisin n'affleure au bord. */
-.cs-loader__bande {
-  position: absolute;
-  inset: 0;
-  transform: translateY(calc(var(--cs-i, 0) * -120%));
-  transition: transform var(--cs-loader-pas, 220ms) var(--cs-ease-in-out);
-  will-change: transform;
-}
-/* Chaque mot est cale a droite : son bord droit, celui qui fera face a
-   SEPTEMBRE, ne bouge pas d'un mot a l'autre. */
-.cs-loader__chiffre {
-  position: absolute;
-  right: 0;
-  top: calc(var(--cs-k, 0) * 120%);
+/* Devoilement en masque : le masque remonte pendant que le mot monte de
+   quelques pixels dedans. SEPTEMBRE part un peu apres CINQ. */
+.cs-loader__masque {
+  display: block;
   height: 100%;
+  clip-path: inset(110% 0 -10% 0);
+  transition: clip-path var(--cs-loader-apparition, 700ms) var(--cs-ease-in-out);
 }
-
-/* ---- SEPTEMBRE : devoile de gauche a droite pendant que le logotype glisse ---- */
-.cs-loader__mot--septembre {
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path var(--cs-loader-jonction, 650ms) var(--cs-ease-in-out);
+.cs-loader__masque svg {
+  transform: translateY(45%);
+  transition: transform var(--cs-loader-apparition, 700ms) var(--cs-ease-out);
 }
-.cs-loader[data-joint] .cs-loader__mot--septembre { clip-path: inset(0 0 0 0); }
+.cs-loader__mot--septembre .cs-loader__masque,
+.cs-loader__mot--septembre .cs-loader__masque svg { transition-delay: var(--cs-loader-decalage, 120ms); }
+.cs-loader[data-visible] .cs-loader__masque { clip-path: inset(-10% 0 -10% 0); }
+.cs-loader[data-visible] .cs-loader__masque svg { transform: translateY(0); }
 
 /* Tant que le loader est la, rien ne defile derriere.
    Le fond blanc et le masquage du contenu sont poses des la lecture du Head,
@@ -100,10 +79,11 @@ html.cs-loader-actif, html.cs-loader-actif body { overflow: hidden; }
 html.cs-loader-actif { background-color: var(--cs-blanc); }
 html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
 
-/* Mouvement reduit : ni roulette ni glissement (le JS pose directement le logo
-   forme), simple fondu */
+/* Mouvement reduit : ni masque ni course (le JS pose directement le logo forme),
+   simple fondu */
 @media (prefers-reduced-motion: reduce) {
-  .cs-loader__mot--cinq { transition: opacity 200ms var(--cs-ease-out); }
-  .cs-loader__logo, .cs-loader__mot--septembre { transition: none; }
-  .cs-loader__bande { transition: none; }
+  .cs-loader__mot { transform: none !important; transition: none; }
+  .cs-loader__masque { clip-path: none; opacity: 0; transition: opacity 300ms var(--cs-ease-out); }
+  .cs-loader__masque svg { transform: none; transition: none; }
+  .cs-loader[data-visible] .cs-loader__masque { opacity: 1; }
 }
