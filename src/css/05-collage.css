@@ -72,6 +72,13 @@
   .cs-collage__case:hover .cs-collage__img { transform: scale(1.04); }
 }
 
+/* Curseur « Decouvrir » : sur une image, il remplace le curseur natif
+   (classe posee par le JS seulement si le curseur personnalise existe). */
+@media (hover: hover) and (pointer: fine) {
+  .cs-collage.a-curseur .cs-collage__case { cursor: none; }
+  .cs-collage.a-curseur.is-tire .cs-collage__case { cursor: grabbing; }
+}
+
 /* Nom du projet au survol. En difference pour rester lisible sur n'importe
    quelle image, claire comme sombre. */
 .cs-collage__nom {

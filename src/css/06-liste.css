@@ -145,7 +145,21 @@ html:not([data-cs-vue]) .cs-liste {
 .cs-curseur.is-visible .cs-curseur__int { opacity: 1; transform: scale(1); }
 .cs-curseur__rond { display: block; flex: none; }
 
+/* Le cercle se trace quand le curseur apparait : depart en haut, sens des
+   aiguilles d'une montre. Il s'efface vite en sortant, pour se retracer en
+   entier sur la carte suivante. */
+.cs-curseur__trace {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 150ms var(--cs-ease-out);
+}
+.cs-curseur.is-visible .cs-curseur__trace {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 700ms var(--cs-ease-in-out) 80ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cs-liste__img { transition: none; }
   .cs-curseur__int { transition: opacity 150ms ease; transform: none; }
+  .cs-curseur__trace { stroke-dashoffset: 0; transition: none; }
 }

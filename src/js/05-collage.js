@@ -321,6 +321,11 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
     demanderRendu();
   });
 
+  /* ---- Curseur « Decouvrir » au survol d'une image ---- */
+  if (C.libelleCurseur && CS.curseur(ctx, racine, C.libelleCurseur, 'rond', function (e) {
+    return e.target.closest && e.target.closest('.cs-collage__case') && !racine.classList.contains('is-tire');
+  })) racine.classList.add('a-curseur');
+
   /* ---- Logo fixe au centre, en difference (accueil) ---- */
   if (C.logoPages && C.logoPages.indexOf(ctx.page) !== -1) {
     var d = document.createElement('div');

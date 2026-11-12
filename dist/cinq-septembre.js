@@ -69,6 +69,7 @@ CS.config = {
     nom: '.projet-name-cat, [data-cs-nom]',   // element portant le nom, a defaut de data-nom
     cadre: '.infinite-canvas, .container-projets',  // bloc d'origine a masquer
     logoPages: ['accueil'],        // logo fixe au centre : accueil seulement
+    libelleCurseur: 'D\u00e9couvrir',   // curseur au survol d'une image ('' = pas de curseur)
 
     motif: { w: 1206, h: 3249 },
     /* Espace vertical ajoute entre deux repetitions. Sans lui, la derniere
@@ -359,7 +360,10 @@ CS.flottement = function (ctx, appliquer) {
    sur son contenu, pour ne pas se melanger au suivi.
    estDessus(e) dit si le curseur doit etre visible a cet endroit. */
 CS.ICONES = {
-  rond:  '<circle cx="8" cy="8" r="7" stroke-opacity=".35"/><path d="M8 1a7 7 0 0 1 7 7"/>',
+  /* anneau discret en fond + le meme cercle, qui se trace quand le curseur apparait
+     (pathLength="1" : le trait se pilote de 0 a 1, quelle que soit la taille) */
+  rond:  '<circle cx="8" cy="8" r="7" stroke-opacity=".35"/>' +
+         '<circle class="cs-curseur__trace" cx="8" cy="8" r="7" pathLength="1" transform="rotate(-90 8 8)"/>',
   croix: '<path d="M5.5 5.5l5 5M10.5 5.5l-5 5"/>'
 };
 CS.curseur = function (ctx, zone, texte, icone, estDessus) {
@@ -1047,6 +1051,11 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
     });
     demanderRendu();
   });
+
+  /* ---- Curseur « Decouvrir » au survol d'une image ---- */
+  if (C.libelleCurseur && CS.curseur(ctx, racine, C.libelleCurseur, 'rond', function (e) {
+    return e.target.closest && e.target.closest('.cs-collage__case') && !racine.classList.contains('is-tire');
+  })) racine.classList.add('a-curseur');
 
   /* ---- Logo fixe au centre, en difference (accueil) ---- */
   if (C.logoPages && C.logoPages.indexOf(ctx.page) !== -1) {
