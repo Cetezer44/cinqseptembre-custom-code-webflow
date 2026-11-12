@@ -35,8 +35,13 @@ CS.config = {
   collage: {
     pages: ['accueil', 'projets'],
     conteneur: '.cs-collage',      // cree si absent
-    source: '.cs-source',          // liste CMS cachee posee dans Webflow
-    item: '.cs-source__item',
+    /* Le moteur lit la Collection List deja presente sur la page d'accueil
+       (ancienne mosaique). Rien a recreer dans le Designer : il suffit que la
+       liste soit liee a « Projets », l'image au champ « Image mosaique 1 »,
+       le lien a la page du projet, et que le lien porte un attribut
+       data-nom contenant le Name. */
+    source: '.canvas-content, .cs-source',
+    item: '.canvas-item__link, .cs-source__item',
     logo: true,                    // logo fixe au centre (false sur la page Projets)
 
     motif: { w: 1206, h: 3249 },
@@ -335,6 +340,16 @@ document.documentElement.setAttribute('data-cs-page', CS.page);
   function demarrer() {
     projets = lireSource();
     if (!projets.length) return;   // pas de liste CMS : on ne fait rien
+
+    /* La liste CMS d'origine ne sert qu'a fournir les donnees : on la retire de
+       l'affichage, ainsi que l'ancien cadre de mosaique s'il est encore la. */
+    var src = document.querySelector(C.source);
+    if (src) {
+      var cadre = src.closest('.infinite-canvas') || src;
+      cadre.style.display = 'none';
+      cadre.setAttribute('aria-hidden', 'true');
+    }
+    document.querySelectorAll('.canvas-zoom').forEach(function (e) { e.style.display = 'none'; });
 
     racine = document.querySelector(C.conteneur);
     if (!racine) {

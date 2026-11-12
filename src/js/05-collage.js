@@ -161,6 +161,16 @@
     projets = lireSource();
     if (!projets.length) return;   // pas de liste CMS : on ne fait rien
 
+    /* La liste CMS d'origine ne sert qu'a fournir les donnees : on la retire de
+       l'affichage, ainsi que l'ancien cadre de mosaique s'il est encore la. */
+    var src = document.querySelector(C.source);
+    if (src) {
+      var cadre = src.closest('.infinite-canvas') || src;
+      cadre.style.display = 'none';
+      cadre.setAttribute('aria-hidden', 'true');
+    }
+    document.querySelectorAll('.canvas-zoom').forEach(function (e) { e.style.display = 'none'; });
+
     racine = document.querySelector(C.conteneur);
     if (!racine) {
       racine = document.createElement('div');
