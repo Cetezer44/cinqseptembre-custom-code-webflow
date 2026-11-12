@@ -1,0 +1,14 @@
+/* ===== Socle commun =====
+   Variables partagees par tous les modules. Les courbes viennent du vocabulaire
+   d'animation du studio : une seule source, jamais de cubic-bezier improvise. */
+:root {
+  --cs-ease-out:    cubic-bezier(0.23, 1, 0.32, 1);     /* entrees, arrivees */
+  --cs-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);    /* deplacements a l'ecran */
+  --cs-ease-doux:   cubic-bezier(0.32, 0.72, 0, 1);     /* glissements longs */
+
+  --cs-blanc: #ffffff;
+  --cs-noir:  #000000;
+
+  /* Largeur du logotype complet (CINQ + SEPTEMBRE) dans la maquette : 258 px a 1440 px */
+  --cs-logo-w: clamp(170px, 17.9vw, 258px);
+}
