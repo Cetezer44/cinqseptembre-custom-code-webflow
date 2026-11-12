@@ -121,6 +121,25 @@
 .cs-collage-logo__mot--cinq      { left: 0;  width: 27.62%; }
 .cs-collage-logo__mot--septembre { right: 0; width: 68.32%; }
 
+/* ---- Entree des images en masque ----
+   Le masque est sur un calque interne (l'image), jamais sur la case : la case
+   porte deja le transform du flottement, et son fond gris d'attente ne doit pas
+   apparaitre avant l'image. L'image arrive legerement agrandie et se pose en
+   meme temps que le masque remonte. --cs-e = rang de la case a l'ecran. */
+.cs-collage[data-entree] .cs-collage__case { background-color: transparent; }
+.cs-collage[data-entree="avant"] .cs-collage__img {
+  clip-path: inset(100% 0 0 0);
+  transform: scale(1.12);
+  transition: none;
+}
+.cs-collage[data-entree="joue"] .cs-collage__img {
+  clip-path: inset(0 0 0 0);
+  transform: scale(1);
+  transition:
+    clip-path var(--cs-entree-duree, 900ms) var(--cs-ease-in-out) calc(var(--cs-e, 0) * var(--cs-entree-decalage, 90ms)),
+    transform calc(var(--cs-entree-duree, 900ms) * 1.3) var(--cs-ease-out) calc(var(--cs-e, 0) * var(--cs-entree-decalage, 90ms));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cs-collage__img { transition: none; }
 }

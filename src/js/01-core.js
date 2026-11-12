@@ -19,22 +19,28 @@ CS.svg = {
 
 CS.config = {
   /* ---- Loader : roulette UN, DEUX, TROIS, QUATRE -> CINQ ----
-     A la place de CINQ, les mots defilent vers le haut l'un apres l'autre, comme
-     un compteur, et s'arretent sur CINQ : le logotype est alors forme, a la
-     place exacte du logo de l'accueil, et le voile s'efface. */
+     1. Au centre de l'ecran, les mots defilent vers le haut comme un compteur
+        et s'arretent sur CINQ.
+     2. CINQ glisse a gauche, a sa place dans le logotype, pendant que
+        SEPTEMBRE se devoile a droite : le logo est forme, a la place exacte
+        de celui de l'accueil.
+     3. Le voile s'efface et les images du collage apparaissent en masque
+        (voir collage.entree). */
   loader: {
     actif: true,
     pages: ['accueil'],   // pages ou le loader apparait ; [] = partout, null = nulle part
     uneFoisParSession: false,   // false = a chaque chargement de la page (pas aux retours par transition)
     mots: ['un', 'deux', 'trois', 'quatre', 'cinq'],   // cles de CS.svg, dans l'ordre ; le dernier reste
-    apparition: 400,      // ms — le logotype apparait, sur le premier mot
-    pause: 250,           // ms — temps d'arret avant le premier cran
-    pas: 380,             // ms — duree d'un cran de roulette
-    pasPause: 90,         // ms — arret sur chaque mot
-    pasDernier: 520,      // ms — le dernier cran, celui qui amene CINQ, un peu plus pose
-    repos: 300,           // ms — temps d'arret une fois le logo forme
-    sortie: 500           // ms — disparition du voile
+    apparition: 250,      // ms — le premier mot apparait
+    pause: 80,            // ms — temps d'arret avant le premier cran
+    pas: 220,             // ms — duree d'un cran de roulette
+    pasPause: 30,         // ms — arret sur chaque mot
+    pasDernier: 340,      // ms — le dernier cran, celui qui amene CINQ, un peu plus pose
+    jonction: 650,        // ms — CINQ se decale, SEPTEMBRE se devoile
+    repos: 150,           // ms — temps d'arret une fois le logo forme
+    sortie: 400           // ms — disparition du voile
   },
+
 
 
   /* ---- Collage en defilement infini (accueil + page Projets) ----
@@ -69,6 +75,15 @@ CS.config = {
     vitesseTactile: 1.6,           // glissement au doigt
     souplesse: 0.1,                // lissage du defilement : 0,05 tres doux, 0,2 sec
     seuilClic: 8,                  // px — au-dela, le geste est un glissement, pas un clic
+
+    /* Entree des images : chaque case visible se devoile par un masque qui
+       remonte, l'une apres l'autre de haut en bas. Jouee apres le loader sur
+       l'accueil, et a chaque arrivee sur une page a collage. */
+    entree: {
+      actif: true,
+      duree: 900,                  // ms — devoilement d'une image
+      decalage: 90                 // ms — ecart entre deux images
+    },
 
     /* Deformation des images au defilement (voir 03-deformation.js).
        L'intensite suit la vitesse : nulle a l'arret, pleine a vitessePleine.

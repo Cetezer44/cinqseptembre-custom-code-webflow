@@ -1,8 +1,9 @@
 /* ===== Loader =====
-   Fond clair. Le logotype est a la place et a la taille exactes du logo de
-   l'accueil ; SEPTEMBRE ne bouge pas. Dans la case de CINQ, une bande de mots
-   (UN, DEUX, TROIS, QUATRE, CINQ) monte cran par cran et s'arrete sur CINQ.
-   Le voile s'efface ensuite : le logo semble rester en place.
+   Fond clair. La roulette (UN, DEUX, TROIS, QUATRE, CINQ) joue au centre de
+   l'ecran ; arrivee sur CINQ, la case glisse a gauche, a sa place dans le
+   logotype, et SEPTEMBRE se devoile a droite. Le logo forme est a la place et
+   a la taille exactes de celui de l'accueil : quand le voile s'efface, il
+   semble rester en place.
 
    Geometrie reprise de la maquette (lockup de 257,82 x 36,02 px) :
      CINQ      -> 27,62 % du lockup, a gauche
@@ -38,19 +39,29 @@
   position: absolute;
   top: 0;
   height: 100%;
-  opacity: 0;
-  transition: opacity var(--cs-loader-apparition, 400ms) var(--cs-ease-out);
 }
 .cs-loader__mot svg { display: block; width: 100%; height: 100%; }
 .cs-loader__mot--cinq      { left: 0;  width: 27.62%; }
 .cs-loader__mot--septembre { right: 0; width: 68.32%; }
-.cs-loader[data-visible] .cs-loader__mot { opacity: 1; }
 
 /* ---- Roulette ----
    La case de CINQ sert de fenetre : on ne voit qu'un mot a la fois. Elle coupe
-   en haut et en bas seulement — a gauche elle laisse depasser les mots plus
-   longs que CINQ (QUATRE fait 1,7 fois sa largeur). */
-.cs-loader__mot--cinq { clip-path: inset(0 0 0 -200%); }
+   en haut et en bas seulement — sur les cotes elle laisse depasser les mots
+   plus longs que CINQ (QUATRE fait 1,7 fois sa largeur).
+
+   Tant que la roulette tourne, la case est au centre de l'ecran : son centre
+   est a 13,81 % du lockup, le centre du lockup a 50 %, d'ou un decalage de
+   36,19 % de la largeur du lockup (et non de la case : voir --cs-logo-w). */
+.cs-loader__mot--cinq {
+  clip-path: inset(0 -200% 0 -200%);
+  opacity: 0;
+  transform: translateX(calc(var(--cs-logo-w) * 0.3619));
+  transition:
+    opacity var(--cs-loader-apparition, 250ms) var(--cs-ease-out),
+    transform var(--cs-loader-jonction, 650ms) var(--cs-ease-in-out);
+}
+.cs-loader[data-visible] .cs-loader__mot--cinq { opacity: 1; }
+.cs-loader[data-joint] .cs-loader__mot--cinq { transform: translateX(0); }
 
 /* La bande monte d'un cran a la fois : --cs-i est le numero du mot affiche.
    Un cran = 120 % de la hauteur, pour qu'aucun mot voisin n'affleure au bord. */
@@ -58,15 +69,25 @@
   position: absolute;
   inset: 0;
   transform: translateY(calc(var(--cs-i, 0) * -120%));
-  transition: transform var(--cs-loader-pas, 380ms) var(--cs-ease-in-out);
+  transition: transform var(--cs-loader-pas, 220ms) var(--cs-ease-in-out);
   will-change: transform;
 }
+/* Chaque mot est centre dans la case. CINQ, qui la remplit exactement, tombe
+   donc pile a sa place dans le logotype. */
 .cs-loader__chiffre {
   position: absolute;
-  right: 0;                                   /* cale contre SEPTEMBRE */
+  left: 50%;
   top: calc(var(--cs-k, 0) * 120%);
   height: 100%;
+  transform: translateX(-50%);
 }
+
+/* ---- SEPTEMBRE : devoile de gauche a droite pendant que CINQ se decale ---- */
+.cs-loader__mot--septembre {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--cs-loader-jonction, 650ms) var(--cs-ease-in-out);
+}
+.cs-loader[data-joint] .cs-loader__mot--septembre { clip-path: inset(0 0 0 0); }
 
 /* Tant que le loader est la, rien ne defile derriere.
    Le fond blanc et le masquage du contenu sont poses des la lecture du Head,
@@ -76,8 +97,10 @@ html.cs-loader-actif, html.cs-loader-actif body { overflow: hidden; }
 html.cs-loader-actif { background-color: var(--cs-blanc); }
 html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
 
-/* Mouvement reduit : pas de roulette (le JS affiche directement CINQ), simple fondu */
+/* Mouvement reduit : ni roulette ni glissement (le JS pose directement le logo
+   forme), simple fondu */
 @media (prefers-reduced-motion: reduce) {
-  .cs-loader__mot { transition: opacity 200ms var(--cs-ease-out); }
+  .cs-loader__mot--cinq { transition: opacity 200ms var(--cs-ease-out); }
+  .cs-loader__mot--septembre { transition: none; }
   .cs-loader__bande { transition: none; }
 }

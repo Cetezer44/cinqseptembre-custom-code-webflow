@@ -1,8 +1,10 @@
 /* ===== Loader =====
-   Le logotype apparait avec, a la place de CINQ, une roulette : UN, DEUX,
-   TROIS, QUATRE defilent vers le haut comme un compteur et s'arretent sur
-   CINQ. Le logo est alors forme — meme taille, meme position que celui de
-   l'accueil — et le voile s'efface : le logo semble rester en place.
+   1. Au centre de l'ecran, une roulette : UN, DEUX, TROIS, QUATRE defilent
+      vers le haut comme un compteur et s'arretent sur CINQ.
+   2. CINQ glisse a gauche pendant que SEPTEMBRE se devoile a droite. Le logo
+      est forme — meme taille, meme position que celui de l'accueil.
+   3. Le voile s'efface : le logo semble rester en place, et le collage joue
+      son entree en masque (evenement cs:loader-fini).
 
    Le balisage est injecte ici : rien a creer dans le Designer.
    Joue a chaque chargement reel de la page ; pas quand on y revient par une
@@ -46,6 +48,7 @@
   voile.setAttribute('role', 'presentation');
   voile.style.setProperty('--cs-loader-apparition', C.apparition + 'ms');
   voile.style.setProperty('--cs-loader-sortie', C.sortie + 'ms');
+  voile.style.setProperty('--cs-loader-jonction', C.jonction + 'ms');
   voile.innerHTML =
     '<div class="cs-loader__logo">' +
       '<span class="cs-loader__mot cs-loader__mot--cinq"><span class="cs-loader__bande">' + bandeHTML + '</span></span>' +
@@ -67,21 +70,23 @@
     var dernier = mots.length - 1;
 
     if (CS.reduit()) {
-      /* Mouvement reduit : pas de roulette, le logo est deja forme, simple fondu */
+      /* Mouvement reduit : ni roulette ni glissement, le logo est deja forme, simple fondu */
       cran(dernier, 0);
+      voile.setAttribute('data-joint', '');
       await CS.attendre(20);
       voile.setAttribute('data-visible', '');
       await CS.attendre(C.apparition + C.repos);
     } else {
       await CS.attendre(20);                    // laisse le navigateur peindre l'etat de depart
-      voile.setAttribute('data-visible', '');   // le logotype apparait, sur le premier mot
+      voile.setAttribute('data-visible', '');   // le premier mot apparait, au centre
       await CS.attendre(C.apparition + C.pause);
       for (var i = 1; i <= dernier; i++) {
         var d = i === dernier ? C.pasDernier : C.pas;
         cran(i, d);
         await CS.attendre(d + (i === dernier ? 0 : C.pasPause));
       }
-      await CS.attendre(C.repos);
+      voile.setAttribute('data-joint', '');     // CINQ se decale, SEPTEMBRE se devoile
+      await CS.attendre(C.jonction + C.repos);
     }
 
     voile.setAttribute('data-fini', '');        // le voile s'efface

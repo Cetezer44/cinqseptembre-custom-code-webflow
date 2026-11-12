@@ -28,22 +28,28 @@ CS.svg = {
 
 CS.config = {
   /* ---- Loader : roulette UN, DEUX, TROIS, QUATRE -> CINQ ----
-     A la place de CINQ, les mots defilent vers le haut l'un apres l'autre, comme
-     un compteur, et s'arretent sur CINQ : le logotype est alors forme, a la
-     place exacte du logo de l'accueil, et le voile s'efface. */
+     1. Au centre de l'ecran, les mots defilent vers le haut comme un compteur
+        et s'arretent sur CINQ.
+     2. CINQ glisse a gauche, a sa place dans le logotype, pendant que
+        SEPTEMBRE se devoile a droite : le logo est forme, a la place exacte
+        de celui de l'accueil.
+     3. Le voile s'efface et les images du collage apparaissent en masque
+        (voir collage.entree). */
   loader: {
     actif: true,
     pages: ['accueil'],   // pages ou le loader apparait ; [] = partout, null = nulle part
     uneFoisParSession: false,   // false = a chaque chargement de la page (pas aux retours par transition)
     mots: ['un', 'deux', 'trois', 'quatre', 'cinq'],   // cles de CS.svg, dans l'ordre ; le dernier reste
-    apparition: 400,      // ms — le logotype apparait, sur le premier mot
-    pause: 250,           // ms — temps d'arret avant le premier cran
-    pas: 380,             // ms — duree d'un cran de roulette
-    pasPause: 90,         // ms — arret sur chaque mot
-    pasDernier: 520,      // ms — le dernier cran, celui qui amene CINQ, un peu plus pose
-    repos: 300,           // ms — temps d'arret une fois le logo forme
-    sortie: 500           // ms — disparition du voile
+    apparition: 250,      // ms — le premier mot apparait
+    pause: 80,            // ms — temps d'arret avant le premier cran
+    pas: 220,             // ms — duree d'un cran de roulette
+    pasPause: 30,         // ms — arret sur chaque mot
+    pasDernier: 340,      // ms — le dernier cran, celui qui amene CINQ, un peu plus pose
+    jonction: 650,        // ms — CINQ se decale, SEPTEMBRE se devoile
+    repos: 150,           // ms — temps d'arret une fois le logo forme
+    sortie: 400           // ms — disparition du voile
   },
+
 
 
   /* ---- Collage en defilement infini (accueil + page Projets) ----
@@ -78,6 +84,15 @@ CS.config = {
     vitesseTactile: 1.6,           // glissement au doigt
     souplesse: 0.1,                // lissage du defilement : 0,05 tres doux, 0,2 sec
     seuilClic: 8,                  // px — au-dela, le geste est un glissement, pas un clic
+
+    /* Entree des images : chaque case visible se devoile par un masque qui
+       remonte, l'une apres l'autre de haut en bas. Jouee apres le loader sur
+       l'accueil, et a chaque arrivee sur une page a collage. */
+    entree: {
+      actif: true,
+      duree: 900,                  // ms — devoilement d'une image
+      decalage: 90                 // ms — ecart entre deux images
+    },
 
     /* Deformation des images au defilement (voir 03-deformation.js).
        L'intensite suit la vitesse : nulle a l'arret, pleine a vitessePleine.
@@ -516,10 +531,12 @@ CS.creerDeformation = function (canvas, auChargement) {
 
 /* ---------- 04-loader.js ---------- */
 /* ===== Loader =====
-   Le logotype apparait avec, a la place de CINQ, une roulette : UN, DEUX,
-   TROIS, QUATRE defilent vers le haut comme un compteur et s'arretent sur
-   CINQ. Le logo est alors forme — meme taille, meme position que celui de
-   l'accueil — et le voile s'efface : le logo semble rester en place.
+   1. Au centre de l'ecran, une roulette : UN, DEUX, TROIS, QUATRE defilent
+      vers le haut comme un compteur et s'arretent sur CINQ.
+   2. CINQ glisse a gauche pendant que SEPTEMBRE se devoile a droite. Le logo
+      est forme — meme taille, meme position que celui de l'accueil.
+   3. Le voile s'efface : le logo semble rester en place, et le collage joue
+      son entree en masque (evenement cs:loader-fini).
 
    Le balisage est injecte ici : rien a creer dans le Designer.
    Joue a chaque chargement reel de la page ; pas quand on y revient par une
@@ -563,6 +580,7 @@ CS.creerDeformation = function (canvas, auChargement) {
   voile.setAttribute('role', 'presentation');
   voile.style.setProperty('--cs-loader-apparition', C.apparition + 'ms');
   voile.style.setProperty('--cs-loader-sortie', C.sortie + 'ms');
+  voile.style.setProperty('--cs-loader-jonction', C.jonction + 'ms');
   voile.innerHTML =
     '<div class="cs-loader__logo">' +
       '<span class="cs-loader__mot cs-loader__mot--cinq"><span class="cs-loader__bande">' + bandeHTML + '</span></span>' +
@@ -584,21 +602,23 @@ CS.creerDeformation = function (canvas, auChargement) {
     var dernier = mots.length - 1;
 
     if (CS.reduit()) {
-      /* Mouvement reduit : pas de roulette, le logo est deja forme, simple fondu */
+      /* Mouvement reduit : ni roulette ni glissement, le logo est deja forme, simple fondu */
       cran(dernier, 0);
+      voile.setAttribute('data-joint', '');
       await CS.attendre(20);
       voile.setAttribute('data-visible', '');
       await CS.attendre(C.apparition + C.repos);
     } else {
       await CS.attendre(20);                    // laisse le navigateur peindre l'etat de depart
-      voile.setAttribute('data-visible', '');   // le logotype apparait, sur le premier mot
+      voile.setAttribute('data-visible', '');   // le premier mot apparait, au centre
       await CS.attendre(C.apparition + C.pause);
       for (var i = 1; i <= dernier; i++) {
         var d = i === dernier ? C.pasDernier : C.pas;
         cran(i, d);
         await CS.attendre(d + (i === dernier ? 0 : C.pasPause));
       }
-      await CS.attendre(C.repos);
+      voile.setAttribute('data-joint', '');     // CINQ se decale, SEPTEMBRE se devoile
+      await CS.attendre(C.jonction + C.repos);
     }
 
     voile.setAttribute('data-fini', '');        // le voile s'efface
@@ -742,6 +762,7 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
      Sans WebGL, sur petit ecran ou si l'utilisateur prefere moins de
      mouvement, rien de tout cela n'est cree. */
   var D = C.deformation, gl = null, toile = null, glActif = false;
+  var entreeEnCours = false;
   var lMotif = 0, xMotif = 0;
   var enRendu = false, tPrec = 0, yPrec = 0, intensite = 0, survol = null;
 
@@ -759,6 +780,9 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
   function rendre(t) {
     enRendu = false;
     if (!vivant || !glActif) return;
+    /* Pendant l'entree en masque, ce sont les <img> qui se devoilent : le
+       calque attend, il prendra le relais sur des images deja en place. */
+    if (entreeEnCours) { gl.dessiner([], 0); return; }
     var dt = Math.min(100, Math.max(1, t - (tPrec || t)));
     tPrec = t;
 
@@ -874,6 +898,44 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
   ctx.ecoute(window, 'resize', function () {
     clearTimeout(t); t = setTimeout(mesurer, 150);
   }, { passive: true });
+
+  /* ---- Entree des images en masque ----
+     Les cases visibles sont masquees, puis se devoilent l'une apres l'autre,
+     de haut en bas. Sur l'accueil on attend la fin du loader ; ailleurs on
+     joue des l'arrivee. */
+  var EN = C.entree;
+  if (EN && EN.actif && !CS.reduit()) {
+    entreeEnCours = true;
+    racine.dataset.entree = 'avant';
+    racine.style.setProperty('--cs-entree-duree', EN.duree + 'ms');
+    racine.style.setProperty('--cs-entree-decalage', EN.decalage + 'ms');
+    var jouee = false;
+    var jouerEntree = function () {
+      if (jouee || !vivant) return;
+      jouee = true;
+      var vh = window.innerHeight;
+      var visibles = Array.prototype.slice.call(racine.querySelectorAll('.cs-collage__case'))
+        .map(function (a) { return { a: a, r: a.getBoundingClientRect() }; })
+        .filter(function (o) { return o.r.bottom > 0 && o.r.top < vh; })
+        .sort(function (x, y) { return x.r.top - y.r.top; });
+      visibles.forEach(function (o, i) { o.a.style.setProperty('--cs-e', i); });
+      void racine.offsetWidth;                  // fige l'etat masque avant de lancer
+      racine.dataset.entree = 'joue';
+      setTimeout(function () {
+        if (!vivant) return;
+        delete racine.dataset.entree;
+        visibles.forEach(function (o) { o.a.style.removeProperty('--cs-e'); });
+        entreeEnCours = false;
+        demanderRendu();                        // le calque WebGL prend le relais
+      }, EN.duree * 1.3 + EN.decalage * Math.max(0, visibles.length - 1) + 60);   // 1,3 = l'image finit de se poser
+    };
+    if (document.documentElement.classList.contains('cs-loader-actif')) {
+      ctx.ecoute(document, 'cs:loader-fini', jouerEntree);
+      setTimeout(jouerEntree, 8000);            // filet : si le loader ne finit jamais
+    } else {
+      requestAnimationFrame(function () { requestAnimationFrame(jouerEntree); });
+    }
+  }
 
   /* ---- Flottement a la souris ----
      Le decalage est pose sur chaque case (le lien), donc la zone de clic et le

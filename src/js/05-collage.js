@@ -127,6 +127,7 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
      Sans WebGL, sur petit ecran ou si l'utilisateur prefere moins de
      mouvement, rien de tout cela n'est cree. */
   var D = C.deformation, gl = null, toile = null, glActif = false;
+  var entreeEnCours = false;
   var lMotif = 0, xMotif = 0;
   var enRendu = false, tPrec = 0, yPrec = 0, intensite = 0, survol = null;
 
@@ -144,6 +145,9 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
   function rendre(t) {
     enRendu = false;
     if (!vivant || !glActif) return;
+    /* Pendant l'entree en masque, ce sont les <img> qui se devoilent : le
+       calque attend, il prendra le relais sur des images deja en place. */
+    if (entreeEnCours) { gl.dessiner([], 0); return; }
     var dt = Math.min(100, Math.max(1, t - (tPrec || t)));
     tPrec = t;
 
@@ -259,6 +263,44 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
   ctx.ecoute(window, 'resize', function () {
     clearTimeout(t); t = setTimeout(mesurer, 150);
   }, { passive: true });
+
+  /* ---- Entree des images en masque ----
+     Les cases visibles sont masquees, puis se devoilent l'une apres l'autre,
+     de haut en bas. Sur l'accueil on attend la fin du loader ; ailleurs on
+     joue des l'arrivee. */
+  var EN = C.entree;
+  if (EN && EN.actif && !CS.reduit()) {
+    entreeEnCours = true;
+    racine.dataset.entree = 'avant';
+    racine.style.setProperty('--cs-entree-duree', EN.duree + 'ms');
+    racine.style.setProperty('--cs-entree-decalage', EN.decalage + 'ms');
+    var jouee = false;
+    var jouerEntree = function () {
+      if (jouee || !vivant) return;
+      jouee = true;
+      var vh = window.innerHeight;
+      var visibles = Array.prototype.slice.call(racine.querySelectorAll('.cs-collage__case'))
+        .map(function (a) { return { a: a, r: a.getBoundingClientRect() }; })
+        .filter(function (o) { return o.r.bottom > 0 && o.r.top < vh; })
+        .sort(function (x, y) { return x.r.top - y.r.top; });
+      visibles.forEach(function (o, i) { o.a.style.setProperty('--cs-e', i); });
+      void racine.offsetWidth;                  // fige l'etat masque avant de lancer
+      racine.dataset.entree = 'joue';
+      setTimeout(function () {
+        if (!vivant) return;
+        delete racine.dataset.entree;
+        visibles.forEach(function (o) { o.a.style.removeProperty('--cs-e'); });
+        entreeEnCours = false;
+        demanderRendu();                        // le calque WebGL prend le relais
+      }, EN.duree * 1.3 + EN.decalage * Math.max(0, visibles.length - 1) + 60);   // 1,3 = l'image finit de se poser
+    };
+    if (document.documentElement.classList.contains('cs-loader-actif')) {
+      ctx.ecoute(document, 'cs:loader-fini', jouerEntree);
+      setTimeout(jouerEntree, 8000);            // filet : si le loader ne finit jamais
+    } else {
+      requestAnimationFrame(function () { requestAnimationFrame(jouerEntree); });
+    }
+  }
 
   /* ---- Flottement a la souris ----
      Le decalage est pose sur chaque case (le lien), donc la zone de clic et le
