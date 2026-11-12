@@ -63,8 +63,11 @@ html.cs-sans-defilement, html.cs-sans-defilement body {
 .cs-loader__logo {
   position: relative;
   width: var(--cs-logo-w);
-  /* hauteur = 22 / 257,82 du lockup, ratio du logotype d'origine */
-  aspect-ratio: 257.82 / 22;
+  /* hauteur = 36,02 / 257,82 : hauteur reelle du lockup dans Figma.
+     Les viewBox font 22 de haut dans leur propre repere, mises a l'echelle
+     x1,637 dans le lockup. Un ratio base sur 22 repliait chaque SVG a sa
+     taille intrinseque au lieu de remplir son span. */
+  aspect-ratio: 257.82 / 36.02;
 }
 .cs-loader__mot {
   position: absolute;
@@ -82,8 +85,8 @@ html.cs-sans-defilement, html.cs-sans-defilement body {
    mots ne parcourraient pas la meme distance. */
 .cs-loader__logo { --cs-course-x: calc(var(--cs-logo-w) * 0.3112); }
 
-.cs-loader__mot--cinq      { left: 0;  width: 27.50%; transform: translateX(calc(-1 * var(--cs-course-x))); }
-.cs-loader__mot--septembre { right: 0; width: 67.98%; transform: translateX(var(--cs-course-x)); }
+.cs-loader__mot--cinq      { left: 0;  width: 27.62%; transform: translateX(calc(-1 * var(--cs-course-x))); }
+.cs-loader__mot--septembre { right: 0; width: 68.32%; transform: translateX(var(--cs-course-x)); }
 
 /* Les mots apparaissent, ecartes */
 .cs-loader[data-visible] .cs-loader__mot { opacity: 1; }
@@ -205,7 +208,7 @@ html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
   left: 50%;
   transform: translate(-50%, -50%);
   width: var(--cs-logo-w);
-  aspect-ratio: 257.82 / 22;
+  aspect-ratio: 257.82 / 36.02;
   color: #fff;
   mix-blend-mode: difference;
   pointer-events: none;
@@ -213,8 +216,8 @@ html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
 }
 .cs-collage-logo svg { display: block; width: 100%; height: 100%; }
 .cs-collage-logo__mot { position: absolute; top: 0; height: 100%; }
-.cs-collage-logo__mot--cinq      { left: 0;  width: 27.50%; }
-.cs-collage-logo__mot--septembre { right: 0; width: 67.98%; }
+.cs-collage-logo__mot--cinq      { left: 0;  width: 27.62%; }
+.cs-collage-logo__mot--septembre { right: 0; width: 68.32%; }
 
 @media (prefers-reduced-motion: reduce) {
   .cs-collage__img { transition: none; }
