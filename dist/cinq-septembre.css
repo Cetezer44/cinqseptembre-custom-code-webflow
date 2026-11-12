@@ -18,6 +18,11 @@
   --cs-logo-w: clamp(170px, 17.9vw, 258px);
 }
 
+/* Fond de page. Explicite sur html, sinon le fond du body est reporte sur le
+   canvas du navigateur, qui ne participe pas au mix-blend-mode : le logo et la
+   navigation en difference resteraient blancs sur blanc. */
+html, body { background-color: var(--cs-blanc); }
+
 /* Pages dont le defilement est pris en charge par le JS (collage infini) */
 html.cs-sans-defilement, html.cs-sans-defilement body {
   height: 100%;
