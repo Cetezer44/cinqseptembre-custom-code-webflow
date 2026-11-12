@@ -73,3 +73,21 @@ https://cdn.jsdelivr.net/gh/Cetezer44/cinqseptembre-custom-code-webflow@<sha-du-
 |---|---|
 | `01-core.js` | Réglages (`CS.config`), détection de page, utilitaires |
 | `04-loader.js` | Loader : CINQ et SEPTEMBRE se rejoignent pour former le logo |
+| `05-collage.js` | Collage en défilement infini (accueil + page Projets) |
+
+## Ce que Webflow doit fournir au collage
+
+Le moteur ne crée pas les données : il lit une liste CMS posée dans le Designer,
+masquée, et construit le collage à partir d'elle.
+
+```html
+<div class="cs-source" style="display:none">
+  <!-- Collection List liée à « Projets » -->
+  <a class="cs-source__item" href="/projets/{{slug}}" data-nom="{{Name}}">
+    <img src="{{Image mosaique 1}}">
+  </a>
+</div>
+```
+
+Le moteur reprend le lien, l'image et le nom. Tout le reste — positions,
+répétitions, défilement — est calculé.

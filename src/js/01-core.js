@@ -4,6 +4,13 @@
    modifier pour ajuster une duree, un seuil ou un selecteur. */
 window.CS = window.CS || {};
 
+/* Les deux mots du logotype, inlines a la construction depuis src/svg/.
+   Partages par le loader et par le logo fixe du collage. */
+CS.svg = {
+  cinq:      /*@include:svg/cinq.svg*/'',
+  septembre: /*@include:svg/septembre.svg*/''
+};
+
 CS.config = {
   loader: {
     actif: true,
@@ -14,6 +21,41 @@ CS.config = {
     course: 900,          // ms — les mots se rejoignent
     repos: 250,           // ms — temps d'arret une fois le logo forme
     sortie: 500           // ms — disparition du voile
+  },
+
+  /* ---- Collage en defilement infini (accueil + page Projets) ----
+     Le motif et les 11 emplacements sont repris au pixel de la maquette
+     (groupe de 1206 x 3249 px). Les coordonnees sont celles du motif, pas de
+     l'ecran : le JS les convertit en pourcentages. */
+  collage: {
+    pages: ['accueil', 'projets'],
+    conteneur: '.cs-collage',      // cree si absent
+    source: '.cs-source',          // liste CMS cachee posee dans Webflow
+    item: '.cs-source__item',
+    logo: true,                    // logo fixe au centre (false sur la page Projets)
+
+    motif: { w: 1206, h: 3249 },
+    partLargeur: 0.8375,           // 1206 / 1440 : le motif occupe 83,75 % de la largeur
+    largeurMax: 1600,              // px — au-dela, les images cesseraient de grandir
+
+    vitesse: 1,                    // molette
+    vitesseTactile: 1.6,           // glissement au doigt
+    souplesse: 0.1,                // lissage du defilement : 0,05 tres doux, 0,2 sec
+    seuilClic: 8,                  // px — au-dela, le geste est un glissement, pas un clic
+
+    cases: [
+      { x: 352, y:    0, w: 154, h: 214 },
+      { x: 769, y:  214, w: 343, h: 229 },
+      { x: 157, y:  399, w: 340, h: 439 },
+      { x: 977, y:  604, w: 229, h: 321 },
+      { x:  84, y: 1150, w: 172, h: 226 },
+      { x: 887, y: 1319, w: 319, h: 440 },
+      { x: 256, y: 1698, w: 301, h: 394 },
+      { x: 780, y: 2040, w: 163, h: 227 },
+      { x:   0, y: 2253, w: 325, h: 411 },
+      { x: 965, y: 2664, w: 164, h: 227 },
+      { x: 166, y: 2957, w: 259, h: 292 }
+    ]
   }
 };
 

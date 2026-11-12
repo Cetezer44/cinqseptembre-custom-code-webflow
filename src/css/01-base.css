@@ -12,3 +12,11 @@
   /* Largeur du logotype complet (CINQ + SEPTEMBRE) dans la maquette : 258 px a 1440 px */
   --cs-logo-w: clamp(170px, 17.9vw, 258px);
 }
+
+/* Pages dont le defilement est pris en charge par le JS (collage infini) */
+html.cs-sans-defilement, html.cs-sans-defilement body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}

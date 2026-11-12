@@ -1,0 +1,111 @@
+/* ===== Collage en defilement infini =====
+   Un motif de 1206 x 3249 px contenant 11 emplacements, repris tel quel de la
+   maquette, repete verticalement sans fin. Chaque emplacement recoit un projet
+   du CMS ; d'une repetition a l'autre les projets changent, pour que le
+   defilement ne se lise pas comme une boucle.
+
+   Le motif est pose en pourcentage de sa propre boite : il suffit de changer la
+   largeur de .cs-collage__motif pour que tout suive. */
+.cs-collage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--cs-blanc);
+  touch-action: none;          /* le navigateur ne defile pas : on s'en charge */
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cs-collage.is-tire { cursor: grabbing; }
+
+.cs-collage__piste {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--cs-motif-w);
+  margin-left: calc(var(--cs-motif-w) / -2);
+  will-change: transform;
+}
+
+/* Une repetition du motif. Hauteur = largeur x (3249 / 1206). */
+.cs-collage__motif {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1206 / 3249;
+  will-change: transform;
+}
+
+/* Un emplacement : position et taille en pourcentage du motif, posees par le JS */
+.cs-collage__case {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  background-color: #f4f4f4;
+}
+.cs-collage__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  transition: transform 900ms var(--cs-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .cs-collage__case:hover .cs-collage__img { transform: scale(1.04); }
+}
+
+/* Nom du projet au survol. En difference pour rester lisible sur n'importe
+   quelle image, claire comme sombre. */
+.cs-collage__nom {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  color: #fff;
+  mix-blend-mode: difference;
+  font-size: 7px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms var(--cs-ease-out);
+}
+.cs-collage__nom::before {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background-color: currentColor;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cs-collage__case:hover .cs-collage__nom { opacity: 1; }
+}
+
+/* Logo fixe au centre, en difference : blanc sur sombre, noir sur clair */
+.cs-collage-logo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--cs-logo-w);
+  aspect-ratio: 257.82 / 22;
+  color: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 5;
+}
+.cs-collage-logo svg { display: block; width: 100%; height: 100%; }
+.cs-collage-logo__mot { position: absolute; top: 0; height: 100%; }
+.cs-collage-logo__mot--cinq      { left: 0;  width: 27.50%; }
+.cs-collage-logo__mot--septembre { right: 0; width: 67.98%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-collage__img { transition: none; }
+}

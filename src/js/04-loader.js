@@ -20,9 +20,6 @@
     } catch (e) { /* navigation privee : le loader passera a chaque fois */ }
   }
 
-  var SVG_CINQ = /*@include:svg/cinq.svg*/'';
-  var SVG_SEPT = /*@include:svg/septembre.svg*/'';
-
   /* Le voile est pose tout de suite, avant le premier rendu, pour qu'aucune
      portion de la page n'apparaisse avant lui. */
   document.documentElement.classList.add('cs-loader-actif');
@@ -35,8 +32,8 @@
   voile.style.setProperty('--cs-loader-sortie', C.sortie + 'ms');
   voile.innerHTML =
     '<div class="cs-loader__logo">' +
-      '<span class="cs-loader__mot cs-loader__mot--cinq">' + SVG_CINQ + '</span>' +
-      '<span class="cs-loader__mot cs-loader__mot--septembre">' + SVG_SEPT + '</span>' +
+      '<span class="cs-loader__mot cs-loader__mot--cinq">' + CS.svg.cinq + '</span>' +
+      '<span class="cs-loader__mot cs-loader__mot--septembre">' + CS.svg.septembre + '</span>' +
     '</div>';
 
   function poser() {
