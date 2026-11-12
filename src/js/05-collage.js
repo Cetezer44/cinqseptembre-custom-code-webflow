@@ -75,6 +75,7 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
         img.alt = p.alt || p.nom;
       }
       a.href = p.href;
+      a._src = p.src;              // lu par le calque de deformation
       a.querySelector('.cs-collage__nom').textContent = p.nom;
     });
   }
@@ -89,7 +90,11 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
     var besoin = Math.ceil(window.innerHeight / hPas) + 2;
     while (motifs.length < besoin) motifs.push(construireMotif(motifs.length));
     motifs.forEach(remplir);
+    lMotif = large;
+    xMotif = (window.innerWidth - large) / 2;
+    majDeformation();
     placer();
+    demanderRendu();
   }
 
   /* Recycle les repetitions sorties de l'ecran : celle qui passe au-dessus
@@ -101,6 +106,7 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
       var y = rang * hPas - courant;
       if (y + hMotif < -hPas) { rang += k; m.dataset.rang = rang; remplir(m); y = rang * hPas - courant; }
       else if (y > vh + hPas) { rang -= k; m.dataset.rang = rang; remplir(m); y = rang * hPas - courant; }
+      m._y = y;
       m.style.transform = 'translate3d(0,' + y.toFixed(1) + 'px,0)';
     });
   }
@@ -112,7 +118,70 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
     placer();
     if (anime) requestAnimationFrame(boucle);
   }
-  function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
+  function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } demanderRendu(); }
+
+  /* ---- Deformation au defilement ----
+     Le calque WebGL est glisse SOUS les cases : les liens, le nom au survol et
+     le clic restent ceux du DOM. Une case dont la texture est prete recoit
+     data-gl, qui rend son <img> invisible ; les autres gardent leur <img>.
+     Sans WebGL, sur petit ecran ou si l'utilisateur prefere moins de
+     mouvement, rien de tout cela n'est cree. */
+  var D = C.deformation, gl = null, toile = null, glActif = false;
+  var lMotif = 0, xMotif = 0;
+  var enRendu = false, tPrec = 0, yPrec = 0, intensite = 0, survol = null;
+
+  function majDeformation() {
+    if (!gl) return;
+    glActif = window.innerWidth >= D.largeurMin;
+    toile.style.display = glActif ? '' : 'none';
+    if (glActif) gl.taille(window.innerWidth, window.innerHeight);
+    else liberer();
+  }
+  function liberer() {
+    Array.prototype.forEach.call(racine.querySelectorAll('[data-gl]'), function (a) { a.removeAttribute('data-gl'); });
+  }
+
+  function rendre(t) {
+    enRendu = false;
+    if (!vivant || !glActif) return;
+    var dt = Math.min(100, Math.max(1, t - (tPrec || t)));
+    tPrec = t;
+
+    /* intensite : vitesse de defilement lissee, montee rapide, descente lente */
+    var vitesse = Math.abs(courant - yPrec) / dt * 1000;
+    yPrec = courant;
+    var viseeI = anime ? Math.min(vitesse / D.vitessePleine, 1) : 0;
+    intensite += (viseeI - intensite) * (1 - Math.exp(-dt / (viseeI > intensite ? D.montee : D.descente)));
+    if (intensite < 0.002 && viseeI === 0) intensite = 0;
+
+    var vh = window.innerHeight, liste = [], zoomEnCours = false;
+    var kz = 1 - Math.pow(0.86, dt / 16.67);
+    motifs.forEach(function (m) {
+      Array.prototype.forEach.call(m.children, function (a, i) {
+        var c = C.cases[i];
+        var y = m._y + c.y / C.motif.h * hMotif, h = c.h / C.motif.h * hMotif;
+        var vz = a === survol ? D.zoomSurvol : 1;
+        a._zoom = a._zoom || 1;
+        if (Math.abs(vz - a._zoom) > 0.0005) { a._zoom += (vz - a._zoom) * kz; zoomEnCours = true; } else a._zoom = vz;
+        if (y + h < 0 || y > vh) { if (a.hasAttribute('data-gl')) a.removeAttribute('data-gl'); return; }
+        liste.push({ cle: a, url: a._src, x: xMotif + c.x / C.motif.w * lMotif, y: y, w: c.w / C.motif.w * lMotif, h: h, zoom: a._zoom });
+      });
+    });
+
+    var dessinees = gl.dessiner(liste, D.force * intensite);
+    liste.forEach(function (o) {
+      var pret = dessinees.indexOf(o.cle) !== -1;
+      if (pret !== o.cle.hasAttribute('data-gl')) { if (pret) o.cle.setAttribute('data-gl', ''); else o.cle.removeAttribute('data-gl'); }
+    });
+
+    if (anime || intensite > 0 || zoomEnCours || gl.enAttente()) demanderRendu();
+    else tPrec = 0;
+  }
+  function demanderRendu() {
+    if (!glActif || enRendu) return;
+    enRendu = true;
+    requestAnimationFrame(rendre);
+  }
 
   /* ---- Mise en place ---- */
   racine = document.createElement('div');
@@ -122,9 +191,28 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
   racine.appendChild(piste);
   ctx.conteneur.appendChild(racine);
 
+  if (D && D.pages.indexOf(ctx.page) !== -1 && !CS.reduit() && CS.creerDeformation) {
+    toile = document.createElement('canvas');
+    toile.className = 'cs-collage__gl';
+    toile.setAttribute('aria-hidden', 'true');
+    gl = CS.creerDeformation(toile, function () { demanderRendu(); });
+    if (gl) {
+      racine.insertBefore(toile, piste);
+      /* contexte perdu (pilote, mise en veille) : on rend la main aux <img> */
+      ctx.ecoute(toile, 'webglcontextlost', function (e) { e.preventDefault(); glActif = false; liberer(); toile.style.display = 'none'; });
+      ctx.ecoute(racine, 'pointerover', function (e) {
+        if (e.pointerType !== 'mouse') return;
+        survol = e.target.closest ? e.target.closest('.cs-collage__case') : null;
+        demanderRendu();
+      });
+      ctx.ecoute(racine, 'pointerleave', function () { survol = null; demanderRendu(); });
+    } else toile = null;
+  }
+
   document.documentElement.classList.add('cs-sans-defilement');
   ctx.aLaSortie(function () {
     vivant = false;
+    if (gl) gl.detruire();
     document.documentElement.classList.remove('cs-sans-defilement');
     CS.collage = null;
   });

@@ -65,6 +65,19 @@ CS.config = {
     souplesse: 0.1,                // lissage du defilement : 0,05 tres doux, 0,2 sec
     seuilClic: 8,                  // px — au-dela, le geste est un glissement, pas un clic
 
+    /* Deformation des images au defilement (voir 03-deformation.js).
+       L'intensite suit la vitesse : nulle a l'arret, pleine a vitessePleine.
+       Elle monte vite et retombe lentement, pour que l'effet « s'attarde ». */
+    deformation: {
+      pages: ['accueil'],          // ajouter 'projets' pour l'avoir aussi sur la grille des projets
+      force: 0.0486,               // etirement maximal aux bords haut et bas : 4,86 %
+      vitessePleine: 800,          // px/s
+      montee: 25,                  // ms
+      descente: 175,               // ms
+      largeurMin: 981,             // px — desactive en dessous (tablette, mobile)
+      zoomSurvol: 1.04             // meme zoom au survol que la version sans WebGL
+    },
+
     cases: [
       { x: 352, y:    0, w: 154, h: 214 },
       { x: 769, y:  214, w: 343, h: 229 },
@@ -262,6 +275,166 @@ CS.curseur = function (ctx, zone, texte, icone, estDessus) {
   return c;
 };
 
+/* ---------- 03-deformation.js ---------- */
+/* ===== Deformation des images au defilement (WebGL) =====
+   Tout ce qui approche du haut ou du bas de l'ecran est etire horizontalement
+   depuis l'axe central, selon un profil en arc de cercle : nul au milieu de
+   l'ecran, maximal aux bords. La deformation est calculee dans l'espace de
+   l'ECRAN, pas dans chaque image : les bords verticaux des images se courbent,
+   elles semblent s'enrouler vers soi. Appliquee image par image (un simple
+   scaleX), elle garderait quatre bords droits — c'est la raison du WebGL.
+
+   Ce module ne sait que dessiner : on lui donne a chaque image la liste des
+   rectangles a l'ecran et l'intensite, il rend la main. Le moteur de collage
+   (05-collage.js) decide de l'intensite a partir de la vitesse de defilement.
+
+   CS.creerDeformation(canvas, auChargement) -> { taille, dessiner, detruire }
+   ou null si WebGL n'est pas disponible (le DOM reste alors affiche tel quel). */
+CS.creerDeformation = function (canvas, auChargement) {
+  var gl = null;
+  try {
+    gl = canvas.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: false, powerPreference: 'low-power' });
+  } catch (e) {}
+  if (!gl) return null;
+
+  var VS =
+    'attribute vec2 aP; varying vec2 vEcran;' +
+    'void main(){ vEcran = aP; gl_Position = vec4(aP.x*2.0-1.0, 1.0-aP.y*2.0, 0.0, 1.0); }';
+
+  var FS =
+    'precision highp float;' +
+    'uniform sampler2D uTexture; uniform vec2 uEcran; uniform vec4 uCase; uniform vec2 uImage;' +
+    'uniform float uForce; uniform float uZoom; varying vec2 vEcran;' +
+    'void main(){' +
+    /* 1. courbure de l'ecran : on resserre l'abscisse lue, donc l'image affichee s'elargit */
+    '  vec2 e = vEcran;' +
+    '  float cy = e.y*2.0-1.0;' +
+    '  float bord = 1.0 - sqrt(max(0.0, 1.0 - cy*cy));' +
+    '  e.x = 0.5 + (e.x-0.5)*(1.0 - bord*uForce);' +
+    /* 2. position dans la case, bords adoucis sur moins d'un pixel */
+    '  vec2 l = (e*uEcran - uCase.xy)/uCase.zw;' +
+    '  vec2 d = min(l, 1.0-l)*uCase.zw;' +
+    '  float a = smoothstep(0.0, 0.75, min(d.x, d.y));' +
+    '  if (a <= 0.0) discard;' +
+    /* 3. meme cadrage que object-fit: cover, zoom de survol compris */
+    '  vec2 uv = 0.5 + (l-0.5)/uZoom;' +
+    '  float rc = uCase.z/max(uCase.w, 1.0);' +
+    '  float ri = uImage.x/max(uImage.y, 1.0);' +
+    '  if (ri > rc) uv.x = 0.5 + (uv.x-0.5)*rc/ri; else uv.y = 0.5 + (uv.y-0.5)*ri/rc;' +
+    '  gl_FragColor = vec4(texture2D(uTexture, clamp(uv, 0.0, 1.0)).rgb, a);' +
+    '}';
+
+  function shader(type, source) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, source); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { gl.deleteShader(s); return null; }
+    return s;
+  }
+  var vs = shader(gl.VERTEX_SHADER, VS), fs = shader(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) return null;
+  var prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return null;
+  gl.useProgram(prog);
+
+  var tampon = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, tampon);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW);
+  var aP = gl.getAttribLocation(prog, 'aP');
+  gl.enableVertexAttribArray(aP);
+  gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0);
+
+  var U = {};
+  ['uTexture', 'uEcran', 'uCase', 'uImage', 'uForce', 'uZoom'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+  gl.uniform1i(U.uTexture, 0);
+  gl.clearColor(0, 0, 0, 0);
+  gl.enable(gl.BLEND);
+  gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+  /* ---- Textures, une par adresse d'image ---- */
+  var textures = {}, vivant = true, enCours = 0, largeur = 1, hauteur = 1, densite = 1;
+  function texture(url) {
+    var t = textures[url];
+    if (t) return t.pret ? t : null;
+    t = textures[url] = { pret: false };
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.decoding = 'async';
+    enCours++;
+    img.onload = function () {
+      enCours--;
+      if (!vivant) return;
+      try {
+        var tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        if (gl.getError() !== gl.NO_ERROR) throw new Error('texture');
+        t.tex = tex; t.w = img.naturalWidth; t.h = img.naturalHeight; t.pret = true;
+        if (auChargement) auChargement();
+      } catch (e) { t.echec = true; }       // image non lisible : la case garde son <img>
+    };
+    img.onerror = function () { enCours--; t.echec = true; };
+    img.src = url;
+    return null;
+  }
+
+  return {
+    enAttente: function () { return enCours > 0; },
+
+    taille: function (l, h) {
+      densite = Math.min(window.devicePixelRatio || 1, 2);
+      largeur = l; hauteur = h;
+      var w = Math.max(1, Math.round(l * densite)), hh = Math.max(1, Math.round(h * densite));
+      if (canvas.width !== w || canvas.height !== hh) { canvas.width = w; canvas.height = hh; }
+      gl.viewport(0, 0, w, hh);
+      gl.uniform2f(U.uEcran, l, h);
+    },
+
+    /* cases : [{ cle, url, x, y, w, h, zoom }] en pixels CSS. Rend le tableau des
+       cles effectivement dessinees (texture prete). */
+    dessiner: function (cases, force) {
+      var dessinees = [];
+      if (!vivant) return dessinees;
+      gl.disable(gl.SCISSOR_TEST);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.enable(gl.SCISSOR_TEST);
+      gl.uniform1f(U.uForce, force);
+      /* marge laterale : de combien une image peut deborder de sa case une fois etiree */
+      var marge = largeur * 0.5 * force / (1 - force) + 2;
+      for (var i = 0; i < cases.length; i++) {
+        var c = cases[i], t = texture(c.url);
+        if (!t) continue;
+        var x0 = Math.max(0, Math.floor((c.x - marge) * densite));
+        var x1 = Math.min(canvas.width, Math.ceil((c.x + c.w + marge) * densite));
+        var y0 = Math.max(0, Math.floor((hauteur - c.y - c.h) * densite));
+        var y1 = Math.min(canvas.height, Math.ceil((hauteur - c.y) * densite));
+        if (x1 <= x0 || y1 <= y0) continue;
+        gl.scissor(x0, y0, x1 - x0, y1 - y0);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, t.tex);
+        gl.uniform4f(U.uCase, c.x, c.y, c.w, c.h);
+        gl.uniform2f(U.uImage, t.w, t.h);
+        gl.uniform1f(U.uZoom, c.zoom || 1);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        dessinees.push(c.cle);
+      }
+      return dessinees;
+    },
+
+    detruire: function () {
+      vivant = false;
+      Object.keys(textures).forEach(function (k) { if (textures[k].tex) gl.deleteTexture(textures[k].tex); });
+      gl.deleteBuffer(tampon); gl.deleteProgram(prog);
+      var perte = gl.getExtension('WEBGL_lose_context');
+      if (perte) perte.loseContext();
+    }
+  };
+};
+
 /* ---------- 04-loader.js ---------- */
 /* ===== Loader =====
    Les deux mots du logotype arrivent ecartes, se rapprochent jusqu'a former le
@@ -416,6 +589,7 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
         img.alt = p.alt || p.nom;
       }
       a.href = p.href;
+      a._src = p.src;              // lu par le calque de deformation
       a.querySelector('.cs-collage__nom').textContent = p.nom;
     });
   }
@@ -430,7 +604,11 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
     var besoin = Math.ceil(window.innerHeight / hPas) + 2;
     while (motifs.length < besoin) motifs.push(construireMotif(motifs.length));
     motifs.forEach(remplir);
+    lMotif = large;
+    xMotif = (window.innerWidth - large) / 2;
+    majDeformation();
     placer();
+    demanderRendu();
   }
 
   /* Recycle les repetitions sorties de l'ecran : celle qui passe au-dessus
@@ -442,6 +620,7 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
       var y = rang * hPas - courant;
       if (y + hMotif < -hPas) { rang += k; m.dataset.rang = rang; remplir(m); y = rang * hPas - courant; }
       else if (y > vh + hPas) { rang -= k; m.dataset.rang = rang; remplir(m); y = rang * hPas - courant; }
+      m._y = y;
       m.style.transform = 'translate3d(0,' + y.toFixed(1) + 'px,0)';
     });
   }
@@ -453,7 +632,70 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
     placer();
     if (anime) requestAnimationFrame(boucle);
   }
-  function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
+  function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } demanderRendu(); }
+
+  /* ---- Deformation au defilement ----
+     Le calque WebGL est glisse SOUS les cases : les liens, le nom au survol et
+     le clic restent ceux du DOM. Une case dont la texture est prete recoit
+     data-gl, qui rend son <img> invisible ; les autres gardent leur <img>.
+     Sans WebGL, sur petit ecran ou si l'utilisateur prefere moins de
+     mouvement, rien de tout cela n'est cree. */
+  var D = C.deformation, gl = null, toile = null, glActif = false;
+  var lMotif = 0, xMotif = 0;
+  var enRendu = false, tPrec = 0, yPrec = 0, intensite = 0, survol = null;
+
+  function majDeformation() {
+    if (!gl) return;
+    glActif = window.innerWidth >= D.largeurMin;
+    toile.style.display = glActif ? '' : 'none';
+    if (glActif) gl.taille(window.innerWidth, window.innerHeight);
+    else liberer();
+  }
+  function liberer() {
+    Array.prototype.forEach.call(racine.querySelectorAll('[data-gl]'), function (a) { a.removeAttribute('data-gl'); });
+  }
+
+  function rendre(t) {
+    enRendu = false;
+    if (!vivant || !glActif) return;
+    var dt = Math.min(100, Math.max(1, t - (tPrec || t)));
+    tPrec = t;
+
+    /* intensite : vitesse de defilement lissee, montee rapide, descente lente */
+    var vitesse = Math.abs(courant - yPrec) / dt * 1000;
+    yPrec = courant;
+    var viseeI = anime ? Math.min(vitesse / D.vitessePleine, 1) : 0;
+    intensite += (viseeI - intensite) * (1 - Math.exp(-dt / (viseeI > intensite ? D.montee : D.descente)));
+    if (intensite < 0.002 && viseeI === 0) intensite = 0;
+
+    var vh = window.innerHeight, liste = [], zoomEnCours = false;
+    var kz = 1 - Math.pow(0.86, dt / 16.67);
+    motifs.forEach(function (m) {
+      Array.prototype.forEach.call(m.children, function (a, i) {
+        var c = C.cases[i];
+        var y = m._y + c.y / C.motif.h * hMotif, h = c.h / C.motif.h * hMotif;
+        var vz = a === survol ? D.zoomSurvol : 1;
+        a._zoom = a._zoom || 1;
+        if (Math.abs(vz - a._zoom) > 0.0005) { a._zoom += (vz - a._zoom) * kz; zoomEnCours = true; } else a._zoom = vz;
+        if (y + h < 0 || y > vh) { if (a.hasAttribute('data-gl')) a.removeAttribute('data-gl'); return; }
+        liste.push({ cle: a, url: a._src, x: xMotif + c.x / C.motif.w * lMotif, y: y, w: c.w / C.motif.w * lMotif, h: h, zoom: a._zoom });
+      });
+    });
+
+    var dessinees = gl.dessiner(liste, D.force * intensite);
+    liste.forEach(function (o) {
+      var pret = dessinees.indexOf(o.cle) !== -1;
+      if (pret !== o.cle.hasAttribute('data-gl')) { if (pret) o.cle.setAttribute('data-gl', ''); else o.cle.removeAttribute('data-gl'); }
+    });
+
+    if (anime || intensite > 0 || zoomEnCours || gl.enAttente()) demanderRendu();
+    else tPrec = 0;
+  }
+  function demanderRendu() {
+    if (!glActif || enRendu) return;
+    enRendu = true;
+    requestAnimationFrame(rendre);
+  }
 
   /* ---- Mise en place ---- */
   racine = document.createElement('div');
@@ -463,9 +705,28 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
   racine.appendChild(piste);
   ctx.conteneur.appendChild(racine);
 
+  if (D && D.pages.indexOf(ctx.page) !== -1 && !CS.reduit() && CS.creerDeformation) {
+    toile = document.createElement('canvas');
+    toile.className = 'cs-collage__gl';
+    toile.setAttribute('aria-hidden', 'true');
+    gl = CS.creerDeformation(toile, function () { demanderRendu(); });
+    if (gl) {
+      racine.insertBefore(toile, piste);
+      /* contexte perdu (pilote, mise en veille) : on rend la main aux <img> */
+      ctx.ecoute(toile, 'webglcontextlost', function (e) { e.preventDefault(); glActif = false; liberer(); toile.style.display = 'none'; });
+      ctx.ecoute(racine, 'pointerover', function (e) {
+        if (e.pointerType !== 'mouse') return;
+        survol = e.target.closest ? e.target.closest('.cs-collage__case') : null;
+        demanderRendu();
+      });
+      ctx.ecoute(racine, 'pointerleave', function () { survol = null; demanderRendu(); });
+    } else toile = null;
+  }
+
   document.documentElement.classList.add('cs-sans-defilement');
   ctx.aLaSortie(function () {
     vivant = false;
+    if (gl) gl.detruire();
     document.documentElement.classList.remove('cs-sans-defilement');
     CS.collage = null;
   });

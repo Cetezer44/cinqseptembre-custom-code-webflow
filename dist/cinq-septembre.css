@@ -157,6 +157,20 @@ html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
   will-change: transform;
 }
 
+/* Calque WebGL de deformation au defilement (03-deformation.js), sous les
+   cases. Une case prise en charge par le calque (data-gl) devient transparente
+   et cache son <img> : c'est le calque qui dessine l'image, le lien, lui,
+   reste cliquable et garde son nom au survol. */
+.cs-collage__gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.cs-collage__case[data-gl] { background-color: transparent; overflow: visible; }
+.cs-collage__case[data-gl] .cs-collage__img { opacity: 0; }
+
 /* Une repetition du motif. Hauteur = largeur x (3249 / 1206). */
 .cs-collage__motif {
   position: absolute;

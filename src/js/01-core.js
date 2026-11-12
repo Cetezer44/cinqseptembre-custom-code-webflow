@@ -56,6 +56,19 @@ CS.config = {
     souplesse: 0.1,                // lissage du defilement : 0,05 tres doux, 0,2 sec
     seuilClic: 8,                  // px — au-dela, le geste est un glissement, pas un clic
 
+    /* Deformation des images au defilement (voir 03-deformation.js).
+       L'intensite suit la vitesse : nulle a l'arret, pleine a vitessePleine.
+       Elle monte vite et retombe lentement, pour que l'effet « s'attarde ». */
+    deformation: {
+      pages: ['accueil'],          // ajouter 'projets' pour l'avoir aussi sur la grille des projets
+      force: 0.0486,               // etirement maximal aux bords haut et bas : 4,86 %
+      vitessePleine: 800,          // px/s
+      montee: 25,                  // ms
+      descente: 175,               // ms
+      largeurMin: 981,             // px — desactive en dessous (tablette, mobile)
+      zoomSurvol: 1.04             // meme zoom au survol que la version sans WebGL
+    },
+
     cases: [
       { x: 352, y:    0, w: 154, h: 214 },
       { x: 769, y:  214, w: 343, h: 229 },

@@ -115,6 +115,7 @@ Les pages de projet (`/projets/...`) sont exclues des transitions
 
 | Fichier | Pages | Role |
 |---|---|---|
+| `03-deformation` | accueil | Calque WebGL : images courbees en haut et en bas pendant le defilement |
 | `04-loader` | accueil | Loader au premier chargement de la session |
 | `05-collage` | accueil, projets | Collage vertical infini (11 emplacements) |
 | `06-liste` | projets | Vue liste horizontale + bascule grille / liste |
