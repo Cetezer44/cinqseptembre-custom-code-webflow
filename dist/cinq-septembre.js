@@ -121,8 +121,8 @@ CS.config = {
      de l'ecran. Mesures reprises de la maquette (cadre de 1440 x 1024). */
   liste: {
     pages: ['projets'],
-    vueParDefaut: 'grille',        // 'grille' ou 'liste'
-    memoriser: true,               // retient la vue le temps de la session
+    vueParDefaut: 'liste',         // vue a l'arrivee par un lien : 'grille' ou 'liste'
+    memoriser: true,               // en revenant par « precedent », on retrouve la vue qu'on avait quittee
     carte: { w: 436, h: 628 },     // proportions d'une carte
     partHauteur: 0.6133,           // 628 / 1024 : hauteur de carte / hauteur d'ecran
     ecart: 10,                     // px entre deux cartes
@@ -275,6 +275,13 @@ CS.quellePage = function (chemin) {
   return p.replace(/^\//, '').replace(/\//g, '-') || 'autre';
 };
 CS.page = CS.quellePage(location.pathname);
+
+/* Arrive-t-on par l'historique (precedent / suivant) ou par un lien ?
+   Sert a la page Projets : un lien ouvre la vue par defaut, « precedent »
+   rend la vue qu'on avait quittee. */
+CS.parHistorique = false;
+window.addEventListener('popstate', function () { CS.parHistorique = true; });
+document.addEventListener('click', function () { CS.parHistorique = false; }, true);
 
 /* ===== Cycle de vie des pages =====
    Avec Barba, les pages se remplacent sans rechargement : un module ne peut
@@ -1085,7 +1092,7 @@ CS.module('liste', CS.config.liste.pages, function (ctx) {
 
   /* ---- Memoire de la vue (le temps de la session) ---- */
   function lireVue() {
-    if (L.memoriser) {
+    if (L.memoriser && CS.parHistorique) {
       try { var v = sessionStorage.getItem(CLE); if (v === 'grille' || v === 'liste') return v; } catch (e) {}
     }
     return L.vueParDefaut === 'liste' ? 'liste' : 'grille';

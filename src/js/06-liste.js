@@ -21,7 +21,7 @@ CS.module('liste', CS.config.liste.pages, function (ctx) {
 
   /* ---- Memoire de la vue (le temps de la session) ---- */
   function lireVue() {
-    if (L.memoriser) {
+    if (L.memoriser && CS.parHistorique) {
       try { var v = sessionStorage.getItem(CLE); if (v === 'grille' || v === 'liste') return v; } catch (e) {}
     }
     return L.vueParDefaut === 'liste' ? 'liste' : 'grille';

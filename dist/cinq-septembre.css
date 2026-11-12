@@ -410,15 +410,16 @@ html:not([data-cs-vue]) .cs-liste {
     transform 700ms var(--cs-ease-out) calc(var(--cs-i, 0) * 50ms);
 }
 
-/* ---- Bouton de bascule, fixe a droite, a mi-hauteur ---- */
+/* ---- Bouton de bascule, fixe, centre sous la navigation ----
+   Maquette : a 185 px du haut sur un cadre de 1024 px de haut. */
 .cs-vue-bascule {
   position: fixed;
-  top: 50%;
-  right: 29px;
-  transform: translateY(-50%);
+  top: 18.07vh;
+  left: 50%;
+  transform: translate(-50%, -12px);   /* -12px : le padding ne decale pas le texte */
   z-index: 900;
   margin: 0;
-  padding: 12px 0 12px 12px;      /* zone de clic plus large que le texte */
+  padding: 12px;                  /* zone de clic plus large que le texte */
   border: 0;
   background: none;
   color: #fff;
@@ -544,11 +545,6 @@ html:not([data-cs-vue]) .cs-liste {
   .cs-page-contact .cs-contact__pied { animation: cs-contact-fondu 300ms ease both; animation-delay: 0ms; }
 }
 @keyframes cs-contact-fondu { from { opacity: 0; } }
-
-/* Petit ecran : memes marges que la navigation */
-@media (max-width: 767px) {
-  .cs-vue-bascule { right: 16px; }
-}
 
 /* Pendant le rideau, la page qui reste dessous est contenue dans son propre
    plan : ses elements fixes a z-index eleve (logo central, bouton de vue,
