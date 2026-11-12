@@ -42,12 +42,12 @@ html:not([data-cs-vue]) .cs-liste {
 }
 .cs-liste__int { display: block; }
 
-/* Nom au-dessus de la carte : 8 px, comme la navigation */
+/* Nom au-dessus de la carte : 12 px, comme la navigation */
 .cs-liste__nom {
   display: block;
   padding: 0 0 9px 2px;
-  font-size: 8px;
-  line-height: 15px;
+  font-size: 12px;
+  line-height: 16px;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
@@ -101,7 +101,7 @@ html:not([data-cs-vue]) .cs-liste {
   color: #fff;
   mix-blend-mode: difference;
   font: inherit;
-  font-size: 8px;
+  font-size: 12px;
   line-height: 16px;
   text-transform: uppercase;
   white-space: nowrap;

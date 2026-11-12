@@ -92,8 +92,50 @@ CS.config = {
 
   /* ---- Page Contact ---- */
   contact: {
+    pages: ['contact'],
     retour: '/',                   // ou aller a la fermeture si l'on n'arrive pas du site
     libelleFermer: 'Fermer'
+  },
+
+  /* ---- Page Archive : mosaique infinie + focus ----
+     Trame reguliere reprise de la maquette (cadre de 1440 px de large) :
+     tuiles de 130 x 180, une tous les 276 px en largeur et 323 px en hauteur.
+     Tout est mis a l'echelle de la largeur d'ecran, dans les bornes ci-dessous. */
+  archive: {
+    pages: ['archives'],
+    source: '.cs-archive-source',          // Collection List « Bibliotheque » du Designer
+    item: '.cs-archive-item',
+    champs: { nom: '.cs-archive-item__nom', type: '.cs-archive-item__type', annee: '.cs-archive-item__annee' },
+
+    base: 1440,                    // largeur de la maquette
+    tuile: { w: 130, h: 180 },
+    pas: { x: 276, y: 323 },
+    origine: { x: 241, y: 255 },   // position d'une tuile de reference a l'ouverture
+    echelleMin: 0.75,              // petit ecran : les tuiles ne descendent pas sous 97 px de large
+    echelleMax: 1.35,              // tres grand ecran
+    melange: 7,                    // decalage d'une rangee a l'autre dans l'ordre des references
+
+    souplesse: 0.1,                // lissage (molette, elan)
+    vitesse: 1,                    // molette
+    elan: 260,                     // ms de vitesse conservee au relachement
+    seuilClic: 8,                  // px — au-dela, le geste est un deplacement, pas un clic
+
+    focus: {
+      w: 344, h: 477,              // proportions de l'image agrandie
+      duree: 600,                  // ms — agrandissement / retour
+      delaiSuivant: 450            // ms mini entre deux references a la molette
+    },
+    libelleFermer: 'Fermer'
+  },
+
+  /* ---- Transitions de page (Barba) ---- */
+  transitions: {
+    actif: true,
+    sortie: 300,                   // ms — fondu de la page qui part
+    entree: 450,                   // ms — fondu de la page qui arrive
+    /* Pages chargees normalement, sans transition : les pages de projet
+       embarquent encore leur propre script, que Barba n'executerait pas. */
+    exclure: [/^\/projets\/.+/]
   }
 };
 
@@ -102,6 +144,10 @@ CS.config = {
 /* ---- Utilitaires ---- */
 CS.reduit = function () {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+};
+
+CS.sourisFine = function () {
+  return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 };
 
 CS.attendre = function (ms) {
@@ -118,18 +164,91 @@ CS.pret = function (fn) {
 
 /* Quelle page affiche-t-on ? Repose sur le slug de l'URL, pas sur le balisage,
    pour rester vrai meme si la structure Webflow change. */
-CS.page = (function () {
-  var p = location.pathname.replace(/\/+$/, '');
+CS.quellePage = function (chemin) {
+  var p = (chemin || '').replace(/\/+$/, '');
   if (p === '' || p === '/index') return 'accueil';
   if (p.indexOf('/projets/') === 0) return 'projet';
   if (p === '/projets') return 'projets';
   if (p === '/archive' || p === '/archives' || p === '/bibliotheque') return 'archives';
   if (p === '/contact') return 'contact';
   if (p === '/approche' || p === '/a-propos') return 'approche';
-  return p.replace(/^\//, '') || 'autre';
-})();
+  return p.replace(/^\//, '').replace(/\//g, '-') || 'autre';
+};
+CS.page = CS.quellePage(location.pathname);
 
-document.documentElement.setAttribute('data-cs-page', CS.page);
+/* ===== Cycle de vie des pages =====
+   Avec Barba, les pages se remplacent sans rechargement : un module ne peut
+   plus se contenter de demarrer une fois. Chaque module se declare avec
+   CS.module(nom, pages, init). A chaque arrivee sur une page, CS.entrer()
+   appelle init(ctx) pour les modules concernes ; au depart, CS.sortir()
+   defait tout ce qu'ils ont branche.
 
-/* Classe de page sur <html> : permet a la CSS de cibler une page precise. */
-document.documentElement.classList.add('cs-page-' + CS.page);
+   ctx.conteneur     element de la page (conteneur Barba) : tout ce qu'un
+                     module cree y est ajoute, et disparait donc avec la page
+   ctx.ecoute(...)   addEventListener retire automatiquement au depart
+   ctx.aLaSortie(fn) nettoyage libre (arreter une boucle, retirer une classe) */
+CS._modules = [];
+CS._nettoyages = [];
+
+CS.module = function (nom, pages, init) {
+  CS._modules.push({ nom: nom, pages: pages, init: init });
+};
+
+CS.entrer = function (conteneur) {
+  CS.page = CS.quellePage(location.pathname);
+  var h = document.documentElement;
+  h.className = h.className.replace(/(^|\s)cs-page-\S+/g, ' ').replace(/\s+/g, ' ').trim();
+  h.classList.add('cs-page-' + CS.page);
+
+  var ctx = {
+    page: CS.page,
+    conteneur: conteneur || document.body,
+    ecoute: function (cible, type, fn, options) {
+      cible.addEventListener(type, fn, options);
+      CS._nettoyages.push(function () { cible.removeEventListener(type, fn, options); });
+    },
+    aLaSortie: function (fn) { CS._nettoyages.push(fn); }
+  };
+  CS._modules.forEach(function (m) {
+    if (m.pages && m.pages.indexOf(CS.page) === -1) return;
+    try { m.init(ctx); } catch (e) { if (window.console) console.error('[CS] ' + m.nom, e); }
+  });
+};
+
+CS.sortir = function () {
+  var n = CS._nettoyages; CS._nettoyages = [];
+  n.forEach(function (fn) { try { fn(); } catch (e) {} });
+};
+
+/* ---- Curseur personnalise (souris uniquement) ----
+   Une pastille + un mot qui suivent le pointeur au-dessus d'une zone.
+   Le transform de suivi est pose sur l'element lui-meme, a chaque mouvement :
+   le curseur doit coller au pointeur, sans lissage. L'apparition est jouee
+   sur son contenu, pour ne pas se melanger au suivi.
+   estDessus(e) dit si le curseur doit etre visible a cet endroit. */
+CS.ICONES = {
+  rond:  '<circle cx="8" cy="8" r="7" stroke-opacity=".35"/><path d="M8 1a7 7 0 0 1 7 7"/>',
+  croix: '<path d="M5.5 5.5l5 5M10.5 5.5l-5 5"/>'
+};
+CS.curseur = function (ctx, zone, texte, icone, estDessus) {
+  if (!CS.sourisFine()) return null;
+  var c = document.createElement('div');
+  c.className = 'cs-curseur';
+  c.setAttribute('aria-hidden', 'true');
+  c.innerHTML =
+    '<span class="cs-curseur__int">' +
+      '<svg class="cs-curseur__rond" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round">' +
+        CS.ICONES[icone] +
+      '</svg>' +
+      '<span class="cs-curseur__texte"></span>' +
+    '</span>';
+  c.querySelector('.cs-curseur__texte').textContent = texte;
+  ctx.conteneur.appendChild(c);
+  ctx.ecoute(zone, 'pointermove', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    c.style.transform = 'translate3d(' + e.clientX + 'px,' + e.clientY + 'px,0)';
+    c.classList.toggle('is-visible', !!estDessus(e));
+  });
+  ctx.ecoute(zone, 'pointerleave', function () { c.classList.remove('is-visible'); });
+  return c;
+};

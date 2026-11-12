@@ -45,6 +45,10 @@ def main():
     os.makedirs(os.path.join(RACINE, 'dist'), exist_ok=True)
 
     fjs, js = assembler('js', '.js', inclure)
+    # Bibliotheques tierces (src/vendor), placees avant notre code, telles quelles
+    if os.path.isdir(os.path.join(RACINE, 'src', 'vendor')):
+        fv, vendor = assembler('vendor', '.js')
+        fjs, js = fv + fjs, vendor + '\n' + js
     fcss, css = assembler('css', '.css')
 
     io.open(os.path.join(RACINE, 'dist', 'cinq-septembre.js'), 'w', encoding='utf-8').write(entete + js)

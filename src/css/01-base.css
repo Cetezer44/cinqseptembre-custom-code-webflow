@@ -18,6 +18,23 @@
    navigation en difference resteraient blancs sur blanc. */
 html, body { background-color: var(--cs-blanc); }
 
+/* Pages a fond noir. Le fond de la page elle-meme change aussi, pour qu'entre
+   deux pages (transitions Barba) on ne voie jamais un eclair de blanc. */
+html.cs-page-contact, html.cs-page-contact body,
+html.cs-page-archives, html.cs-page-archives body { background-color: var(--cs-noir); }
+body { transition: background-color 400ms ease; }
+
+/* La barre de navigation reste en place d'une page a l'autre (elle est hors du
+   conteneur Barba). Sur Contact elle descend au milieu de l'ecran : la
+   transition est declaree ici pour jouer dans les deux sens. */
+.fixed-nav {
+  transition: transform 900ms var(--cs-ease-in-out), opacity 500ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fixed-nav { transition: opacity 200ms ease; }
+  body { transition: none; }
+}
+
 /* Pages dont le defilement est pris en charge par le JS (collage infini) */
 html.cs-sans-defilement, html.cs-sans-defilement body {
   height: 100%;

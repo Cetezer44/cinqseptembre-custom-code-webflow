@@ -91,3 +91,33 @@ masquée, et construit le collage à partir d'elle.
 
 Le moteur reprend le lien, l'image et le nom. Tout le reste — positions,
 répétitions, défilement — est calculé.
+
+
+## Cycle de vie des pages (Barba)
+
+Le site utilise [@barba/core](https://barba.js.org) 2.10.3 (MIT), embarque dans
+`dist/cinq-septembre.js` depuis `src/vendor/`. Les pages se remplacent sans
+rechargement ; la barre de navigation, hors du conteneur, reste en place.
+
+Dans Webflow, chaque page doit avoir un element `data-barba="container"` avec
+un `data-barba-namespace`. Une page sans conteneur se charge normalement.
+
+Un module ne demarre donc plus « une fois » : il se declare avec
+`CS.module(nom, pages, init)`. `init(ctx)` est appele a chaque arrivee sur une
+des pages listees ; tout ce qui est branche par `ctx.ecoute(...)` ou declare
+par `ctx.aLaSortie(...)` est defait au depart, et tout element ajoute dans
+`ctx.conteneur` disparait avec la page.
+
+Les pages de projet (`/projets/...`) sont exclues des transitions
+(`CS.config.transitions.exclure`) tant qu'elles embarquent leur propre script.
+
+## Modules
+
+| Fichier | Pages | Role |
+|---|---|---|
+| `04-loader` | accueil | Loader au premier chargement de la session |
+| `05-collage` | accueil, projets | Collage vertical infini (11 emplacements) |
+| `06-liste` | projets | Vue liste horizontale + bascule grille / liste |
+| `07-contact` | contact | Curseur « Fermer », fermeture |
+| `08-archive` | archive | Mosaique infinie (collection Bibliotheque) + focus |
+| `09-barba` | toutes | Demarrage et transitions de page |

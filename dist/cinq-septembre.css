@@ -23,6 +23,23 @@
    navigation en difference resteraient blancs sur blanc. */
 html, body { background-color: var(--cs-blanc); }
 
+/* Pages a fond noir. Le fond de la page elle-meme change aussi, pour qu'entre
+   deux pages (transitions Barba) on ne voie jamais un eclair de blanc. */
+html.cs-page-contact, html.cs-page-contact body,
+html.cs-page-archives, html.cs-page-archives body { background-color: var(--cs-noir); }
+body { transition: background-color 400ms ease; }
+
+/* La barre de navigation reste en place d'une page a l'autre (elle est hors du
+   conteneur Barba). Sur Contact elle descend au milieu de l'ecran : la
+   transition est declaree ici pour jouer dans les deux sens. */
+.fixed-nav {
+  transition: transform 900ms var(--cs-ease-in-out), opacity 500ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fixed-nav { transition: opacity 200ms ease; }
+  body { transition: none; }
+}
+
 /* Pages dont le defilement est pris en charge par le JS (collage infini) */
 html.cs-sans-defilement, html.cs-sans-defilement body {
   height: 100%;
@@ -268,12 +285,12 @@ html:not([data-cs-vue]) .cs-liste {
 }
 .cs-liste__int { display: block; }
 
-/* Nom au-dessus de la carte : 8 px, comme la navigation */
+/* Nom au-dessus de la carte : 12 px, comme la navigation */
 .cs-liste__nom {
   display: block;
   padding: 0 0 9px 2px;
-  font-size: 8px;
-  line-height: 15px;
+  font-size: 12px;
+  line-height: 16px;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
@@ -327,7 +344,7 @@ html:not([data-cs-vue]) .cs-liste {
   color: #fff;
   mix-blend-mode: difference;
   font: inherit;
-  font-size: 8px;
+  font-size: 12px;
   line-height: 16px;
   text-transform: uppercase;
   white-space: nowrap;
@@ -378,17 +395,14 @@ html:not([data-cs-vue]) .cs-liste {
    (composant Navigation du Designer), y descend a 40 % de la hauteur d'ecran
    et se pose sur un filet. Le contenu apparait ensuite.
 
-   html.cs-page-contact est pose des la lecture du Head (court script en ligne
-   dans Webflow), donc avant le premier rendu : les animations partent de
-   l'etat de depart sans a-coup. Sans JS, la barre reste en haut et le contenu
-   est simplement visible. */
+   La descente est une transition (declaree sur .fixed-nav dans 01-base.css) :
+   en arrivant d'une autre page la barre glisse vers le bas, en repartant elle
+   remonte. En arrivee directe sur /contact, html.cs-page-contact est pose des
+   la lecture du Head (court script en ligne dans Webflow) : la barre est deja
+   en place au premier rendu. */
 .cs-page-contact .fixed-nav {
   opacity: 0.5;
   transform: translateY(calc(40vh - 35px));       /* 35 px = milieu de la barre */
-  animation: cs-contact-nav 900ms var(--cs-ease-in-out) both;
-}
-@keyframes cs-contact-nav {
-  from { opacity: 1; transform: translateY(0); }
 }
 
 .cs-page-contact .cs-contact__filet {
@@ -422,7 +436,6 @@ html:not([data-cs-vue]) .cs-liste {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cs-page-contact .fixed-nav,
   .cs-page-contact .cs-contact__filet { animation: none; }
   .cs-page-contact .cs-contact__reseaux,
   .cs-page-contact .cs-contact__col,
@@ -433,4 +446,156 @@ html:not([data-cs-vue]) .cs-liste {
 /* Petit ecran : memes marges que la navigation */
 @media (max-width: 767px) {
   .cs-vue-bascule { right: 16px; }
+}
+
+/* ---------- 08-archive.css ---------- */
+/* ===== Page Archive : mosaique infinie et focus =====
+   Fond noir. Les tuiles sont posees par transform (JS) sur une trame
+   virtuelle ; leur taille vient de --cs-tuile-w / --cs-tuile-h. */
+
+/* La Collection List du Designer ne sert qu'a fournir les references : elle
+   reste dans la page (moteurs de recherche, lecteurs d'ecran) mais hors champ.
+   Dans le Designer, cette feuille n'est pas chargee : la liste y reste visible
+   et modifiable. */
+.cs-archive-source {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  padding: 0 !important;
+}
+
+.cs-archive {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--cs-noir);
+  color: #fff;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.cs-archive.is-tire { cursor: grabbing; }
+
+.cs-archive__tuile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--cs-tuile-w);
+  height: var(--cs-tuile-h);
+  overflow: hidden;
+  background-color: #141414;
+  cursor: pointer;
+  will-change: transform;
+  outline: none;
+}
+.cs-archive.is-tire .cs-archive__tuile { cursor: grabbing; }
+.cs-archive__tuile:focus-visible { outline: 1px solid #fff; outline-offset: 3px; }
+
+/* L'opacite est sur l'image, pas sur la tuile : le transform de position
+   (sur la tuile) et le fondu ne partagent aucune propriete. */
+.cs-archive__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  transition: opacity 300ms var(--cs-ease-out), transform 900ms var(--cs-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .cs-archive:not(.is-tire):not(.est-focus) .cs-archive__tuile:hover .cs-archive__img { transform: scale(1.04); }
+}
+
+/* ---- Focus : les autres tuiles s'effacent ---- */
+.cs-archive.est-focus { cursor: none; }
+.cs-archive.est-focus .cs-archive__tuile { pointer-events: none; background-color: transparent; }
+.cs-archive.est-focus .cs-archive__img { opacity: 0; }
+/* la tuile cliquee disparait d'un coup : l'image agrandie prend sa place exacte */
+.cs-archive__tuile.est-origine { visibility: hidden; }
+
+.cs-archive__focus {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  outline: none;
+  /* hauteur de l'image : 477 / 1024 de l'ecran, bornee par la largeur disponible */
+  --cs-focus-h: min(46.6vh, calc((100vw - 58px) * 1.3866));
+}
+.cs-archive__focus[hidden] { display: none; }
+
+/* Centrage (maquette : centre remonte de 14,5 px). Le cadre, dedans, porte
+   l'animation d'agrandissement : centrage et animation ne se melangent pas. */
+.cs-archive__focus-centre {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 14.5px);
+  width: calc(var(--cs-focus-h) * 0.7212);        /* 344 / 477 */
+  height: var(--cs-focus-h);
+  transform: translate(-50%, -50%);
+}
+.cs-archive__focus-cadre {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  will-change: transform;
+}
+.cs-archive__focus-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+  transition: opacity 180ms var(--cs-ease-out);
+}
+
+/* Informations sous l'image : 61 px sous son bord bas, comme sur la maquette */
+.cs-archive__focus-infos {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 14.5px + var(--cs-focus-h) / 2 + 61px);
+  padding: 0 29px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 200ms var(--cs-ease-out), transform 200ms var(--cs-ease-out);
+}
+.cs-archive__focus.est-ouvert .cs-archive__focus-infos {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms var(--cs-ease-out) 350ms, transform 700ms var(--cs-ease-out) 350ms;
+}
+.cs-archive__focus-nom {
+  margin: 0;
+  font-size: 21px;
+  line-height: 33px;
+  font-weight: 300;
+}
+.cs-archive__focus-type,
+.cs-archive__focus-annee {
+  margin: 0;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 300;
+}
+.cs-archive__focus-type { margin-top: 25px; }
+
+/* Changement de reference en focus : fondu enchaine de l'image et du texte */
+.cs-archive__focus.est-change .cs-archive__focus-img { opacity: 0; }
+.cs-archive__focus.est-ouvert.est-change .cs-archive__focus-infos {
+  opacity: 0;
+  transition: opacity 180ms var(--cs-ease-out);
+}
+
+/* Fermeture sans retour dans la case (on a change de reference) : fondu */
+.cs-archive.est-fermeture .cs-archive__focus-cadre { opacity: 0; transition: opacity 250ms var(--cs-ease-out); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-archive__img { transition: opacity 200ms ease; }
+  .cs-archive__focus-infos,
+  .cs-archive__focus.est-ouvert .cs-archive__focus-infos { transform: none; transition: opacity 200ms ease; }
 }

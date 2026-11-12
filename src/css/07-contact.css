@@ -3,17 +3,14 @@
    (composant Navigation du Designer), y descend a 40 % de la hauteur d'ecran
    et se pose sur un filet. Le contenu apparait ensuite.
 
-   html.cs-page-contact est pose des la lecture du Head (court script en ligne
-   dans Webflow), donc avant le premier rendu : les animations partent de
-   l'etat de depart sans a-coup. Sans JS, la barre reste en haut et le contenu
-   est simplement visible. */
+   La descente est une transition (declaree sur .fixed-nav dans 01-base.css) :
+   en arrivant d'une autre page la barre glisse vers le bas, en repartant elle
+   remonte. En arrivee directe sur /contact, html.cs-page-contact est pose des
+   la lecture du Head (court script en ligne dans Webflow) : la barre est deja
+   en place au premier rendu. */
 .cs-page-contact .fixed-nav {
   opacity: 0.5;
   transform: translateY(calc(40vh - 35px));       /* 35 px = milieu de la barre */
-  animation: cs-contact-nav 900ms var(--cs-ease-in-out) both;
-}
-@keyframes cs-contact-nav {
-  from { opacity: 1; transform: translateY(0); }
 }
 
 .cs-page-contact .cs-contact__filet {
@@ -47,7 +44,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cs-page-contact .fixed-nav,
   .cs-page-contact .cs-contact__filet { animation: none; }
   .cs-page-contact .cs-contact__reseaux,
   .cs-page-contact .cs-contact__col,

@@ -2,6 +2,10 @@
  *  Depot : github.com/Cetezer44/cinqseptembre-custom-code-webflow
  *  Genere par build.py le 2026-11-12 — ne pas editer ce fichier a la main.
  */
+/* ---------- barba-core-2.10.3.umd.js ---------- */
+!function(t,n){"object"==typeof exports&&"undefined"!=typeof module?module.exports=n():"function"==typeof define&&define.amd?define(n):(t||self).barba=n()}(this,function(){function t(t,n){for(var r=0;r<n.length;r++){var i=n[r];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(t,"symbol"==typeof(e=function(t,n){if("object"!=typeof t||null===t)return t;var r=t[Symbol.toPrimitive];if(void 0!==r){var i=r.call(t,"string");if("object"!=typeof i)return i;throw new TypeError("@@toPrimitive must return a primitive value.")}return String(t)}(i.key))?e:String(e),i)}var e}function n(n,r,i){return r&&t(n.prototype,r),i&&t(n,i),Object.defineProperty(n,"prototype",{writable:!1}),n}function r(){return r=Object.assign?Object.assign.bind():function(t){for(var n=1;n<arguments.length;n++){var r=arguments[n];for(var i in r)Object.prototype.hasOwnProperty.call(r,i)&&(t[i]=r[i])}return t},r.apply(this,arguments)}function i(t,n){t.prototype=Object.create(n.prototype),t.prototype.constructor=t,o(t,n)}function e(t){return e=Object.setPrototypeOf?Object.getPrototypeOf.bind():function(t){return t.__proto__||Object.getPrototypeOf(t)},e(t)}function o(t,n){return o=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(t,n){return t.__proto__=n,t},o(t,n)}function u(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){})),!0}catch(t){return!1}}function s(t,n,r){return s=u()?Reflect.construct.bind():function(t,n,r){var i=[null];i.push.apply(i,n);var e=new(Function.bind.apply(t,i));return r&&o(e,r.prototype),e},s.apply(null,arguments)}function f(t){var n="function"==typeof Map?new Map:void 0;return f=function(t){if(null===t||-1===Function.toString.call(t).indexOf("[native code]"))return t;if("function"!=typeof t)throw new TypeError("Super expression must either be null or a function");if(void 0!==n){if(n.has(t))return n.get(t);n.set(t,r)}function r(){return s(t,arguments,e(this).constructor)}return r.prototype=Object.create(t.prototype,{constructor:{value:r,enumerable:!1,writable:!0,configurable:!0}}),o(r,t)},f(t)}function c(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}var a,h=function(){this.before=void 0,this.beforeLeave=void 0,this.leave=void 0,this.afterLeave=void 0,this.beforeEnter=void 0,this.enter=void 0,this.afterEnter=void 0,this.after=void 0};!function(t){t[t.off=0]="off",t[t.error=1]="error",t[t.warning=2]="warning",t[t.info=3]="info",t[t.debug=4]="debug"}(a||(a={}));var v=a.off,d=/*#__PURE__*/function(){function t(t){this.t=void 0,this.t=t}t.getLevel=function(){return v},t.setLevel=function(t){return v=a[t]};var n=t.prototype;return n.error=function(){this.i(console.error,a.error,[].slice.call(arguments))},n.warn=function(){this.i(console.warn,a.warning,[].slice.call(arguments))},n.info=function(){this.i(console.info,a.info,[].slice.call(arguments))},n.debug=function(){this.i(console.log,a.debug,[].slice.call(arguments))},n.i=function(n,r,i){r<=t.getLevel()&&n.apply(console,["["+this.t+"] "].concat(i))},t}();function l(t){return t.replace(/([.+*?=^!:${}()[\]|/\\])/g,"\\$1")}function p(t){return t&&t.sensitive?"":"i"}var m={container:"container",history:"history",namespace:"namespace",prefix:"data-barba",prevent:"prevent",wrapper:"wrapper"},w=/*#__PURE__*/function(){function t(){this.o=m,this.u=void 0,this.h={after:null,before:null,parent:null}}var n=t.prototype;return n.toString=function(t){return t.outerHTML},n.toDocument=function(t){return this.u||(this.u=new DOMParser),this.u.parseFromString(t,"text/html")},n.toElement=function(t){var n=document.createElement("div");return n.innerHTML=t,n},n.getHtml=function(t){return void 0===t&&(t=document),this.toString(t.documentElement)},n.getWrapper=function(t){return void 0===t&&(t=document),t.querySelector("["+this.o.prefix+'="'+this.o.wrapper+'"]')},n.getContainer=function(t){return void 0===t&&(t=document),t.querySelector("["+this.o.prefix+'="'+this.o.container+'"]')},n.removeContainer=function(t){document.body.contains(t)&&(this.v(t),t.parentNode.removeChild(t))},n.addContainer=function(t,n){var r=this.getContainer()||this.h.before;r?this.l(t,r):this.h.after?this.h.after.parentNode.insertBefore(t,this.h.after):this.h.parent?this.h.parent.appendChild(t):n.appendChild(t)},n.getSibling=function(){return this.h},n.getNamespace=function(t){void 0===t&&(t=document);var n=t.querySelector("["+this.o.prefix+"-"+this.o.namespace+"]");return n?n.getAttribute(this.o.prefix+"-"+this.o.namespace):null},n.getHref=function(t){if(t.tagName&&"a"===t.tagName.toLowerCase()){if("string"==typeof t.href)return t.href;var n=t.getAttribute("href")||t.getAttribute("xlink:href");if(n)return this.resolveUrl(n.baseVal||n)}return null},n.resolveUrl=function(){var t=[].slice.call(arguments).length;if(0===t)throw new Error("resolveUrl requires at least one argument; got none.");var n=document.createElement("base");if(n.href=arguments[0],1===t)return n.href;var r=document.getElementsByTagName("head")[0];r.insertBefore(n,r.firstChild);for(var i,e=document.createElement("a"),o=1;o<t;o++)e.href=arguments[o],n.href=i=e.href;return r.removeChild(n),i},n.l=function(t,n){n.parentNode.insertBefore(t,n.nextSibling)},n.v=function(t){return this.h={after:t.nextElementSibling,before:t.previousElementSibling,parent:t.parentElement},this.h},t}(),b=new w,y=/*#__PURE__*/function(){function t(){this.p=void 0,this.m=[],this.P=-1}var i=t.prototype;return i.init=function(t,n){this.p="barba";var r={data:{},ns:n,scroll:{x:window.scrollX,y:window.scrollY},url:t};this.P=0,this.m.push(r);var i={from:this.p,index:this.P,states:[].concat(this.m)};window.history&&window.history.replaceState(i,"",t)},i.change=function(t,n,r){if(r&&r.state){var i=r.state,e=i.index;n=this.g(this.P-e),this.replace(i.states),this.P=e}else this.add(t,n);return n},i.add=function(t,n,r,i){var e=null!=r?r:this.R(n),o={data:null!=i?i:{},ns:"tmp",scroll:{x:window.scrollX,y:window.scrollY},url:t};switch(e){case"push":this.P=this.size,this.m.push(o);break;case"replace":this.set(this.P,o)}var u={from:this.p,index:this.P,states:[].concat(this.m)};switch(e){case"push":window.history&&window.history.pushState(u,"",t);break;case"replace":window.history&&window.history.replaceState(u,"",t)}},i.store=function(t,n){var i=n||this.P,e=this.get(i);e.data=r({},e.data,t),this.set(i,e);var o={from:this.p,index:this.P,states:[].concat(this.m)};window.history.replaceState(o,"")},i.update=function(t,n){var i=n||this.P,e=r({},this.get(i),t);this.set(i,e)},i.remove=function(t){t?this.m.splice(t,1):this.m.pop(),this.P--},i.clear=function(){this.m=[],this.P=-1},i.replace=function(t){this.m=t},i.get=function(t){return this.m[t]},i.set=function(t,n){return this.m[t]=n},i.R=function(t){var n="push",r=t,i=m.prefix+"-"+m.history;return r.hasAttribute&&r.hasAttribute(i)&&(n=r.getAttribute(i)),n},i.g=function(t){return Math.abs(t)>1?t>0?"forward":"back":0===t?"popstate":t>0?"back":"forward"},n(t,[{key:"current",get:function(){return this.m[this.P]}},{key:"previous",get:function(){return this.P<1?null:this.m[this.P-1]}},{key:"size",get:function(){return this.m.length}}]),t}(),P=new y,g=function(t,n){try{var r=function(){if(!n.next.html)return Promise.resolve(t).then(function(t){var r=n.next;if(t){var i=b.toElement(t.html);r.namespace=b.getNamespace(i),r.container=b.getContainer(i),r.url=t.url,r.html=t.html,P.update({ns:r.namespace});var e=b.toDocument(t.html);document.title=e.title}})}();return Promise.resolve(r&&r.then?r.then(function(){}):void 0)}catch(t){return Promise.reject(t)}},E=function t(n,r,i){return n instanceof RegExp?function(t,n){if(!n)return t;for(var r=/\((?:\?<(.*?)>)?(?!\?)/g,i=0,e=r.exec(t.source);e;)n.push({name:e[1]||i++,prefix:"",suffix:"",modifier:"",pattern:""}),e=r.exec(t.source);return t}(n,r):Array.isArray(n)?function(n,r,i){var e=n.map(function(n){return t(n,r,i).source});return new RegExp("(?:".concat(e.join("|"),")"),p(i))}(n,r,i):function(t,n,r){return function(t,n,r){void 0===r&&(r={});for(var i=r.strict,e=void 0!==i&&i,o=r.start,u=void 0===o||o,s=r.end,f=void 0===s||s,c=r.encode,a=void 0===c?function(t){return t}:c,h=r.delimiter,v=void 0===h?"/#?":h,d=r.endsWith,m="[".concat(l(void 0===d?"":d),"]|$"),w="[".concat(l(v),"]"),b=u?"^":"",y=0,P=t;y<P.length;y++){var g=P[y];if("string"==typeof g)b+=l(a(g));else{var E=l(a(g.prefix)),x=l(a(g.suffix));if(g.pattern)if(n&&n.push(g),E||x)if("+"===g.modifier||"*"===g.modifier){var R="*"===g.modifier?"?":"";b+="(?:".concat(E,"((?:").concat(g.pattern,")(?:").concat(x).concat(E,"(?:").concat(g.pattern,"))*)").concat(x,")").concat(R)}else b+="(?:".concat(E,"(").concat(g.pattern,")").concat(x,")").concat(g.modifier);else b+="+"===g.modifier||"*"===g.modifier?"((?:".concat(g.pattern,")").concat(g.modifier,")"):"(".concat(g.pattern,")").concat(g.modifier);else b+="(?:".concat(E).concat(x,")").concat(g.modifier)}}if(f)e||(b+="".concat(w,"?")),b+=r.endsWith?"(?=".concat(m,")"):"$";else{var k=t[t.length-1],O="string"==typeof k?w.indexOf(k[k.length-1])>-1:void 0===k;e||(b+="(?:".concat(w,"(?=").concat(m,"))?")),O||(b+="(?=".concat(w,"|").concat(m,")"))}return new RegExp(b,p(r))}(function(t,n){void 0===n&&(n={});for(var r=function(t){for(var n=[],r=0;r<t.length;){var i=t[r];if("*"!==i&&"+"!==i&&"?"!==i)if("\\"!==i)if("{"!==i)if("}"!==i)if(":"!==i)if("("!==i)n.push({type:"CHAR",index:r,value:t[r++]});else{var e=1,o="";if("?"===t[s=r+1])throw new TypeError('Pattern cannot start with "?" at '.concat(s));for(;s<t.length;)if("\\"!==t[s]){if(")"===t[s]){if(0==--e){s++;break}}else if("("===t[s]&&(e++,"?"!==t[s+1]))throw new TypeError("Capturing groups are not allowed at ".concat(s));o+=t[s++]}else o+=t[s++]+t[s++];if(e)throw new TypeError("Unbalanced pattern at ".concat(r));if(!o)throw new TypeError("Missing pattern at ".concat(r));n.push({type:"PATTERN",index:r,value:o}),r=s}else{for(var u="",s=r+1;s<t.length;){var f=t.charCodeAt(s);if(!(f>=48&&f<=57||f>=65&&f<=90||f>=97&&f<=122||95===f))break;u+=t[s++]}if(!u)throw new TypeError("Missing parameter name at ".concat(r));n.push({type:"NAME",index:r,value:u}),r=s}else n.push({type:"CLOSE",index:r,value:t[r++]});else n.push({type:"OPEN",index:r,value:t[r++]});else n.push({type:"ESCAPED_CHAR",index:r++,value:t[r++]});else n.push({type:"MODIFIER",index:r,value:t[r++]})}return n.push({type:"END",index:r,value:""}),n}(t),i=n.prefixes,e=void 0===i?"./":i,o="[^".concat(l(n.delimiter||"/#?"),"]+?"),u=[],s=0,f=0,c="",a=function(t){if(f<r.length&&r[f].type===t)return r[f++].value},h=function(t){var n=a(t);if(void 0!==n)return n;var i=r[f],e=i.index;throw new TypeError("Unexpected ".concat(i.type," at ").concat(e,", expected ").concat(t))},v=function(){for(var t,n="";t=a("CHAR")||a("ESCAPED_CHAR");)n+=t;return n};f<r.length;){var d=a("CHAR"),p=a("NAME"),m=a("PATTERN");if(p||m)-1===e.indexOf(b=d||"")&&(c+=b,b=""),c&&(u.push(c),c=""),u.push({name:p||s++,prefix:b,suffix:"",pattern:m||o,modifier:a("MODIFIER")||""});else{var w=d||a("ESCAPED_CHAR");if(w)c+=w;else if(c&&(u.push(c),c=""),a("OPEN")){var b=v(),y=a("NAME")||"",P=a("PATTERN")||"",g=v();h("CLOSE"),u.push({name:y||(P?s++:""),pattern:y&&!P?o:P,prefix:b,suffix:g,modifier:a("MODIFIER")||""})}else h("END")}}return u}(t,r),n,r)}(n,r,i)},x={__proto__:null,update:g,nextTick:function(){return new Promise(function(t){window.requestAnimationFrame(t)})},pathToRegexp:E},R=function(){return window.location.origin},k=function(t){return void 0===t&&(t=window.location.href),O(t).port},O=function(t){var n,r=t.match(/:\d+/);if(null===r)/^http/.test(t)&&(n=80),/^https/.test(t)&&(n=443);else{var i=r[0].substring(1);n=parseInt(i,10)}var e,o=t.replace(R(),""),u={},s=o.indexOf("#");s>=0&&(e=o.slice(s+1),o=o.slice(0,s));var f=o.indexOf("?");return f>=0&&(u=T(o.slice(f+1)),o=o.slice(0,f)),{hash:e,path:o,port:n,query:u}},T=function(t){return t.split("&").reduce(function(t,n){var r=n.split("=");return t[r[0]]=r[1],t},{})},A=function(t){return void 0===t&&(t=window.location.href),t.replace(/(\/#.*|\/|#.*)$/,"")},j={__proto__:null,getHref:function(){return window.location.href},getAbsoluteHref:function(t,n){return void 0===n&&(n=document.baseURI),new URL(t,n).href},getOrigin:R,getPort:k,getPath:function(t){return void 0===t&&(t=window.location.href),O(t).path},getQuery:function(t,n){return void 0===n&&(n=!1),n?JSON.stringify(O(t).query):O(t).query},getHash:function(t){return O(t).hash},parse:O,parseQuery:T,clean:A};function M(t,n,i,e,o){return void 0===n&&(n=2e3),new Promise(function(u,s){var f=new XMLHttpRequest;f.onreadystatechange=function(){if(f.readyState===XMLHttpRequest.DONE)if(200===f.status){var n=""!==f.responseURL&&f.responseURL!==t?f.responseURL:t;u({html:f.responseText,url:r({href:n},O(n))}),e.update(t,{status:"fulfilled",target:n})}else if(f.status){var o={status:f.status,statusText:f.statusText};i(t,o),s(o),e.update(t,{status:"rejected"})}},f.ontimeout=function(){var r=new Error("Timeout error ["+n+"]");i(t,r),s(r),e.update(t,{status:"rejected"})},f.onerror=function(){var n=new Error("Fetch error");i(t,n),s(n),e.update(t,{status:"rejected"})},f.open("GET",t),f.timeout=n,f.setRequestHeader("Accept","text/html,application/xhtml+xml,application/xml"),f.setRequestHeader("x-barba","yes"),o.all().forEach(function(t,n){f.setRequestHeader(n,t)}),f.send()})}function N(t){return!!t&&("object"==typeof t||"function"==typeof t)&&"function"==typeof t.then}function S(t,n){return void 0===n&&(n={}),function(){var r=arguments,i=!1,e=new Promise(function(e,o){n.async=function(){return i=!0,function(t,n){t?o(t):e(n)}};var u=t.apply(n,[].slice.call(r));i||(N(u)?u.then(e,o):e(u))});return e}}var C=/*#__PURE__*/function(t){function n(){var n;return(n=t.call(this)||this).logger=new d("@barba/core"),n.all=["ready","page","reset","currentAdded","currentRemoved","nextAdded","nextRemoved","beforeOnce","once","afterOnce","before","beforeLeave","leave","afterLeave","beforeEnter","enter","afterEnter","after"],n.registered=new Map,n.init(),n}i(n,t);var r=n.prototype;return r.init=function(){var t=this;this.registered.clear(),this.all.forEach(function(n){t[n]||(t[n]=function(r,i){t.registered.has(n)||t.registered.set(n,new Set),t.registered.get(n).add({ctx:i||{},fn:r})})})},r.do=function(t){var n=arguments,r=this;if(this.registered.has(t)){var i=Promise.resolve();return this.registered.get(t).forEach(function(t){i=i.then(function(){return S(t.fn,t.ctx).apply(void 0,[].slice.call(n,1))})}),i.catch(function(n){r.logger.debug("Hook error ["+t+"]"),r.logger.error(n)})}return Promise.resolve()},r.clear=function(){var t=this;this.all.forEach(function(n){delete t[n]}),this.init()},r.help=function(){this.logger.info("Available hooks: "+this.all.join(","));var t=[];this.registered.forEach(function(n,r){return t.push(r)}),this.logger.info("Registered hooks: "+t.join(","))},n}(h),L=new C,H=/*#__PURE__*/function(){function t(t){if(this.k=void 0,this.O=[],"boolean"==typeof t)this.k=t;else{var n=Array.isArray(t)?t:[t];this.O=n.map(function(t){return E(t)})}}return t.prototype.checkHref=function(t){if("boolean"==typeof this.k)return this.k;var n=O(t).path;return this.O.some(function(t){return null!==t.exec(n)})},t}(),_=/*#__PURE__*/function(t){function n(n){var r;return(r=t.call(this,n)||this).T=new Map,r}i(n,t);var e=n.prototype;return e.set=function(t,n,r,i,e){return this.T.set(t,{action:r,request:n,status:i,target:null!=e?e:t}),{action:r,request:n,status:i,target:e}},e.get=function(t){return this.T.get(t)},e.getRequest=function(t){return this.T.get(t).request},e.getAction=function(t){return this.T.get(t).action},e.getStatus=function(t){return this.T.get(t).status},e.getTarget=function(t){return this.T.get(t).target},e.has=function(t){return!this.checkHref(t)&&this.T.has(t)},e.delete=function(t){return this.T.delete(t)},e.update=function(t,n){var i=r({},this.T.get(t),n);return this.T.set(t,i),i},n}(H),D=/*#__PURE__*/function(){function t(){this.A=new Map}var n=t.prototype;return n.set=function(t,n){return this.A.set(t,n),{name:n}},n.get=function(t){return this.A.get(t)},n.all=function(){return this.A},n.has=function(t){return this.A.has(t)},n.delete=function(t){return this.A.delete(t)},n.clear=function(){return this.A.clear()},t}(),B=function(){return!window.history.pushState},q=function(t){return!t.el||!t.href},F=function(t){var n=t.event;return n.which>1||n.metaKey||n.ctrlKey||n.shiftKey||n.altKey},I=function(t){var n=t.el;return n.hasAttribute("target")&&"_blank"===n.target},U=function(t){var n=t.el;return void 0!==n.protocol&&window.location.protocol!==n.protocol||void 0!==n.hostname&&window.location.hostname!==n.hostname},$=function(t){var n=t.el;return void 0!==n.port&&k()!==k(n.href)},Q=function(t){var n=t.el;return n.getAttribute&&"string"==typeof n.getAttribute("download")},X=function(t){return t.el.hasAttribute(m.prefix+"-"+m.prevent)},z=function(t){return Boolean(t.el.closest("["+m.prefix+"-"+m.prevent+'="all"]'))},G=function(t){var n=t.href;return A(n)===A()&&k(n)===k()},J=/*#__PURE__*/function(t){function n(n){var r;return(r=t.call(this,n)||this).suite=[],r.tests=new Map,r.init(),r}i(n,t);var r=n.prototype;return r.init=function(){this.add("pushState",B),this.add("exists",q),this.add("newTab",F),this.add("blank",I),this.add("corsDomain",U),this.add("corsPort",$),this.add("download",Q),this.add("preventSelf",X),this.add("preventAll",z),this.add("sameUrl",G,!1)},r.add=function(t,n,r){void 0===r&&(r=!0),this.tests.set(t,n),r&&this.suite.push(t)},r.run=function(t,n,r,i){return this.tests.get(t)({el:n,event:r,href:i})},r.checkLink=function(t,n,r){var i=this;return this.suite.some(function(e){return i.run(e,t,n,r)})},n}(H),W=/*#__PURE__*/function(t){function n(r,i){var e;return void 0===i&&(i="Barba error"),(e=t.call.apply(t,[this].concat([].slice.call(arguments,2)))||this).error=void 0,e.label=void 0,e.error=r,e.label=i,Error.captureStackTrace&&Error.captureStackTrace(c(e),n),e.name="BarbaError",e}return i(n,t),n}(/*#__PURE__*/f(Error)),K=/*#__PURE__*/function(){function t(t){void 0===t&&(t=[]),this.logger=new d("@barba/core"),this.all=[],this.page=[],this.once=[],this.j=[{name:"namespace",type:"strings"},{name:"custom",type:"function"}],t&&(this.all=this.all.concat(t)),this.update()}var n=t.prototype;return n.add=function(t,n){"rule"===t?this.j.splice(n.position||0,0,n.value):this.all.push(n),this.update()},n.resolve=function(t,n){var r=this;void 0===n&&(n={});var i=n.once?this.once:this.page;i=i.filter(n.self?function(t){return t.name&&"self"===t.name}:function(t){return!t.name||"self"!==t.name});var e=new Map,o=i.find(function(i){var o=!0,u={};return n.self&&"self"===i.name?(e.set(i,u),!0):(r.j.reverse().forEach(function(n){o&&(o=r.M(i,n,t,u),i.from&&i.to&&(o=r.M(i,n,t,u,"from")&&r.M(i,n,t,u,"to")),i.from&&!i.to&&(o=r.M(i,n,t,u,"from")),!i.from&&i.to&&(o=r.M(i,n,t,u,"to")))}),e.set(i,u),o)}),u=e.get(o),s=[];if(s.push(n.once?"once":"page"),n.self&&s.push("self"),u){var f,c=[o];Object.keys(u).length>0&&c.push(u),(f=this.logger).info.apply(f,["Transition found ["+s.join(",")+"]"].concat(c))}else this.logger.info("No transition found ["+s.join(",")+"]");return o},n.update=function(){var t=this;this.all=this.all.map(function(n){return t.N(n)}).sort(function(t,n){return t.priority-n.priority}).reverse().map(function(t){return delete t.priority,t}),this.page=this.all.filter(function(t){return void 0!==t.leave||void 0!==t.enter}),this.once=this.all.filter(function(t){return void 0!==t.once})},n.M=function(t,n,r,i,e){var o=!0,u=!1,s=t,f=n.name,c=f,a=f,h=f,v=e?s[e]:s,d="to"===e?r.next:r.current;if(e?v&&v[f]:v[f]){switch(n.type){case"strings":default:var l=Array.isArray(v[c])?v[c]:[v[c]];d[c]&&-1!==l.indexOf(d[c])&&(u=!0),-1===l.indexOf(d[c])&&(o=!1);break;case"object":var p=Array.isArray(v[a])?v[a]:[v[a]];d[a]?(d[a].name&&-1!==p.indexOf(d[a].name)&&(u=!0),-1===p.indexOf(d[a].name)&&(o=!1)):o=!1;break;case"function":v[h](r)?u=!0:o=!1}u&&(e?(i[e]=i[e]||{},i[e][f]=s[e][f]):i[f]=s[f])}return o},n.S=function(t,n,r){var i=0;return(t[n]||t.from&&t.from[n]||t.to&&t.to[n])&&(i+=Math.pow(10,r),t.from&&t.from[n]&&(i+=1),t.to&&t.to[n]&&(i+=2)),i},n.N=function(t){var n=this;t.priority=0;var r=0;return this.j.forEach(function(i,e){r+=n.S(t,i.name,e+1)}),t.priority=r,t},t}();function V(t,n){try{var r=t()}catch(t){return n(t)}return r&&r.then?r.then(void 0,n):r}var Y=/*#__PURE__*/function(){function t(t){void 0===t&&(t=[]),this.logger=new d("@barba/core"),this.store=void 0,this.C=!1,this.store=new K(t)}var r=t.prototype;return r.get=function(t,n){return this.store.resolve(t,n)},r.doOnce=function(t){var n=t.data,r=t.transition;try{var i=function(){e.C=!1},e=this,o=r||{};e.C=!0;var u=V(function(){return Promise.resolve(e.L("beforeOnce",n,o)).then(function(){return Promise.resolve(e.once(n,o)).then(function(){return Promise.resolve(e.L("afterOnce",n,o)).then(function(){})})})},function(t){e.C=!1,e.logger.debug("Transition error [before/after/once]"),e.logger.error(t)});return Promise.resolve(u&&u.then?u.then(i):i())}catch(t){return Promise.reject(t)}},r.doPage=function(t){var n=t.data,r=t.transition,i=t.page,e=t.wrapper;try{var o=function(t){u.C=!1},u=this,s=r||{},f=!0===s.sync||!1;u.C=!0;var c=V(function(){function t(){return Promise.resolve(u.L("before",n,s)).then(function(){function t(t){return Promise.resolve(u.remove(n)).then(function(){return Promise.resolve(u.L("after",n,s)).then(function(){})})}var r=function(){if(f)return V(function(){return Promise.resolve(u.add(n,e)).then(function(){return Promise.resolve(u.L("beforeLeave",n,s)).then(function(){return Promise.resolve(u.L("beforeEnter",n,s)).then(function(){return Promise.resolve(Promise.all([u.leave(n,s),u.enter(n,s)])).then(function(){return Promise.resolve(u.L("afterLeave",n,s)).then(function(){return Promise.resolve(u.L("afterEnter",n,s)).then(function(){})})})})})})},function(t){if(u.H(t))throw new W(t,"Transition error [sync]")});var t=function(t){return V(function(){var t=function(){if(!1!==r)return Promise.resolve(u.add(n,e)).then(function(){return Promise.resolve(u.L("beforeEnter",n,s)).then(function(){return Promise.resolve(u.enter(n,s,r)).then(function(){return Promise.resolve(u.L("afterEnter",n,s)).then(function(){})})})})}();if(t&&t.then)return t.then(function(){})},function(t){if(u.H(t))throw new W(t,"Transition error [before/after/enter]")})},r=!1,o=V(function(){return Promise.resolve(u.L("beforeLeave",n,s)).then(function(){return Promise.resolve(Promise.all([u.leave(n,s),g(i,n)]).then(function(t){return t[0]})).then(function(t){return r=t,Promise.resolve(u.L("afterLeave",n,s)).then(function(){})})})},function(t){if(u.H(t))throw new W(t,"Transition error [before/after/leave]")});return o&&o.then?o.then(t):t()}();return r&&r.then?r.then(t):t()})}var r=function(){if(f)return Promise.resolve(g(i,n)).then(function(){})}();return r&&r.then?r.then(t):t()},function(t){if(u.C=!1,t.name&&"BarbaError"===t.name)throw u.logger.debug(t.label),u.logger.error(t.error),t;throw u.logger.debug("Transition error [page]"),u.logger.error(t),t});return Promise.resolve(c&&c.then?c.then(o):o())}catch(t){return Promise.reject(t)}},r.once=function(t,n){try{return Promise.resolve(L.do("once",t,n)).then(function(){return n.once?S(n.once,n)(t):Promise.resolve()})}catch(t){return Promise.reject(t)}},r.leave=function(t,n){try{return Promise.resolve(L.do("leave",t,n)).then(function(){return n.leave?S(n.leave,n)(t):Promise.resolve()})}catch(t){return Promise.reject(t)}},r.enter=function(t,n,r){try{return Promise.resolve(L.do("enter",t,n)).then(function(){return n.enter?S(n.enter,n)(t,r):Promise.resolve()})}catch(t){return Promise.reject(t)}},r.add=function(t,n){try{return b.addContainer(t.next.container,n),L.do("nextAdded",t),Promise.resolve()}catch(t){return Promise.reject(t)}},r.remove=function(t){try{return b.removeContainer(t.current.container),L.do("currentRemoved",t),Promise.resolve()}catch(t){return Promise.reject(t)}},r.H=function(t){return t.message?!/Timeout error|Fetch error/.test(t.message):!t.status},r.L=function(t,n,r){try{return Promise.resolve(L.do(t,n,r)).then(function(){return r[t]?S(r[t],r)(n):Promise.resolve()})}catch(t){return Promise.reject(t)}},n(t,[{key:"isRunning",get:function(){return this.C},set:function(t){this.C=t}},{key:"hasOnce",get:function(){return this.store.once.length>0}},{key:"hasSelf",get:function(){return this.store.all.some(function(t){return"self"===t.name})}},{key:"shouldWait",get:function(){return this.store.all.some(function(t){return t.to&&!t.to.route||t.sync})}}]),t}(),Z=/*#__PURE__*/function(){function t(t){var n=this;this.names=["beforeLeave","afterLeave","beforeEnter","afterEnter"],this.byNamespace=new Map,0!==t.length&&(t.forEach(function(t){n.byNamespace.set(t.namespace,t)}),this.names.forEach(function(t){L[t](n._(t))}))}return t.prototype._=function(t){var n=this;return function(r){var i=t.match(/enter/i)?r.next:r.current,e=n.byNamespace.get(i.namespace);return e&&e[t]?S(e[t],e)(r):Promise.resolve()}},t}();Element.prototype.matches||(Element.prototype.matches=Element.prototype.msMatchesSelector||Element.prototype.webkitMatchesSelector),Element.prototype.closest||(Element.prototype.closest=function(t){var n=this;do{if(n.matches(t))return n;n=n.parentElement||n.parentNode}while(null!==n&&1===n.nodeType);return null});var tt={container:null,html:"",namespace:"",url:{hash:"",href:"",path:"",port:null,query:{}}},nt=/*#__PURE__*/function(){function t(){this.version="2.10.3",this.schemaPage=tt,this.Logger=d,this.logger=new d("@barba/core"),this.plugins=[],this.timeout=void 0,this.cacheIgnore=void 0,this.cacheFirstPage=void 0,this.prefetchIgnore=void 0,this.preventRunning=void 0,this.hooks=L,this.cache=void 0,this.headers=void 0,this.prevent=void 0,this.transitions=void 0,this.views=void 0,this.dom=b,this.helpers=x,this.history=P,this.request=M,this.url=j,this.D=void 0,this.B=void 0,this.q=void 0,this.F=void 0}var i=t.prototype;return i.use=function(t,n){var r=this.plugins;r.indexOf(t)>-1?this.logger.warn("Plugin ["+t.name+"] already installed."):"function"==typeof t.install?(t.install(this,n),r.push(t)):this.logger.warn("Plugin ["+t.name+'] has no "install" method.')},i.init=function(t){var n=void 0===t?{}:t,i=n.transitions,e=void 0===i?[]:i,o=n.views,u=void 0===o?[]:o,s=n.schema,f=void 0===s?m:s,c=n.requestError,a=n.timeout,h=void 0===a?2e3:a,v=n.cacheIgnore,l=void 0!==v&&v,p=n.cacheFirstPage,w=void 0!==p&&p,b=n.prefetchIgnore,y=void 0!==b&&b,P=n.preventRunning,g=void 0!==P&&P,E=n.prevent,x=void 0===E?null:E,R=n.debug,k=n.logLevel;if(d.setLevel(!0===(void 0!==R&&R)?"debug":void 0===k?"off":k),this.logger.info(this.version),Object.keys(f).forEach(function(t){m[t]&&(m[t]=f[t])}),this.B=c,this.timeout=h,this.cacheIgnore=l,this.cacheFirstPage=w,this.prefetchIgnore=y,this.preventRunning=g,this.q=this.dom.getWrapper(),!this.q)throw new Error("[@barba/core] No Barba wrapper found");this.I();var O=this.data.current;if(!O.container)throw new Error("[@barba/core] No Barba container found");if(this.cache=new _(l),this.headers=new D,this.prevent=new J(y),this.transitions=new Y(e),this.views=new Z(u),null!==x){if("function"!=typeof x)throw new Error("[@barba/core] Prevent should be a function");this.prevent.add("preventCustom",x)}this.history.init(O.url.href,O.namespace),w&&this.cache.set(O.url.href,Promise.resolve({html:O.html,url:O.url}),"init","fulfilled"),this.U=this.U.bind(this),this.$=this.$.bind(this),this.X=this.X.bind(this),this.G(),this.plugins.forEach(function(t){return t.init()});var T=this.data;T.trigger="barba",T.next=T.current,T.current=r({},this.schemaPage),this.hooks.do("ready",T),this.once(T),this.I()},i.destroy=function(){this.I(),this.J(),this.history.clear(),this.hooks.clear(),this.plugins=[]},i.force=function(t){window.location.assign(t)},i.go=function(t,n,r){var i;if(void 0===n&&(n="barba"),this.F=null,this.transitions.isRunning)this.force(t);else if(!(i="popstate"===n?this.history.current&&this.url.getPath(this.history.current.url)===this.url.getPath(t)&&this.url.getQuery(this.history.current.url,!0)===this.url.getQuery(t,!0):this.prevent.run("sameUrl",null,null,t))||this.transitions.hasSelf)return n=this.history.change(this.cache.has(t)?this.cache.get(t).target:t,n,r),r&&(r.stopPropagation(),r.preventDefault()),this.page(t,n,null!=r?r:void 0,i)},i.once=function(t){try{var n=this;return Promise.resolve(n.hooks.do("beforeEnter",t)).then(function(){function r(){return Promise.resolve(n.hooks.do("afterEnter",t)).then(function(){})}var i=function(){if(n.transitions.hasOnce){var r=n.transitions.get(t,{once:!0});return Promise.resolve(n.transitions.doOnce({transition:r,data:t})).then(function(){})}}();return i&&i.then?i.then(r):r()})}catch(t){return Promise.reject(t)}},i.page=function(t,n,i,e){try{var o,u=function(){var t=s.data;return Promise.resolve(s.hooks.do("page",t)).then(function(){var n=function(n,r){try{var i=(u=s.transitions.get(t,{once:!1,self:e}),Promise.resolve(s.transitions.doPage({data:t,page:o,transition:u,wrapper:s.q})).then(function(){s.I()}))}catch(t){return r()}var u;return i&&i.then?i.then(void 0,r):i}(0,function(){0===d.getLevel()&&s.force(t.next.url.href)});if(n&&n.then)return n.then(function(){})})},s=this;if(s.data.next.url=r({href:t},s.url.parse(t)),s.data.trigger=n,s.data.event=i,s.cache.has(t))o=s.cache.update(t,{action:"click"}).request;else{var f=s.request(t,s.timeout,s.onRequestError.bind(s,n),s.cache,s.headers);f.then(function(r){r.url.href!==t&&s.history.add(r.url.href,n,"replace")}),o=s.cache.set(t,f,"click","pending").request}var c=function(){if(s.transitions.shouldWait)return Promise.resolve(g(o,s.data)).then(function(){})}();return Promise.resolve(c&&c.then?c.then(u):u())}catch(t){return Promise.reject(t)}},i.onRequestError=function(t){this.transitions.isRunning=!1;var n=[].slice.call(arguments,1),r=n[0],i=n[1],e=this.cache.getAction(r);return this.cache.delete(r),this.B&&!1===this.B(t,e,r,i)||"click"===e&&this.force(r),!1},i.prefetch=function(t){var n=this;t=this.url.getAbsoluteHref(t),this.cache.has(t)||this.cache.set(t,this.request(t,this.timeout,this.onRequestError.bind(this,"barba"),this.cache,this.headers).catch(function(t){n.logger.error(t)}),"prefetch","pending")},i.G=function(){!0!==this.prefetchIgnore&&(document.addEventListener("mouseover",this.U),document.addEventListener("touchstart",this.U)),document.addEventListener("click",this.$),window.addEventListener("popstate",this.X)},i.J=function(){!0!==this.prefetchIgnore&&(document.removeEventListener("mouseover",this.U),document.removeEventListener("touchstart",this.U)),document.removeEventListener("click",this.$),window.removeEventListener("popstate",this.X)},i.U=function(t){var n=this,r=this.W(t);if(r){var i=this.url.getAbsoluteHref(this.dom.getHref(r));this.prevent.checkHref(i)||this.cache.has(i)||this.cache.set(i,this.request(i,this.timeout,this.onRequestError.bind(this,r),this.cache,this.headers).catch(function(t){n.logger.error(t)}),"enter","pending")}},i.$=function(t){var n=this.W(t);if(n){if(this.transitions.isRunning&&this.preventRunning)return t.preventDefault(),void t.stopPropagation();this.F=t,this.go(this.dom.getHref(n),n,t)}},i.X=function(t){this.go(this.url.getHref(),"popstate",t)},i.W=function(t){for(var n=t.target;n&&!this.dom.getHref(n);)n=n.parentNode;if(n&&!this.prevent.checkLink(n,t,this.dom.getHref(n)))return n},i.I=function(){var t=this.url.getHref(),n={container:this.dom.getContainer(),html:this.dom.getHtml(),namespace:this.dom.getNamespace(),url:r({href:t},this.url.parse(t))};this.D={current:n,event:void 0,next:r({},this.schemaPage),trigger:void 0},this.hooks.do("reset",this.data)},n(t,[{key:"data",get:function(){return this.D}},{key:"wrapper",get:function(){return this.q}}]),t}();return new nt});
+//# sourceMappingURL=barba.umd.js.map
+
 /* ---------- 01-core.js ---------- */
 /* ===== Cinq Septembre — socle =====
    Charge par jsDelivr depuis le depot cinqseptembre-custom-code-webflow.
@@ -97,8 +101,50 @@ CS.config = {
 
   /* ---- Page Contact ---- */
   contact: {
+    pages: ['contact'],
     retour: '/',                   // ou aller a la fermeture si l'on n'arrive pas du site
     libelleFermer: 'Fermer'
+  },
+
+  /* ---- Page Archive : mosaique infinie + focus ----
+     Trame reguliere reprise de la maquette (cadre de 1440 px de large) :
+     tuiles de 130 x 180, une tous les 276 px en largeur et 323 px en hauteur.
+     Tout est mis a l'echelle de la largeur d'ecran, dans les bornes ci-dessous. */
+  archive: {
+    pages: ['archives'],
+    source: '.cs-archive-source',          // Collection List « Bibliotheque » du Designer
+    item: '.cs-archive-item',
+    champs: { nom: '.cs-archive-item__nom', type: '.cs-archive-item__type', annee: '.cs-archive-item__annee' },
+
+    base: 1440,                    // largeur de la maquette
+    tuile: { w: 130, h: 180 },
+    pas: { x: 276, y: 323 },
+    origine: { x: 241, y: 255 },   // position d'une tuile de reference a l'ouverture
+    echelleMin: 0.75,              // petit ecran : les tuiles ne descendent pas sous 97 px de large
+    echelleMax: 1.35,              // tres grand ecran
+    melange: 7,                    // decalage d'une rangee a l'autre dans l'ordre des references
+
+    souplesse: 0.1,                // lissage (molette, elan)
+    vitesse: 1,                    // molette
+    elan: 260,                     // ms de vitesse conservee au relachement
+    seuilClic: 8,                  // px — au-dela, le geste est un deplacement, pas un clic
+
+    focus: {
+      w: 344, h: 477,              // proportions de l'image agrandie
+      duree: 600,                  // ms — agrandissement / retour
+      delaiSuivant: 450            // ms mini entre deux references a la molette
+    },
+    libelleFermer: 'Fermer'
+  },
+
+  /* ---- Transitions de page (Barba) ---- */
+  transitions: {
+    actif: true,
+    sortie: 300,                   // ms — fondu de la page qui part
+    entree: 450,                   // ms — fondu de la page qui arrive
+    /* Pages chargees normalement, sans transition : les pages de projet
+       embarquent encore leur propre script, que Barba n'executerait pas. */
+    exclure: [/^\/projets\/.+/]
   }
 };
 
@@ -107,6 +153,10 @@ CS.config = {
 /* ---- Utilitaires ---- */
 CS.reduit = function () {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+};
+
+CS.sourisFine = function () {
+  return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 };
 
 CS.attendre = function (ms) {
@@ -123,21 +173,94 @@ CS.pret = function (fn) {
 
 /* Quelle page affiche-t-on ? Repose sur le slug de l'URL, pas sur le balisage,
    pour rester vrai meme si la structure Webflow change. */
-CS.page = (function () {
-  var p = location.pathname.replace(/\/+$/, '');
+CS.quellePage = function (chemin) {
+  var p = (chemin || '').replace(/\/+$/, '');
   if (p === '' || p === '/index') return 'accueil';
   if (p.indexOf('/projets/') === 0) return 'projet';
   if (p === '/projets') return 'projets';
   if (p === '/archive' || p === '/archives' || p === '/bibliotheque') return 'archives';
   if (p === '/contact') return 'contact';
   if (p === '/approche' || p === '/a-propos') return 'approche';
-  return p.replace(/^\//, '') || 'autre';
-})();
+  return p.replace(/^\//, '').replace(/\//g, '-') || 'autre';
+};
+CS.page = CS.quellePage(location.pathname);
 
-document.documentElement.setAttribute('data-cs-page', CS.page);
+/* ===== Cycle de vie des pages =====
+   Avec Barba, les pages se remplacent sans rechargement : un module ne peut
+   plus se contenter de demarrer une fois. Chaque module se declare avec
+   CS.module(nom, pages, init). A chaque arrivee sur une page, CS.entrer()
+   appelle init(ctx) pour les modules concernes ; au depart, CS.sortir()
+   defait tout ce qu'ils ont branche.
 
-/* Classe de page sur <html> : permet a la CSS de cibler une page precise. */
-document.documentElement.classList.add('cs-page-' + CS.page);
+   ctx.conteneur     element de la page (conteneur Barba) : tout ce qu'un
+                     module cree y est ajoute, et disparait donc avec la page
+   ctx.ecoute(...)   addEventListener retire automatiquement au depart
+   ctx.aLaSortie(fn) nettoyage libre (arreter une boucle, retirer une classe) */
+CS._modules = [];
+CS._nettoyages = [];
+
+CS.module = function (nom, pages, init) {
+  CS._modules.push({ nom: nom, pages: pages, init: init });
+};
+
+CS.entrer = function (conteneur) {
+  CS.page = CS.quellePage(location.pathname);
+  var h = document.documentElement;
+  h.className = h.className.replace(/(^|\s)cs-page-\S+/g, ' ').replace(/\s+/g, ' ').trim();
+  h.classList.add('cs-page-' + CS.page);
+
+  var ctx = {
+    page: CS.page,
+    conteneur: conteneur || document.body,
+    ecoute: function (cible, type, fn, options) {
+      cible.addEventListener(type, fn, options);
+      CS._nettoyages.push(function () { cible.removeEventListener(type, fn, options); });
+    },
+    aLaSortie: function (fn) { CS._nettoyages.push(fn); }
+  };
+  CS._modules.forEach(function (m) {
+    if (m.pages && m.pages.indexOf(CS.page) === -1) return;
+    try { m.init(ctx); } catch (e) { if (window.console) console.error('[CS] ' + m.nom, e); }
+  });
+};
+
+CS.sortir = function () {
+  var n = CS._nettoyages; CS._nettoyages = [];
+  n.forEach(function (fn) { try { fn(); } catch (e) {} });
+};
+
+/* ---- Curseur personnalise (souris uniquement) ----
+   Une pastille + un mot qui suivent le pointeur au-dessus d'une zone.
+   Le transform de suivi est pose sur l'element lui-meme, a chaque mouvement :
+   le curseur doit coller au pointeur, sans lissage. L'apparition est jouee
+   sur son contenu, pour ne pas se melanger au suivi.
+   estDessus(e) dit si le curseur doit etre visible a cet endroit. */
+CS.ICONES = {
+  rond:  '<circle cx="8" cy="8" r="7" stroke-opacity=".35"/><path d="M8 1a7 7 0 0 1 7 7"/>',
+  croix: '<path d="M5.5 5.5l5 5M10.5 5.5l-5 5"/>'
+};
+CS.curseur = function (ctx, zone, texte, icone, estDessus) {
+  if (!CS.sourisFine()) return null;
+  var c = document.createElement('div');
+  c.className = 'cs-curseur';
+  c.setAttribute('aria-hidden', 'true');
+  c.innerHTML =
+    '<span class="cs-curseur__int">' +
+      '<svg class="cs-curseur__rond" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round">' +
+        CS.ICONES[icone] +
+      '</svg>' +
+      '<span class="cs-curseur__texte"></span>' +
+    '</span>';
+  c.querySelector('.cs-curseur__texte').textContent = texte;
+  ctx.conteneur.appendChild(c);
+  ctx.ecoute(zone, 'pointermove', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    c.style.transform = 'translate3d(' + e.clientX + 'px,' + e.clientY + 'px,0)';
+    c.classList.toggle('is-visible', !!estDessus(e));
+  });
+  ctx.ecoute(zone, 'pointerleave', function () { c.classList.remove('is-visible'); });
+  return c;
+};
 
 /* ---------- 04-loader.js ---------- */
 /* ===== Loader =====
@@ -217,9 +340,9 @@ document.documentElement.classList.add('cs-page-' + CS.page);
 
 /* ---------- 05-collage.js ---------- */
 /* ===== Collage en defilement infini =====
-   Accueil et page Projets partagent ce moteur. Il lit une liste CMS cachee
-   posee dans Webflow, repartit les projets dans les 11 emplacements du motif
-   de la maquette, et fait defiler ce motif sans fin.
+   Accueil et page Projets partagent ce moteur. Il lit une liste CMS posee dans
+   Webflow, repartit les projets dans les 11 emplacements du motif de la
+   maquette, et fait defiler ce motif sans fin.
 
    Pourquoi pas la barre de defilement du navigateur : une boucle vraiment
    infinie demanderait soit une page demesurement haute, soit des sauts de
@@ -227,20 +350,19 @@ document.documentElement.classList.add('cs-page-' + CS.page);
    piste nous-memes, ce qui permet de recycler les repetitions hors de l'ecran.
 
    Reglages : CS.config.collage (01-core.js). */
-(function () {
+CS.module('collage', CS.config.collage.pages, function (ctx) {
   var C = CS.config.collage;
-  if (!C || C.pages.indexOf(CS.page) === -1) return;
-
   var racine, piste, motifs = [], projets = [];
-  var cible = 0, courant = 0, anime = false;
+  var cible = 0, courant = 0, anime = false, vivant = true;
   var hMotif = 0;   // hauteur d'une repetition
   var hPas = 0;     // distance entre deux repetitions = hMotif + marge de raccord
 
+  CS.collage = { actif: false, racine: null, projets: [] };
+
   /* ---- Lecture de la liste CMS ---- */
-  function lireSource() {
-    var src = document.querySelector(C.source);
-    if (!src) return [];
-    return Array.prototype.map.call(src.querySelectorAll(C.item), function (el) {
+  var src = ctx.conteneur.querySelector(C.source) || document.querySelector(C.source);
+  if (src) {
+    projets = Array.prototype.map.call(src.querySelectorAll(C.item), function (el) {
       var img = el.querySelector('img');
       return {
         href: el.getAttribute('href') || el.dataset.href || '#',
@@ -252,13 +374,21 @@ document.documentElement.classList.add('cs-page-' + CS.page);
       };
     }).filter(function (p) { return p.src; });
   }
+  if (!projets.length) return;   // pas de liste CMS : on ne fait rien
+
+  /* La liste CMS d'origine ne sert qu'a fournir les donnees : on la retire de
+     l'affichage, ainsi que l'ancien cadre de mosaique s'il est encore la. */
+  var cadre = (C.cadre && src.closest(C.cadre)) || src;
+  cadre.style.display = 'none';
+  cadre.setAttribute('aria-hidden', 'true');
+  Array.prototype.forEach.call(ctx.conteneur.querySelectorAll('.canvas-zoom'), function (e) { e.style.display = 'none'; });
 
   /* ---- Construction d'une repetition du motif ---- */
   function construireMotif(rang) {
     var m = document.createElement('div');
     m.className = 'cs-collage__motif';
     m.dataset.rang = rang;
-    C.cases.forEach(function (c, i) {
+    C.cases.forEach(function (c) {
       var a = document.createElement('a');
       a.className = 'cs-collage__case';
       a.style.left   = (c.x / C.motif.w * 100) + '%';
@@ -299,7 +429,7 @@ document.documentElement.classList.add('cs-page-' + CS.page);
 
     var besoin = Math.ceil(window.innerHeight / hPas) + 2;
     while (motifs.length < besoin) motifs.push(construireMotif(motifs.length));
-    motifs.forEach(function (m) { remplir(m); });
+    motifs.forEach(remplir);
     placer();
   }
 
@@ -317,6 +447,7 @@ document.documentElement.classList.add('cs-page-' + CS.page);
   }
 
   function boucle() {
+    if (!vivant) return;
     courant += (cible - courant) * C.souplesse;
     if (Math.abs(cible - courant) < 0.1) { courant = cible; anime = false; }
     placer();
@@ -324,119 +455,97 @@ document.documentElement.classList.add('cs-page-' + CS.page);
   }
   function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
 
+  /* ---- Mise en place ---- */
+  racine = document.createElement('div');
+  racine.className = 'cs-collage';
+  piste = document.createElement('div');
+  piste.className = 'cs-collage__piste';
+  racine.appendChild(piste);
+  ctx.conteneur.appendChild(racine);
+
+  document.documentElement.classList.add('cs-sans-defilement');
+  ctx.aLaSortie(function () {
+    vivant = false;
+    document.documentElement.classList.remove('cs-sans-defilement');
+    CS.collage = null;
+  });
+  mesurer();
+
   /* ---- Entrees ---- */
-  function brancher() {
-    racine.addEventListener('wheel', function (e) {
-      e.preventDefault();
-      cible += e.deltaY * (e.deltaMode === 1 ? 16 : 1) * C.vitesse;
-      relancer();
-    }, { passive: false });
+  ctx.ecoute(racine, 'wheel', function (e) {
+    e.preventDefault();
+    cible += e.deltaY * (e.deltaMode === 1 ? 16 : 1) * C.vitesse;
+    relancer();
+  }, { passive: false });
 
-    var tireDepuis = null, deplace = 0;
-    racine.addEventListener('pointerdown', function (e) {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      tireDepuis = e.clientY; deplace = 0;
-      racine.classList.add('is-tire');
-    });
-    racine.addEventListener('pointermove', function (e) {
-      if (tireDepuis === null) return;
-      var d = e.clientY - tireDepuis;
-      deplace += Math.abs(d);
-      cible -= d * C.vitesseTactile;
-      tireDepuis = e.clientY;
-      relancer();
-    });
-    function relacher() { tireDepuis = null; racine.classList.remove('is-tire'); }
-    racine.addEventListener('pointerup', relacher);
-    racine.addEventListener('pointercancel', relacher);
-    /* Un glissement n'ouvre pas le projet : seul un vrai clic compte. */
-    racine.addEventListener('click', function (e) {
-      if (deplace > C.seuilClic) { e.preventDefault(); e.stopPropagation(); }
-      deplace = 0;
-    }, true);
+  var tireDepuis = null, deplace = 0;
+  ctx.ecoute(racine, 'pointerdown', function (e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    tireDepuis = e.clientY; deplace = 0;
+    racine.classList.add('is-tire');
+  });
+  ctx.ecoute(racine, 'pointermove', function (e) {
+    if (tireDepuis === null) return;
+    var d = e.clientY - tireDepuis;
+    deplace += Math.abs(d);
+    cible -= d * C.vitesseTactile;
+    tireDepuis = e.clientY;
+    relancer();
+  });
+  function relacher() { tireDepuis = null; racine.classList.remove('is-tire'); }
+  ctx.ecoute(racine, 'pointerup', relacher);
+  ctx.ecoute(racine, 'pointercancel', relacher);
+  /* Un glissement n'ouvre pas le projet : seul un vrai clic compte. */
+  ctx.ecoute(racine, 'click', function (e) {
+    if (deplace > C.seuilClic) { e.preventDefault(); e.stopPropagation(); }
+    deplace = 0;
+  }, true);
 
-    window.addEventListener('keydown', function (e) {
-      if (!CS.collage.actif) return;
-      var pas = { ArrowUp: -120, ArrowDown: 120, PageUp: -600, PageDown: 600 }[e.key];
-      if (pas === undefined) return;
-      e.preventDefault(); cible += pas; relancer();
-    });
+  ctx.ecoute(window, 'keydown', function (e) {
+    if (!CS.collage || !CS.collage.actif) return;
+    var pas = { ArrowUp: -120, ArrowDown: 120, PageUp: -600, PageDown: 600 }[e.key];
+    if (pas === undefined) return;
+    e.preventDefault(); cible += pas; relancer();
+  });
 
-    var t;
-    window.addEventListener('resize', function () {
-      clearTimeout(t); t = setTimeout(mesurer, 150);
-    }, { passive: true });
-  }
+  var t;
+  ctx.ecoute(window, 'resize', function () {
+    clearTimeout(t); t = setTimeout(mesurer, 150);
+  }, { passive: true });
 
-  /* ---- Logo fixe au centre, en difference ---- */
-  function poserLogo() {
-    if (!C.logoPages || C.logoPages.indexOf(CS.page) === -1) return;
+  /* ---- Logo fixe au centre, en difference (accueil) ---- */
+  if (C.logoPages && C.logoPages.indexOf(ctx.page) !== -1) {
     var d = document.createElement('div');
     d.className = 'cs-collage-logo';
     d.innerHTML =
       '<span class="cs-collage-logo__mot cs-collage-logo__mot--cinq">' + CS.svg.cinq + '</span>' +
       '<span class="cs-collage-logo__mot cs-collage-logo__mot--septembre">' + CS.svg.septembre + '</span>';
-    document.body.appendChild(d);
+    ctx.conteneur.appendChild(d);
   }
 
-  function demarrer() {
-    projets = lireSource();
-    if (!projets.length) return;   // pas de liste CMS : on ne fait rien
-
-    /* La liste CMS d'origine ne sert qu'a fournir les donnees : on la retire de
-       l'affichage, ainsi que l'ancien cadre de mosaique s'il est encore la. */
-    var src = document.querySelector(C.source);
-    if (src) {
-      var cadre = (C.cadre && src.closest(C.cadre)) || src;
-      cadre.style.display = 'none';
-      cadre.setAttribute('aria-hidden', 'true');
-    }
-    document.querySelectorAll('.canvas-zoom').forEach(function (e) { e.style.display = 'none'; });
-
-    racine = document.querySelector(C.conteneur);
-    if (!racine) {
-      racine = document.createElement('div');
-      racine.className = 'cs-collage';
-      document.body.insertBefore(racine, document.body.firstChild);
-    }
-    racine.classList.add('cs-collage');
-    piste = document.createElement('div');
-    piste.className = 'cs-collage__piste';
-    racine.appendChild(piste);
-
-    document.documentElement.classList.add('cs-sans-defilement');
-    mesurer();
-    brancher();
-    poserLogo();
-
-    /* Expose aux autres modules (vue liste de la page Projets) */
-    CS.collage.racine = racine;
-    CS.collage.projets = projets;
-    document.dispatchEvent(new CustomEvent('cs:collage-pret'));
-  }
-
-  /* actif = false quand une autre vue a la main : le clavier ne pilote plus la grille */
-  CS.collage = { actif: true, racine: null, projets: [] };
-
-  CS.pret(demarrer);
-})();
+  /* Expose aux autres modules (vue liste de la page Projets).
+     actif = false quand une autre vue a la main : le clavier ne pilote plus la grille. */
+  CS.collage = { actif: true, racine: racine, projets: projets };
+});
 
 /* ---------- 06-liste.js ---------- */
 /* ===== Page Projets : vue liste et bascule grille / liste =====
    La vue liste est une bande horizontale de grandes cartes, en defilement
    infini, alimentee par les memes projets que la grille (lus une seule fois
-   par le moteur de collage). Un bouton fixe a droite passe d'une vue a l'autre.
+   par le moteur de collage, declare juste avant). Un bouton fixe a droite
+   passe d'une vue a l'autre.
 
    Les cartes sont posees une a une par transform : la bande n'a pas de largeur
    reelle, chaque carte reboucle de l'autre cote quand elle sort de l'ecran.
 
    Reglages : CS.config.liste (01-core.js). */
-(function () {
+CS.module('liste', CS.config.liste.pages, function (ctx) {
   var L = CS.config.liste;
-  if (!L || L.pages.indexOf(CS.page) === -1) return;
+  var projets = (CS.collage && CS.collage.projets) || [];
+  if (!projets.length) return;
 
-  var racine, cartes = [], projets = [], bouton, curseur;
-  var cible = 0, courant = 0, anime = false;
+  var racine, cartes = [], bouton, curseur;
+  var cible = 0, courant = 0, anime = false, vivant = true;
   var largeur = 0, pas = 0, total = 0;
   var vue = 'grille';
   var CLE = 'cs-vue-projets';
@@ -502,86 +611,13 @@ document.documentElement.classList.add('cs-page-' + CS.page);
   }
 
   function boucle() {
+    if (!vivant) return;
     courant += (cible - courant) * L.souplesse;
     if (Math.abs(cible - courant) < 0.1) { courant = cible; anime = false; }
     placer();
     if (anime) requestAnimationFrame(boucle);
   }
   function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
-
-  /* ---- Entrees ---- */
-  function brancher() {
-    racine.addEventListener('wheel', function (e) {
-      e.preventDefault();
-      /* molette verticale ou geste horizontal du trackpad : le plus marque l'emporte */
-      var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      cible += d * (e.deltaMode === 1 ? 16 : 1) * L.vitesse;
-      relancer();
-    }, { passive: false });
-
-    var tireDepuis = null, deplace = 0;
-    racine.addEventListener('pointerdown', function (e) {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      tireDepuis = e.clientX; deplace = 0;
-      racine.classList.add('is-tire');
-    });
-    racine.addEventListener('pointermove', function (e) {
-      if (tireDepuis === null) return;
-      var d = e.clientX - tireDepuis;
-      deplace += Math.abs(d);
-      cible -= d * L.vitesseTactile;
-      tireDepuis = e.clientX;
-      relancer();
-    });
-    function relacher() { tireDepuis = null; racine.classList.remove('is-tire'); }
-    racine.addEventListener('pointerup', relacher);
-    racine.addEventListener('pointercancel', relacher);
-    racine.addEventListener('click', function (e) {
-      if (deplace > L.seuilClic) { e.preventDefault(); e.stopPropagation(); }
-      deplace = 0;
-    }, true);
-    racine.addEventListener('dragstart', function (e) { e.preventDefault(); });
-
-    window.addEventListener('keydown', function (e) {
-      if (vue !== 'liste') return;
-      var d = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -1, ArrowDown: 1, PageUp: -3, PageDown: 3 }[e.key];
-      if (d === undefined) return;
-      e.preventDefault(); cible += d * pas; relancer();
-    });
-
-    var t;
-    window.addEventListener('resize', function () {
-      clearTimeout(t); t = setTimeout(mesurer, 150);
-    }, { passive: true });
-  }
-
-  /* ---- Curseur « Decouvrir » (souris uniquement) ---- */
-  function poserCurseur() {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    curseur = document.createElement('div');
-    curseur.className = 'cs-curseur';
-    curseur.setAttribute('aria-hidden', 'true');
-    curseur.innerHTML =
-      '<span class="cs-curseur__int">' +
-        '<svg class="cs-curseur__rond" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor">' +
-          '<circle cx="8" cy="8" r="7" stroke-opacity=".35"/>' +
-          '<path d="M8 1a7 7 0 0 1 7 7" stroke-linecap="round"/>' +
-        '</svg>' +
-        '<span class="cs-curseur__texte"></span>' +
-      '</span>';
-    curseur.querySelector('.cs-curseur__texte').textContent = L.libelles.curseur;
-    document.body.appendChild(curseur);
-
-    /* Le transform est pose sur l'element lui-meme, a chaque mouvement : le
-       curseur doit coller au pointeur, sans lissage. */
-    racine.addEventListener('pointermove', function (e) {
-      if (e.pointerType !== 'mouse') return;
-      curseur.style.transform = 'translate3d(' + e.clientX + 'px,' + e.clientY + 'px,0)';
-      var sur = !!(e.target.closest && e.target.closest('.cs-liste__cadre'));
-      curseur.classList.toggle('is-visible', sur && !racine.classList.contains('is-tire'));
-    });
-    racine.addEventListener('pointerleave', function () { curseur.classList.remove('is-visible'); });
-  }
 
   /* ---- Bascule ---- */
   function entreeCartes() {
@@ -609,34 +645,79 @@ document.documentElement.classList.add('cs-page-' + CS.page);
     if (v === 'liste' && !immediat) entreeCartes();
   }
 
-  function demarrer() {
-    projets = (CS.collage && CS.collage.projets) || [];
-    if (!projets.length) return;
+  /* ---- Mise en place ---- */
+  racine = document.createElement('div');
+  racine.className = 'cs-liste';
+  ctx.conteneur.appendChild(racine);
 
-    racine = document.createElement('div');
-    racine.className = 'cs-liste';
-    document.body.appendChild(racine);
+  bouton = document.createElement('button');
+  bouton.type = 'button';
+  bouton.className = 'cs-vue-bascule';
+  ctx.ecoute(bouton, 'click', function () {
+    var v = vue === 'grille' ? 'liste' : 'grille';
+    retenirVue(v);
+    appliquer(v, false);
+  });
+  ctx.conteneur.appendChild(bouton);
 
-    bouton = document.createElement('button');
-    bouton.type = 'button';
-    bouton.className = 'cs-vue-bascule';
-    bouton.addEventListener('click', function () {
-      var v = vue === 'grille' ? 'liste' : 'grille';
-      retenirVue(v);
-      appliquer(v, false);
-    });
-    document.body.appendChild(bouton);
+  ctx.aLaSortie(function () {
+    vivant = false;
+    document.documentElement.removeAttribute('data-cs-vue');
+  });
 
-    mesurer();
-    brancher();
-    poserCurseur();
-    appliquer(lireVue(), true);
-  }
+  mesurer();
 
-  /* Le collage lit la liste CMS : on attend qu'il ait fini. */
-  if (CS.collage && CS.collage.racine) demarrer();
-  else document.addEventListener('cs:collage-pret', demarrer, { once: true });
-})();
+  /* ---- Entrees ---- */
+  ctx.ecoute(racine, 'wheel', function (e) {
+    e.preventDefault();
+    /* molette verticale ou geste horizontal du trackpad : le plus marque l'emporte */
+    var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    cible += d * (e.deltaMode === 1 ? 16 : 1) * L.vitesse;
+    relancer();
+  }, { passive: false });
+
+  var tireDepuis = null, deplace = 0;
+  ctx.ecoute(racine, 'pointerdown', function (e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    tireDepuis = e.clientX; deplace = 0;
+    racine.classList.add('is-tire');
+  });
+  ctx.ecoute(racine, 'pointermove', function (e) {
+    if (tireDepuis === null) return;
+    var d = e.clientX - tireDepuis;
+    deplace += Math.abs(d);
+    cible -= d * L.vitesseTactile;
+    tireDepuis = e.clientX;
+    relancer();
+  });
+  function relacher() { tireDepuis = null; racine.classList.remove('is-tire'); }
+  ctx.ecoute(racine, 'pointerup', relacher);
+  ctx.ecoute(racine, 'pointercancel', relacher);
+  ctx.ecoute(racine, 'click', function (e) {
+    if (deplace > L.seuilClic) { e.preventDefault(); e.stopPropagation(); }
+    deplace = 0;
+  }, true);
+  ctx.ecoute(racine, 'dragstart', function (e) { e.preventDefault(); });
+
+  ctx.ecoute(window, 'keydown', function (e) {
+    if (vue !== 'liste') return;
+    var d = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -1, ArrowDown: 1, PageUp: -3, PageDown: 3 }[e.key];
+    if (d === undefined) return;
+    e.preventDefault(); cible += d * pas; relancer();
+  });
+
+  var t;
+  ctx.ecoute(window, 'resize', function () {
+    clearTimeout(t); t = setTimeout(mesurer, 150);
+  }, { passive: true });
+
+  /* ---- Curseur « Decouvrir » ---- */
+  curseur = CS.curseur(ctx, racine, L.libelles.curseur, 'rond', function (e) {
+    return e.target.closest && e.target.closest('.cs-liste__cadre') && !racine.classList.contains('is-tire');
+  });
+
+  appliquer(lireVue(), true);
+});
 
 /* ---------- 07-contact.js ---------- */
 /* ===== Page Contact =====
@@ -644,51 +725,475 @@ document.documentElement.classList.add('cs-page-' + CS.page);
    le curseur « Fermer » et la fermeture — un clic sur le fond noir, ou la
    touche Echap, ramene a la page d'ou l'on vient.
 
-   L'entree (la barre de navigation qui descend, le contenu qui apparait) est
-   entierement en CSS : voir 07-contact.css. */
-(function () {
-  if (CS.page !== 'contact') return;
+   La barre de navigation qui descend et le contenu qui apparait sont en CSS :
+   voir 07-contact.css. */
+CS.module('contact', CS.config.contact.pages, function (ctx) {
   var K = CS.config.contact;
+  var fond = ctx.conteneur.matches('.cs-contact') ? ctx.conteneur : ctx.conteneur.querySelector('.cs-contact');
+  if (!fond) return;
 
   function fermer() {
-    var vientDuSite = false;
-    try { vientDuSite = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
+    var vientDuSite = CS.navigationInterne;      // on est arrive ici par une transition
+    if (!vientDuSite) {
+      try { vientDuSite = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
+    }
     if (vientDuSite && history.length > 1) history.back();
-    else location.href = K.retour;
+    else CS.aller(K.retour);
+  }
+
+  /* Tout ce qui n'est pas un lien ferme la page */
+  ctx.ecoute(fond, 'click', function (e) {
+    if (e.target.closest('a, button')) return;
+    fermer();
+  });
+  ctx.ecoute(window, 'keydown', function (e) { if (e.key === 'Escape') fermer(); });
+
+  if (CS.curseur(ctx, fond, K.libelleFermer, 'croix', function (e) { return !e.target.closest('a, button'); })) {
+    document.documentElement.classList.add('cs-curseur-fermer');
+    ctx.aLaSortie(function () { document.documentElement.classList.remove('cs-curseur-fermer'); });
+  }
+});
+
+/* ---------- 08-archive.js ---------- */
+/* ===== Page Archive : mosaique infinie et focus =====
+   Les references de la collection « Bibliotheque » (Collection List du
+   Designer) sont posees sur une trame reguliere qui se prolonge sans fin dans
+   les deux directions. On s'y deplace en tirant, a la molette ou au clavier.
+
+   La trame est virtuelle : seules les tuiles visibles existent (une « reserve »
+   de colonnes x rangees). Chaque tuile de la reserve est reaffectee a une
+   autre case de la trame quand elle sort de l'ecran. La reference affichee
+   dans une case ne depend que de sa position : on retrouve la meme image en
+   revenant au meme endroit.
+
+   Un clic sur une tuile l'agrandit au centre ; les autres s'effacent, les
+   informations apparaissent dessous. En focus, la molette et les fleches
+   passent a la reference suivante ou precedente.
+
+   Reglages : CS.config.archive (01-core.js). */
+CS.module('archive', CS.config.archive.pages, function (ctx) {
+  var A = CS.config.archive, F = A.focus;
+
+  /* ---- Lecture de la Collection List ---- */
+  var src = ctx.conteneur.querySelector(A.source);
+  if (!src) return;
+  function texte(el, sel) { var e = sel && el.querySelector(sel); return e ? e.textContent.trim() : ''; }
+  var refs = Array.prototype.map.call(src.querySelectorAll(A.item), function (el) {
+    var img = el.querySelector('img');
+    return {
+      src: img ? (img.getAttribute('src') || '') : '',
+      srcset: img ? img.getAttribute('srcset') : null,
+      nom: texte(el, A.champs.nom),
+      type: texte(el, A.champs.type),
+      annee: texte(el, A.champs.annee)
+    };
+  }).filter(function (r) { return r.src; });
+  var n = refs.length;
+  if (!n) return;
+
+  function mod(a, b) { return ((a % b) + b) % b; }
+
+  /* ---- Etat ---- */
+  var racine, plan, tuiles = [], cols = 0, rangs = 0;
+  var tw, th, px, py, ox, oy;                  // tuile, pas, origine — a l'echelle
+  var camX = 0, camY = 0, cibleX = 0, cibleY = 0;
+  var anime = false, vivant = true;
+  var focusOuvert = false;
+
+  racine = document.createElement('div');
+  racine.className = 'cs-archive';
+  plan = document.createElement('div');
+  plan.className = 'cs-archive__plan';
+  racine.appendChild(plan);
+  ctx.conteneur.appendChild(racine);
+
+  document.documentElement.classList.add('cs-sans-defilement');
+  ctx.aLaSortie(function () {
+    vivant = false;
+    document.documentElement.classList.remove('cs-sans-defilement');
+  });
+
+  /* ---- Trame ---- */
+  function creerTuile() {
+    var t = document.createElement('div');
+    t.className = 'cs-archive__tuile';
+    t.setAttribute('role', 'button');
+    t.tabIndex = 0;
+    t.innerHTML = '<img class="cs-archive__img" alt="" draggable="false">';
+    t._c = null; t._r = null; t._i = -1;
+    plan.appendChild(t);
+    return t;
+  }
+
+  function mesurer() {
+    var e = Math.max(A.echelleMin, Math.min(A.echelleMax, window.innerWidth / A.base));
+    tw = A.tuile.w * e; th = A.tuile.h * e;
+    px = A.pas.x * e;   py = A.pas.y * e;
+    ox = A.origine.x * e; oy = A.origine.y * e;
+    racine.style.setProperty('--cs-tuile-w', tw.toFixed(2) + 'px');
+    racine.style.setProperty('--cs-tuile-h', th.toFixed(2) + 'px');
+
+    var c = Math.ceil(window.innerWidth / px) + 2;
+    var r = Math.ceil(window.innerHeight / py) + 2;
+    if (c !== cols || r !== rangs) {
+      cols = c; rangs = r;
+      while (tuiles.length < cols * rangs) tuiles.push(creerTuile());
+      while (tuiles.length > cols * rangs) plan.removeChild(tuiles.pop());
+      tuiles.forEach(function (t) { t._c = null; });      // force la reaffectation
+    }
+    placer();
+  }
+
+  /* La tuile i de la reserve tient toujours une colonne congrue a i modulo
+     cols (idem pour les rangees) : elle ne change de case que lorsqu'elle sort
+     d'un cote pour rentrer de l'autre. */
+  function placer() {
+    var c0 = Math.floor((camX - ox) / px) - 1;
+    var r0 = Math.floor((camY - oy) / py) - 1;
+    for (var k = 0; k < tuiles.length; k++) {
+      var t = tuiles[k];
+      var c = c0 + mod((k % cols) - c0, cols);
+      var r = r0 + mod(Math.floor(k / cols) - r0, rangs);
+      if (c !== t._c || r !== t._r) {
+        t._c = c; t._r = r;
+        var i = mod(c + r * A.melange, n);
+        if (i !== t._i) {
+          t._i = i;
+          var img = t.firstChild, ref = refs[i];
+          img.removeAttribute('srcset');
+          img.src = ref.src;
+          if (ref.srcset) { img.srcset = ref.srcset; img.sizes = Math.ceil(tw) + 'px'; }
+          img.alt = ref.nom;
+          t.setAttribute('aria-label', ref.nom);
+        }
+      }
+      t._x = ox + c * px - camX;
+      t._y = oy + r * py - camY;
+      t.style.transform = 'translate3d(' + t._x.toFixed(1) + 'px,' + t._y.toFixed(1) + 'px,0)';
+    }
+  }
+
+  function boucle() {
+    if (!vivant) return;
+    camX += (cibleX - camX) * A.souplesse;
+    camY += (cibleY - camY) * A.souplesse;
+    if (Math.abs(cibleX - camX) < 0.1 && Math.abs(cibleY - camY) < 0.1) { camX = cibleX; camY = cibleY; anime = false; }
+    placer();
+    if (anime) requestAnimationFrame(boucle);
+  }
+  function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
+
+  mesurer();
+
+  /* ---- Deplacement ----
+     Pendant qu'on tire, la trame suit le pointeur a l'identique (pas de
+     lissage : c'est une manipulation directe). Au relachement, elle garde un
+     peu de la vitesse du geste et se pose en douceur. */
+  var tire = null, deplace = 0, vx = 0, vy = 0;
+  ctx.ecoute(racine, 'pointerdown', function (e) {
+    if (focusOuvert) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    tire = { x: e.clientX, y: e.clientY, t: e.timeStamp, id: e.pointerId };
+    deplace = 0; vx = vy = 0;
+    cibleX = camX; cibleY = camY;                  // arrete net un elan en cours
+  });
+  ctx.ecoute(racine, 'pointermove', function (e) {
+    if (!tire || e.pointerId !== tire.id) return;
+    var dx = e.clientX - tire.x, dy = e.clientY - tire.y;
+    var dt = Math.max(1, e.timeStamp - tire.t);
+    deplace += Math.abs(dx) + Math.abs(dy);
+    if (deplace > A.seuilClic && !racine.classList.contains('is-tire')) {
+      racine.classList.add('is-tire');
+      try { racine.setPointerCapture(tire.id); } catch (err) {}
+    }
+    /* vitesse lissee, en px/ms */
+    vx = vx * 0.7 + (dx / dt) * 0.3;
+    vy = vy * 0.7 + (dy / dt) * 0.3;
+    camX -= dx; camY -= dy; cibleX = camX; cibleY = camY;
+    tire.x = e.clientX; tire.y = e.clientY; tire.t = e.timeStamp;
+    placer();
+  });
+  function relacher(e) {
+    if (!tire) return;
+    var arret = e.timeStamp - tire.t > 80;          // doigt immobile avant de lacher : pas d'elan
+    tire = null;
+    racine.classList.remove('is-tire');
+    if (!arret && deplace > A.seuilClic && !CS.reduit()) {
+      cibleX = camX - vx * A.elan;
+      cibleY = camY - vy * A.elan;
+      relancer();
+    }
+  }
+  ctx.ecoute(racine, 'pointerup', relacher);
+  ctx.ecoute(racine, 'pointercancel', relacher);
+
+  ctx.ecoute(racine, 'wheel', function (e) {
+    e.preventDefault();
+    var k = (e.deltaMode === 1 ? 16 : 1) * A.vitesse;
+    if (focusOuvert) { molletteFocus(e.deltaY * k + e.deltaX * k); return; }
+    if (e.shiftKey && !e.deltaX) cibleX += e.deltaY * k;
+    else { cibleX += e.deltaX * k; cibleY += e.deltaY * k; }
+    relancer();
+  }, { passive: false });
+
+  ctx.ecoute(racine, 'dragstart', function (e) { e.preventDefault(); });
+
+  var tr;
+  ctx.ecoute(window, 'resize', function () {
+    clearTimeout(tr);
+    tr = setTimeout(function () { mesurer(); }, 150);
+  }, { passive: true });
+
+  /* ==================== Focus ==================== */
+  var panneau = document.createElement('div');
+  panneau.className = 'cs-archive__focus';
+  panneau.setAttribute('role', 'dialog');
+  panneau.setAttribute('aria-modal', 'true');
+  panneau.hidden = true;
+  panneau.innerHTML =
+    '<div class="cs-archive__focus-centre"><div class="cs-archive__focus-cadre">' +
+      '<img class="cs-archive__focus-img" alt="" draggable="false">' +
+    '</div></div>' +
+    '<div class="cs-archive__focus-infos">' +
+      '<h2 class="cs-archive__focus-nom"></h2>' +
+      '<p class="cs-archive__focus-type"></p>' +
+      '<p class="cs-archive__focus-annee"></p>' +
+    '</div>';
+  racine.appendChild(panneau);
+  var cadre = panneau.querySelector('.cs-archive__focus-cadre');
+  var grande = panneau.querySelector('.cs-archive__focus-img');
+  var infos = panneau.querySelector('.cs-archive__focus-infos');
+  var elNom = panneau.querySelector('.cs-archive__focus-nom');
+  var elType = panneau.querySelector('.cs-archive__focus-type');
+  var elAnnee = panneau.querySelector('.cs-archive__focus-annee');
+
+  var origine = null;        // tuile cliquee
+  var courant = -1;          // reference affichee
+  var animCadre = null;
+  var EASE = 'cubic-bezier(0.77, 0, 0.175, 1)';     // --cs-ease-in-out
+
+  function remplirFocus(i) {
+    var ref = refs[i];
+    courant = i;
+    grande.removeAttribute('srcset');
+    grande.src = ref.src;
+    grande.alt = ref.nom;
+    elNom.textContent = ref.nom;
+    elType.textContent = ref.type;
+    elAnnee.textContent = ref.annee;
+    panneau.setAttribute('aria-label', ref.nom);
+  }
+
+  /* Transform qui ramene le cadre (a sa place finale) sur le rectangle d'une tuile */
+  function versTuile(t) {
+    var a = t.getBoundingClientRect(), b = cadre.getBoundingClientRect();
+    if (!b.width || !b.height) return 'none';
+    var dx = (a.left + a.width / 2) - (b.left + b.width / 2);
+    var dy = (a.top + a.height / 2) - (b.top + b.height / 2);
+    return 'translate(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px) scale(' +
+           (a.width / b.width).toFixed(4) + ',' + (a.height / b.height).toFixed(4) + ')';
+  }
+
+  function ouvrir(t) {
+    if (focusOuvert || t._i < 0) return;
+    focusOuvert = true;
+    origine = t;
+    cibleX = camX; cibleY = camY;                   // la trame ne bouge plus
+    remplirFocus(t._i);
+    panneau.hidden = false;
+    racine.classList.add('est-focus');
+    t.classList.add('est-origine');
+    if (animCadre) animCadre.cancel();
+    if (!CS.reduit()) {
+      animCadre = cadre.animate(
+        [{ transform: versTuile(t) }, { transform: 'none' }],
+        { duration: F.duree, easing: EASE });
+    }
+    void panneau.offsetWidth;
+    panneau.classList.add('est-ouvert');
+    panneau.tabIndex = -1;
+    try { panneau.focus({ preventScroll: true }); } catch (e) {}
+  }
+
+  function fermer() {
+    if (!focusOuvert) return;
+    focusOuvert = false;
+    panneau.classList.remove('est-ouvert');
+    var t = origine, retour = t && t._i === courant && !CS.reduit();
+    function fin() {
+      panneau.hidden = true;
+      if (t) { t.classList.remove('est-origine'); try { t.focus({ preventScroll: true }); } catch (e) {} }
+      racine.classList.remove('est-focus', 'est-fermeture');
+    }
+    if (animCadre) animCadre.cancel();
+    if (retour) {
+      /* meme reference qu'a l'ouverture : l'image retourne dans sa case */
+      animCadre = cadre.animate(
+        [{ transform: 'none' }, { transform: versTuile(t) }],
+        { duration: F.duree, easing: EASE, fill: 'forwards' });
+      animCadre.onfinish = function () { fin(); animCadre.cancel(); };
+      setTimeout(function () { racine.classList.remove('est-focus'); }, F.duree * 0.4);
+    } else {
+      /* on a change de reference entre-temps : simple fondu */
+      racine.classList.add('est-fermeture');
+      racine.classList.remove('est-focus');
+      setTimeout(fin, 300);
+    }
+    if (curseur) curseur.classList.remove('is-visible');
+  }
+
+  /* Reference suivante / precedente : fondu enchaine de l'image et du texte */
+  var dernier = 0, cumul = 0;
+  function suivant(sens) {
+    var maintenant = Date.now();
+    if (maintenant - dernier < F.delaiSuivant) return;
+    dernier = maintenant;
+    var i = mod(courant + sens, n);
+    var pre = new Image(); pre.src = refs[i].src;
+    panneau.classList.add('est-change');
+    setTimeout(function () {
+      if (!focusOuvert) return;
+      remplirFocus(i);
+      panneau.classList.remove('est-change');
+    }, 180);
+  }
+  function molletteFocus(d) {
+    cumul += d;
+    if (Math.abs(cumul) < 30) return;
+    var sens = cumul > 0 ? 1 : -1; cumul = 0;
+    suivant(sens);
+  }
+
+  /* Clic : sur une tuile -> ouvre ; en focus -> ferme. Un deplacement n'est pas un clic. */
+  ctx.ecoute(racine, 'click', function (e) {
+    if (deplace > A.seuilClic) { deplace = 0; return; }
+    deplace = 0;
+    if (focusOuvert) { fermer(); return; }
+    var t = e.target.closest('.cs-archive__tuile');
+    if (t) ouvrir(t);
+  });
+
+  /* En focus, au doigt : glisser vers le haut ou le bas change de reference */
+  var touche = null;
+  ctx.ecoute(panneau, 'pointerdown', function (e) { if (e.pointerType !== 'mouse') touche = e.clientY; });
+  ctx.ecoute(panneau, 'pointerup', function (e) {
+    if (touche === null) return;
+    var d = e.clientY - touche; touche = null;
+    if (Math.abs(d) > 50) { deplace = A.seuilClic + 1; suivant(d < 0 ? 1 : -1); }
+  });
+
+  ctx.ecoute(window, 'keydown', function (e) {
+    if (focusOuvert) {
+      if (e.key === 'Escape') { e.preventDefault(); fermer(); }
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); suivant(1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); suivant(-1); }
+      return;
+    }
+    var t = document.activeElement && document.activeElement.closest && document.activeElement.closest('.cs-archive__tuile');
+    if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); ouvrir(t); return; }
+    var d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (!d) return;
+    e.preventDefault();
+    cibleX += d[0] * px; cibleY += d[1] * py; relancer();
+  });
+
+  var curseur = CS.curseur(ctx, racine, A.libelleFermer, 'croix', function () { return focusOuvert; });
+});
+
+/* ---------- 09-barba.js ---------- */
+/* ===== Demarrage et transitions de page (Barba) =====
+   Barba remplace le contenu de la page sans recharger : la barre de
+   navigation (hors du conteneur) reste en place, et le code n'est telecharge
+   qu'une fois. A chaque changement de page :
+
+     1. la page qui part s'efface (fondu)            -> CS.sortir()
+     2. Barba echange les conteneurs
+     3. la nouvelle page s'installe                  -> CS.entrer(conteneur)
+     4. elle apparait (fondu)
+
+   Dans Webflow, chaque page a un element [data-barba="container"] avec un
+   data-barba-namespace. Sans cet element — ou si Barba est desactive dans
+   CS.config.transitions — le site fonctionne en chargement classique.
+
+   Bibliotheque : @barba/core 2.10.3 (MIT), embarquee dans ce fichier. */
+(function () {
+  var T = CS.config.transitions;
+
+  /* Navigation programmee : par Barba s'il tourne, sinon classique */
+  CS.aller = function (url) {
+    if (CS.barbaActif && window.barba) window.barba.go(url);
+    else location.href = url;
+  };
+
+  function fondre(el, de, vers, duree) {
+    if (!el.animate) { el.style.opacity = vers; return Promise.resolve(); }
+    var a = el.animate([{ opacity: de }, { opacity: vers }],
+      { duration: CS.reduit() ? Math.min(duree, 150) : duree, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'forwards' });
+    return a.finished.catch(function () {}).then(function () { el.style.opacity = vers; a.cancel(); });
+  }
+
+  /* Ce que Webflow fait a chaque chargement et qu'il faut refaire a la main */
+  function majDocument(data) {
+    /* identifiant de page, lu par les interactions Webflow */
+    var m = data.next.html && data.next.html.match(/<html[^>]*\sdata-wf-page="([^"]+)"/);
+    if (m) document.documentElement.setAttribute('data-wf-page', m[1]);
+    /* lien courant dans la navigation */
+    var ici = location.pathname.replace(/\/+$/, '') || '/';
+    Array.prototype.forEach.call(document.querySelectorAll('.fixed-nav a[href]'), function (a) {
+      var h = (a.getAttribute('href') || '').replace(/\/+$/, '') || '/';
+      var courant = h === ici;
+      a.classList.toggle('w--current', courant);
+      if (courant) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function relancerWebflow() {
+    try {
+      if (!window.Webflow) return;
+      window.Webflow.destroy();
+      window.Webflow.ready();
+      var ix2 = window.Webflow.require && window.Webflow.require('ix2');
+      if (ix2 && ix2.init) ix2.init();
+    } catch (e) {}
   }
 
   function demarrer() {
-    var fond = document.querySelector('.cs-contact');
-    if (!fond) return;
+    var conteneur = document.querySelector('[data-barba="container"]');
+    CS.entrer(conteneur || document.body);
 
-    /* Tout ce qui n'est pas un lien ferme la page */
-    fond.addEventListener('click', function (e) {
-      if (e.target.closest('a, button')) return;
-      fermer();
-    });
-    window.addEventListener('keydown', function (e) { if (e.key === 'Escape') fermer(); });
+    if (!T.actif || !window.barba || !conteneur) return;
+    if (T.exclure.some(function (r) { return r.test(location.pathname); })) return;
 
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    var c = document.createElement('div');
-    c.className = 'cs-curseur';
-    c.setAttribute('aria-hidden', 'true');
-    c.innerHTML =
-      '<span class="cs-curseur__int">' +
-        '<svg class="cs-curseur__rond" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round">' +
-          '<path d="M5.5 5.5l5 5M10.5 5.5l-5 5"/>' +
-        '</svg>' +
-        '<span class="cs-curseur__texte"></span>' +
-      '</span>';
-    c.querySelector('.cs-curseur__texte').textContent = K.libelleFermer;
-    document.body.appendChild(c);
-    document.documentElement.classList.add('cs-curseur-fermer');
-
-    fond.addEventListener('pointermove', function (e) {
-      if (e.pointerType !== 'mouse') return;
-      c.style.transform = 'translate3d(' + e.clientX + 'px,' + e.clientY + 'px,0)';
-      c.classList.toggle('is-visible', !e.target.closest('a, button'));
-    });
-    fond.addEventListener('pointerleave', function () { c.classList.remove('is-visible'); });
+    document.body.setAttribute('data-barba', 'wrapper');
+    try {
+      window.barba.init({
+        timeout: 8000,
+        prevent: function (o) {
+          var a = document.createElement('a'); a.href = o.href;
+          return T.exclure.some(function (r) { return r.test(a.pathname); });
+        },
+        transitions: [{
+          name: 'fondu',
+          leave: function (data) { return fondre(data.current.container, 1, 0, T.sortie); },
+          afterLeave: function () { CS.sortir(); },
+          beforeEnter: function (data) {
+            CS.navigationInterne = true;
+            data.next.container.style.opacity = 0;
+            majDocument(data);
+            CS.entrer(data.next.container);
+          },
+          enter: function (data) { return fondre(data.next.container, 0, 1, T.entree); },
+          after: function (data) {
+            data.next.container.style.opacity = '';
+            relancerWebflow();
+          }
+        }]
+      });
+      CS.barbaActif = true;
+    } catch (e) {
+      if (window.console) console.error('[CS] barba', e);
+    }
   }
 
   CS.pret(demarrer);
