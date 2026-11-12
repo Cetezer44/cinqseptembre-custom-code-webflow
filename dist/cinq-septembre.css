@@ -102,8 +102,8 @@ html.cs-sans-defilement, html.cs-sans-defilement body {
 /* ---------- 04-loader.css ---------- */
 /* ===== Loader =====
    Fond clair. La roulette (UN, DEUX, TROIS, QUATRE, CINQ) joue au centre de
-   l'ecran ; arrivee sur CINQ, la case glisse a gauche, a sa place dans le
-   logotype, et SEPTEMBRE se devoile a droite. Le logo forme est a la place et
+   l'ecran, les mots cales a droite ; arrivee sur CINQ, le logotype glisse a
+   gauche d'un bloc et SEPTEMBRE se devoile a sa droite. Le logo forme est a la place et
    a la taille exactes de celui de l'accueil : quand le voile s'efface, il
    semble rester en place.
 
@@ -148,22 +148,26 @@ html.cs-sans-defilement, html.cs-sans-defilement body {
 
 /* ---- Roulette ----
    La case de CINQ sert de fenetre : on ne voit qu'un mot a la fois. Elle coupe
-   en haut et en bas seulement — sur les cotes elle laisse depasser les mots
-   plus longs que CINQ (QUATRE fait 1,7 fois sa largeur).
-
-   Tant que la roulette tourne, la case est au centre de l'ecran : son centre
-   est a 13,81 % du lockup, le centre du lockup a 50 %, d'ou un decalage de
-   36,19 % de la largeur du lockup (et non de la case : voir --cs-logo-w). */
+   en haut et en bas seulement — a gauche elle laisse depasser les mots plus
+   longs que CINQ (QUATRE fait 1,7 fois sa largeur). */
 .cs-loader__mot--cinq {
-  clip-path: inset(0 -200% 0 -200%);
+  clip-path: inset(0 0 0 -200%);
   opacity: 0;
-  transform: translateX(calc(var(--cs-logo-w) * 0.3619));
-  transition:
-    opacity var(--cs-loader-apparition, 250ms) var(--cs-ease-out),
-    transform var(--cs-loader-jonction, 650ms) var(--cs-ease-in-out);
+  transition: opacity var(--cs-loader-apparition, 250ms) var(--cs-ease-out);
 }
 .cs-loader[data-visible] .cs-loader__mot--cinq { opacity: 1; }
-.cs-loader[data-joint] .cs-loader__mot--cinq { transform: translateX(0); }
+
+/* Tant que la roulette tourne, c'est le logotype ENTIER qui est decale pour
+   amener la case de CINQ au centre de l'ecran : son centre est a 13,81 % du
+   lockup, celui du lockup a 50 %, d'ou 36,19 % de sa largeur. A la jonction le
+   logotype revient d'un bloc a sa place : CINQ et SEPTEMBRE se deplacent
+   ensemble, a distance constante, et ne peuvent donc pas se chevaucher.
+   (Si CINQ glissait seul, il traverserait la zone ou SEPTEMBRE se devoile.) */
+.cs-loader__logo {
+  transform: translateX(36.19%);
+  transition: transform var(--cs-loader-jonction, 650ms) var(--cs-ease-in-out);
+}
+.cs-loader[data-joint] .cs-loader__logo { transform: translateX(0); }
 
 /* La bande monte d'un cran a la fois : --cs-i est le numero du mot affiche.
    Un cran = 120 % de la hauteur, pour qu'aucun mot voisin n'affleure au bord. */
@@ -174,17 +178,16 @@ html.cs-sans-defilement, html.cs-sans-defilement body {
   transition: transform var(--cs-loader-pas, 220ms) var(--cs-ease-in-out);
   will-change: transform;
 }
-/* Chaque mot est centre dans la case. CINQ, qui la remplit exactement, tombe
-   donc pile a sa place dans le logotype. */
+/* Chaque mot est cale a droite : son bord droit, celui qui fera face a
+   SEPTEMBRE, ne bouge pas d'un mot a l'autre. */
 .cs-loader__chiffre {
   position: absolute;
-  left: 50%;
+  right: 0;
   top: calc(var(--cs-k, 0) * 120%);
   height: 100%;
-  transform: translateX(-50%);
 }
 
-/* ---- SEPTEMBRE : devoile de gauche a droite pendant que CINQ se decale ---- */
+/* ---- SEPTEMBRE : devoile de gauche a droite pendant que le logotype glisse ---- */
 .cs-loader__mot--septembre {
   clip-path: inset(0 100% 0 0);
   transition: clip-path var(--cs-loader-jonction, 650ms) var(--cs-ease-in-out);
@@ -203,7 +206,7 @@ html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
    forme), simple fondu */
 @media (prefers-reduced-motion: reduce) {
   .cs-loader__mot--cinq { transition: opacity 200ms var(--cs-ease-out); }
-  .cs-loader__mot--septembre { transition: none; }
+  .cs-loader__logo, .cs-loader__mot--septembre { transition: none; }
   .cs-loader__bande { transition: none; }
 }
 
