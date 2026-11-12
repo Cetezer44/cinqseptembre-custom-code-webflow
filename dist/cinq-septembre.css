@@ -499,36 +499,48 @@ html:not([data-cs-vue]) .cs-liste {
 .cs-curseur__int {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: -8px 0 0 -8px;          /* centre le rond de 16 px sur le pointeur */
-  font-size: 12px;
+  gap: 9px;
+  margin: -10px 0 0 -10px;        /* centre le rond de 20 px sur le pointeur */
+  font-size: 14px;
   line-height: 1;
   white-space: nowrap;
   opacity: 0;
   transform: scale(0.9);
-  transform-origin: 8px 8px;
+  transform-origin: 10px 10px;
   transition: opacity 150ms var(--cs-ease-out), transform 150ms var(--cs-ease-out);
 }
 .cs-curseur.is-visible .cs-curseur__int { opacity: 1; transform: scale(1); }
-.cs-curseur__rond { display: block; flex: none; }
+.cs-curseur__rond { display: block; flex: none; width: 20px; height: 20px; }
+/* le trait garde 1 px d'epaisseur quelle que soit la taille du rond */
+.cs-curseur__rond * { vector-effect: non-scaling-stroke; }
 
-/* Le cercle se trace quand le curseur apparait : depart en haut, sens des
-   aiguilles d'une montre. Il s'efface vite en sortant, pour se retracer en
-   entier sur la carte suivante. */
+/* Le cercle se construit puis se defait, en boucle, tant que le curseur est
+   visible. Depart en haut, sens des aiguilles d'une montre. Le trait se pilote
+   de 0 a 1 (pathLength="1") :
+     decalage  1 -> 0   le trait avance : le cercle se construit
+     decalage  0 -> -1  le debut du trait rattrape la fin : le cercle se defait
+   Les deux phases tournent dans le meme sens, la boucle se raccorde sans saut. */
 .cs-curseur__trace {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   transition: stroke-dashoffset 150ms var(--cs-ease-out);
 }
 .cs-curseur.is-visible .cs-curseur__trace {
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 700ms var(--cs-ease-in-out) 80ms;
+  animation: cs-curseur-cercle 2400ms var(--cs-ease-in-out) 80ms infinite both;
+}
+@keyframes cs-curseur-cercle {
+  0%   { stroke-dashoffset: 1; }
+  42%  { stroke-dashoffset: 0; }       /* construit */
+  54%  { stroke-dashoffset: 0; }       /* court temps d'arret, cercle plein */
+  96%  { stroke-dashoffset: -1; }      /* defait */
+  100% { stroke-dashoffset: -1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .cs-liste__img { transition: none; }
   .cs-curseur__int { transition: opacity 150ms ease; transform: none; }
-  .cs-curseur__trace { stroke-dashoffset: 0; transition: none; }
+  .cs-curseur__trace,
+  .cs-curseur.is-visible .cs-curseur__trace { stroke-dashoffset: 0; transition: none; animation: none; }
 }
 
 /* ---------- 07-contact.css ---------- */
@@ -726,6 +738,7 @@ html:not([data-cs-vue]) .cs-liste {
   font-size: 21px;
   line-height: 33px;
   font-weight: 300;
+  text-transform: uppercase;
 }
 .cs-archive__focus-type,
 .cs-archive__focus-annee {
