@@ -57,8 +57,13 @@
 /* Puis se rejoignent sur la position finale du logo */
 .cs-loader[data-joint] .cs-loader__mot { transform: translateX(0); }
 
-/* Tant que le loader est la, rien ne defile derriere */
+/* Tant que le loader est la, rien ne defile derriere.
+   Le fond blanc et le masquage du contenu sont poses des la lecture du Head,
+   par le court script en ligne de Webflow : la page ne peut donc jamais
+   apparaitre avant le voile, meme si le fichier principal tarde a arriver. */
 html.cs-loader-actif, html.cs-loader-actif body { overflow: hidden; }
+html.cs-loader-actif { background-color: var(--cs-blanc); }
+html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
 
 /* Mouvement reduit : pas de course, un simple fondu sur le logo deja assemble */
 @media (prefers-reduced-motion: reduce) {

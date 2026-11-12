@@ -8,20 +8,24 @@
    Reglages : CS.config.loader (01-core.js). */
 (function () {
   var C = CS.config.loader;
-  if (!C.actif) return;
-  if (C.pages && C.pages.length && C.pages.indexOf(CS.page) === -1) return;
-  if (C.pages === null) return;
+
+  /* Le Head a pu masquer la page en prevision du loader : quoi qu'il arrive
+     ensuite, c'est a nous de la redonner a voir. */
+  function rendreLaPage() {
+    document.documentElement.classList.remove('cs-loader-actif');
+  }
+
+  if (!C.actif) { rendreLaPage(); return; }
+  if (!C.pages || C.pages.indexOf(CS.page) === -1) { rendreLaPage(); return; }
 
   var CLE = 'cs-loader-vu';
   if (C.uneFoisParSession) {
     try {
-      if (sessionStorage.getItem(CLE)) return;
+      if (sessionStorage.getItem(CLE)) { rendreLaPage(); return; }
       sessionStorage.setItem(CLE, '1');
     } catch (e) { /* navigation privee : le loader passera a chaque fois */ }
   }
 
-  /* Le voile est pose tout de suite, avant le premier rendu, pour qu'aucune
-     portion de la page n'apparaisse avant lui. */
   document.documentElement.classList.add('cs-loader-actif');
 
   var voile = document.createElement('div');
@@ -59,7 +63,7 @@
     }
 
     voile.setAttribute('data-fini', '');        // le voile s'efface
-    document.documentElement.classList.remove('cs-loader-actif');
+    rendreLaPage();
     document.dispatchEvent(new CustomEvent('cs:loader-fini'));
 
     await CS.attendre(C.sortie);
