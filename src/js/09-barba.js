@@ -91,6 +91,19 @@
           name: 'contact-ouvre',
           sync: true,
           to: { namespace: ['contact'] },
+          /* Avant que le rideau parte : la page en place est contenue sous lui
+             (voir .cs-sous-rideau), et le logo central de l'accueil s'efface. */
+          beforeLeave: function (data) {
+            /* En mode sync, Barba a deja insere Contact dans le document : on
+               le referme tout de suite, sinon le panneau noir s'afficherait
+               en entier pendant que le logo s'efface. */
+            var suivante = data.next && data.next.container;
+            if (suivante) { if (CS.reduit()) suivante.style.opacity = 0; else suivante.style.clipPath = FERME; }
+            var page = data.current.container;
+            page.classList.add('cs-sous-rideau');
+            var logo = page.querySelector('.cs-collage-logo');
+            if (logo) return fondre(logo, 1, 0, T.logo);
+          },
           leave: function () {},
           beforeEnter: function (data) {
             CS.navigationInterne = true;
@@ -112,13 +125,15 @@
           from: { namespace: ['contact'] },
           beforeEnter: function (data) {
             CS.navigationInterne = true;
+            data.next.container.classList.add('cs-sous-rideau');
             majDocument(data);
             CS.entrer(data.next.container);
           },
           leave: function (data) { return rideau(data.current.container, OUVERT, FERME); },
           enter: function () {},
-          after: function () {
+          after: function (data) {
             CS.sortir();                               // Contact
+            data.next.container.classList.remove('cs-sous-rideau');
             relancerWebflow();
           }
         }, {

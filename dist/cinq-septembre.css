@@ -218,7 +218,7 @@ html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
   padding: 0 4px;
   color: #fff;
   mix-blend-mode: difference;
-  font-size: 7px;
+  font-size: 12px;
   line-height: 1;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -389,9 +389,9 @@ html:not([data-cs-vue]) .cs-liste {
 .cs-curseur__int {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin: -8px 0 0 -8px;          /* centre le rond de 16 px sur le pointeur */
-  font-size: 7px;
+  font-size: 12px;
   line-height: 1;
   white-space: nowrap;
   opacity: 0;
@@ -467,6 +467,16 @@ html:not([data-cs-vue]) .cs-liste {
 /* Petit ecran : memes marges que la navigation */
 @media (max-width: 767px) {
   .cs-vue-bascule { right: 16px; }
+}
+
+/* Pendant le rideau, la page qui reste dessous est contenue dans son propre
+   plan : ses elements fixes a z-index eleve (logo central, bouton de vue,
+   curseur) ne peuvent plus passer par-dessus le panneau noir. isolation garde
+   leurs fusions (mix-blend-mode) a l'interieur de la page, ou elles etaient. */
+.cs-sous-rideau {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
 }
 
 /* ---------- 08-archive.css ---------- */
@@ -599,8 +609,8 @@ html:not([data-cs-vue]) .cs-liste {
 .cs-archive__focus-type,
 .cs-archive__focus-annee {
   margin: 0;
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 300;
 }
 .cs-archive__focus-type { margin-top: 25px; }

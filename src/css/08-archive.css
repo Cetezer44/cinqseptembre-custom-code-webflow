@@ -127,8 +127,8 @@
 .cs-archive__focus-type,
 .cs-archive__focus-annee {
   margin: 0;
-  font-size: 11px;
-  line-height: 14px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 300;
 }
 .cs-archive__focus-type { margin-top: 25px; }

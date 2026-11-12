@@ -150,6 +150,7 @@ CS.config = {
        quand on quitte la page. Meme duree et meme courbe que la descente de
        la barre de navigation (01-base.css), pour qu'ils bougent ensemble. */
     rideau: 900,                   // ms
+    logo: 200,                     // ms — le logo central de l'accueil s'efface avant le rideau
     /* Pages chargees normalement, sans transition : les pages de projet
        embarquent encore leur propre script, que Barba n'executerait pas. */
     exclure: [/^\/projets\/.+/]

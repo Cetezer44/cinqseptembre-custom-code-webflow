@@ -128,9 +128,9 @@ html:not([data-cs-vue]) .cs-liste {
 .cs-curseur__int {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin: -8px 0 0 -8px;          /* centre le rond de 16 px sur le pointeur */
-  font-size: 7px;
+  font-size: 12px;
   line-height: 1;
   white-space: nowrap;
   opacity: 0;
