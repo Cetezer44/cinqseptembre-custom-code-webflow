@@ -54,15 +54,14 @@ html.cs-sans-defilement, html.cs-sans-defilement body {
 
 /* ---------- 04-loader.css ---------- */
 /* ===== Loader =====
-   Fond clair, les deux mots du logotype arrivent ecartes puis se rapprochent
-   jusqu'a former le logo exact de l'accueil, a la meme place et a la meme taille.
+   Fond clair. Le logotype est a la place et a la taille exactes du logo de
+   l'accueil ; SEPTEMBRE ne bouge pas. Dans la case de CINQ, une bande de mots
+   (UN, DEUX, TROIS, QUATRE, CINQ) monte cran par cran et s'arrete sur CINQ.
    Le voile s'efface ensuite : le logo semble rester en place.
 
-   Geometrie reprise de la maquette (lockup de 257,82 px de large) :
-     CINQ      = 70,91 px  ->  27,50 % du lockup
-     SEPTEMBRE = 175,26 px ->  67,98 % du lockup
-     ecart final = 11,65 px, ecart au depart = 172,10 px
-     course de chaque mot = (172,10 - 11,65) / 2 = 80,22 px -> 31,12 % du lockup */
+   Geometrie reprise de la maquette (lockup de 257,82 x 36,02 px) :
+     CINQ      -> 27,62 % du lockup, a gauche
+     SEPTEMBRE -> 68,32 % du lockup, a droite */
 .cs-loader {
   position: fixed;
   inset: 0;
@@ -95,25 +94,34 @@ html.cs-sans-defilement, html.cs-sans-defilement body {
   top: 0;
   height: 100%;
   opacity: 0;
-  transition:
-    opacity var(--cs-loader-apparition, 400ms) var(--cs-ease-out),
-    transform var(--cs-loader-course, 900ms) var(--cs-ease-out);
+  transition: opacity var(--cs-loader-apparition, 400ms) var(--cs-ease-out);
 }
 .cs-loader__mot svg { display: block; width: 100%; height: 100%; }
-
-/* La course se mesure sur le lockup, pas sur le mot : un pourcentage dans
-   translateX() se rapporterait a la largeur de l'element lui-meme, et les deux
-   mots ne parcourraient pas la meme distance. */
-.cs-loader__logo { --cs-course-x: calc(var(--cs-logo-w) * 0.3112); }
-
-.cs-loader__mot--cinq      { left: 0;  width: 27.62%; transform: translateX(calc(-1 * var(--cs-course-x))); }
-.cs-loader__mot--septembre { right: 0; width: 68.32%; transform: translateX(var(--cs-course-x)); }
-
-/* Les mots apparaissent, ecartes */
+.cs-loader__mot--cinq      { left: 0;  width: 27.62%; }
+.cs-loader__mot--septembre { right: 0; width: 68.32%; }
 .cs-loader[data-visible] .cs-loader__mot { opacity: 1; }
 
-/* Puis se rejoignent sur la position finale du logo */
-.cs-loader[data-joint] .cs-loader__mot { transform: translateX(0); }
+/* ---- Roulette ----
+   La case de CINQ sert de fenetre : on ne voit qu'un mot a la fois. Elle coupe
+   en haut et en bas seulement — a gauche elle laisse depasser les mots plus
+   longs que CINQ (QUATRE fait 1,7 fois sa largeur). */
+.cs-loader__mot--cinq { clip-path: inset(0 0 0 -200%); }
+
+/* La bande monte d'un cran a la fois : --cs-i est le numero du mot affiche.
+   Un cran = 120 % de la hauteur, pour qu'aucun mot voisin n'affleure au bord. */
+.cs-loader__bande {
+  position: absolute;
+  inset: 0;
+  transform: translateY(calc(var(--cs-i, 0) * -120%));
+  transition: transform var(--cs-loader-pas, 380ms) var(--cs-ease-in-out);
+  will-change: transform;
+}
+.cs-loader__chiffre {
+  position: absolute;
+  right: 0;                                   /* cale contre SEPTEMBRE */
+  top: calc(var(--cs-k, 0) * 120%);
+  height: 100%;
+}
 
 /* Tant que le loader est la, rien ne defile derriere.
    Le fond blanc et le masquage du contenu sont poses des la lecture du Head,
@@ -123,12 +131,10 @@ html.cs-loader-actif, html.cs-loader-actif body { overflow: hidden; }
 html.cs-loader-actif { background-color: var(--cs-blanc); }
 html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
 
-/* Mouvement reduit : pas de course, un simple fondu sur le logo deja assemble */
+/* Mouvement reduit : pas de roulette (le JS affiche directement CINQ), simple fondu */
 @media (prefers-reduced-motion: reduce) {
-  .cs-loader__mot {
-    transform: none !important;
-    transition: opacity 200ms var(--cs-ease-out);
-  }
+  .cs-loader__mot { transition: opacity 200ms var(--cs-ease-out); }
+  .cs-loader__bande { transition: none; }
 }
 
 /* ---------- 05-collage.css ---------- */
@@ -189,6 +195,7 @@ html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
 .cs-collage__case {
   position: absolute;
   display: block;
+  will-change: transform;        /* flottement a la souris */
   overflow: hidden;
   background-color: #f4f4f4;
 }

@@ -42,6 +42,7 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
   var camX = 0, camY = 0, cibleX = 0, cibleY = 0;
   var anime = false, vivant = true;
   var focusOuvert = false;
+  var FL = CS.config.flottement, flX = 0, flY = 0;     // flottement a la souris, en px
 
   racine = document.createElement('div');
   racine.className = 'cs-archive';
@@ -110,8 +111,10 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
           t.setAttribute('aria-label', ref.nom);
         }
       }
-      t._x = ox + c * px - camX;
-      t._y = oy + r * py - camY;
+      /* flottement : chaque case de la trame a sa profondeur, fixe */
+      var pf = FL.profondeurs[mod(c * 3 + r * 5, FL.profondeurs.length)];
+      t._x = ox + c * px - camX + flX * pf;
+      t._y = oy + r * py - camY + flY * pf;
       t.style.transform = 'translate3d(' + t._x.toFixed(1) + 'px,' + t._y.toFixed(1) + 'px,0)';
     }
   }
@@ -127,6 +130,14 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
   function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
 
   mesurer();
+
+  /* Flottement a la souris — fige pendant le focus, pour que l'image agrandie
+     retrouve sa case la ou elle l'a quittee. */
+  CS.flottement(ctx, function (fx, fy) {
+    if (focusOuvert) return;
+    flX = -fx * FL.amplitude; flY = -fy * FL.amplitude;
+    placer();
+  });
 
   /* ---- Deplacement ----
      Pendant qu'on tire, la trame suit le pointeur a l'identique (pas de

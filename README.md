@@ -122,3 +122,14 @@ Les pages de projet (`/projets/...`) sont exclues des transitions
 | `07-contact` | contact | Curseur « Fermer », fermeture |
 | `08-archive` | archive | Mosaique infinie (collection Bibliotheque) + focus |
 | `09-barba` | toutes | Demarrage et transitions de page |
+
+## Mots de la roulette du loader
+
+Le logotype est compose en Instrument Serif (licence SIL OFL 1.1) avec un
+interlettrage de 45/1000. Les mots UN, DEUX, TROIS et QUATRE du loader sont
+traces dans cette police, a la meme echelle et sur la meme ligne de base que
+le CINQ du logo, puis livres en contours SVG (`src/svg/`). Pour les regenerer
+ou en ajouter :
+
+    npm pack @fontsource/instrument-serif && tar xzf fontsource-instrument-serif-*.tgz
+    python3 tools/tracer-mots.py package/files/instrument-serif-latin-400-italic.woff

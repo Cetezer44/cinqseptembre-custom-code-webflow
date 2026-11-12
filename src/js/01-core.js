@@ -8,20 +8,34 @@ window.CS = window.CS || {};
    Partages par le loader et par le logo fixe du collage. */
 CS.svg = {
   cinq:      /*@include:svg/cinq.svg*/'',
-  septembre: /*@include:svg/septembre.svg*/''
+  septembre: /*@include:svg/septembre.svg*/'',
+  /* Mots de la roulette du loader, traces dans la police du logotype
+     (tools/tracer-mots.py) : meme echelle, meme ligne de base que CINQ. */
+  un:        /*@include:svg/un.svg*/'',
+  deux:      /*@include:svg/deux.svg*/'',
+  trois:     /*@include:svg/trois.svg*/'',
+  quatre:    /*@include:svg/quatre.svg*/''
 };
 
 CS.config = {
+  /* ---- Loader : roulette UN, DEUX, TROIS, QUATRE -> CINQ ----
+     A la place de CINQ, les mots defilent vers le haut l'un apres l'autre, comme
+     un compteur, et s'arretent sur CINQ : le logotype est alors forme, a la
+     place exacte du logo de l'accueil, et le voile s'efface. */
   loader: {
     actif: true,
     pages: ['accueil'],   // pages ou le loader apparait ; [] = partout, null = nulle part
-    uneFoisParSession: true,
-    apparition: 400,      // ms — les deux mots apparaissent, ecartes
-    pause: 300,           // ms — temps d'arret avant le rapprochement
-    course: 900,          // ms — les mots se rejoignent
-    repos: 250,           // ms — temps d'arret une fois le logo forme
+    uneFoisParSession: false,   // false = a chaque chargement de la page (pas aux retours par transition)
+    mots: ['un', 'deux', 'trois', 'quatre', 'cinq'],   // cles de CS.svg, dans l'ordre ; le dernier reste
+    apparition: 400,      // ms — le logotype apparait, sur le premier mot
+    pause: 250,           // ms — temps d'arret avant le premier cran
+    pas: 380,             // ms — duree d'un cran de roulette
+    pasPause: 90,         // ms — arret sur chaque mot
+    pasDernier: 520,      // ms — le dernier cran, celui qui amene CINQ, un peu plus pose
+    repos: 300,           // ms — temps d'arret une fois le logo forme
     sortie: 500           // ms — disparition du voile
   },
+
 
   /* ---- Collage en defilement infini (accueil + page Projets) ----
      Le motif et les 11 emplacements sont repris au pixel de la maquette
@@ -141,6 +155,19 @@ CS.config = {
     libelleFermer: 'Fermer'
   },
 
+  /* ---- Flottement a la souris ----
+     Sur les mosaiques, chaque image se decale de quelques pixels a l'oppose du
+     pointeur. Chacune a sa « profondeur » : c'est l'ecart entre elles qui donne
+     l'impression de flotter, pas le deplacement lui-meme. Souris uniquement,
+     et rien si l'utilisateur prefere moins de mouvement. */
+  flottement: {
+    actif: true,
+    pages: ['accueil', 'projets', 'archives'],
+    amplitude: 12,                 // px — decalage maximal, pointeur au bord de l'ecran
+    souplesse: 0.06,               // amorti : 0,03 tres flottant, 0,15 nerveux
+    profondeurs: [0.55, 1, 0.8, 0.45, 0.7, 1, 0.6, 0.9, 0.5, 0.85, 0.65]   // part de l'amplitude, image par image
+  },
+
   /* ---- Transitions de page (Barba) ---- */
   transitions: {
     actif: true,
@@ -241,6 +268,39 @@ CS.entrer = function (conteneur) {
 CS.sortir = function () {
   var n = CS._pages.shift() || [];
   n.forEach(function (fn) { try { fn(); } catch (e) {} });
+};
+
+/* ---- Flottement a la souris ----
+   Suit le pointeur avec un amorti et appelle appliquer(x, y) tant que la valeur
+   bouge ; x et y vont de -1 (bord gauche / haut) a 1 (bord droit / bas).
+   Le module appelant decide quoi deplacer. Rend null si l'effet ne s'applique
+   pas (pas de souris, mouvement reduit, page non concernee). */
+CS.flottement = function (ctx, appliquer) {
+  var F = CS.config.flottement;
+  if (!F || !F.actif || F.pages.indexOf(ctx.page) === -1) return null;
+  if (!CS.sourisFine() || CS.reduit()) return null;
+  var vx = 0, vy = 0, x = 0, y = 0, enCours = false, vivant = true;
+  function boucle() {
+    enCours = false;
+    if (!vivant) return;
+    x += (vx - x) * F.souplesse;
+    y += (vy - y) * F.souplesse;
+    var pose = Math.abs(vx - x) < 0.0005 && Math.abs(vy - y) < 0.0005;
+    if (pose) { x = vx; y = vy; }
+    appliquer(x, y);
+    if (!pose) lancer();
+  }
+  function lancer() { if (!enCours) { enCours = true; requestAnimationFrame(boucle); } }
+  ctx.ecoute(window, 'pointermove', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    vx = e.clientX / window.innerWidth * 2 - 1;
+    vy = e.clientY / window.innerHeight * 2 - 1;
+    lancer();
+  }, { passive: true });
+  /* le pointeur quitte la fenetre : tout revient doucement a sa place */
+  ctx.ecoute(document.documentElement, 'pointerleave', function () { vx = 0; vy = 0; lancer(); });
+  ctx.aLaSortie(function () { vivant = false; });
+  return true;
 };
 
 /* ---- Curseur personnalise (souris uniquement) ----

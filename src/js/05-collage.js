@@ -164,7 +164,7 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
         a._zoom = a._zoom || 1;
         if (Math.abs(vz - a._zoom) > 0.0005) { a._zoom += (vz - a._zoom) * kz; zoomEnCours = true; } else a._zoom = vz;
         if (y + h < 0 || y > vh) { if (a.hasAttribute('data-gl')) a.removeAttribute('data-gl'); return; }
-        liste.push({ cle: a, url: a._src, x: xMotif + c.x / C.motif.w * lMotif, y: y, w: c.w / C.motif.w * lMotif, h: h, zoom: a._zoom });
+        liste.push({ cle: a, url: a._src, x: xMotif + c.x / C.motif.w * lMotif + (a._fx || 0), y: y + (a._fy || 0), w: c.w / C.motif.w * lMotif, h: h, zoom: a._zoom });
       });
     });
 
@@ -259,6 +259,22 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
   ctx.ecoute(window, 'resize', function () {
     clearTimeout(t); t = setTimeout(mesurer, 150);
   }, { passive: true });
+
+  /* ---- Flottement a la souris ----
+     Le decalage est pose sur chaque case (le lien), donc la zone de clic et le
+     nom au survol suivent ; le calque WebGL lit le meme decalage. */
+  var FL = CS.config.flottement;
+  CS.flottement(ctx, function (fx, fy) {
+    motifs.forEach(function (m) {
+      Array.prototype.forEach.call(m.children, function (a, i) {
+        var p = FL.profondeurs[i % FL.profondeurs.length];
+        a._fx = -fx * FL.amplitude * p;
+        a._fy = -fy * FL.amplitude * p;
+        a.style.transform = 'translate3d(' + a._fx.toFixed(2) + 'px,' + a._fy.toFixed(2) + 'px,0)';
+      });
+    });
+    demanderRendu();
+  });
 
   /* ---- Logo fixe au centre, en difference (accueil) ---- */
   if (C.logoPages && C.logoPages.indexOf(ctx.page) !== -1) {

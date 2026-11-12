@@ -55,6 +55,7 @@
 .cs-collage__case {
   position: absolute;
   display: block;
+  will-change: transform;        /* flottement a la souris */
   overflow: hidden;
   background-color: #f4f4f4;
 }
