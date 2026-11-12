@@ -222,3 +222,152 @@ html.cs-loader-actif body > *:not(.cs-loader) { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .cs-collage__img { transition: none; }
 }
+
+/* ---------- 06-liste.css ---------- */
+/* ===== Page Projets : vue liste et bascule grille / liste =====
+   html[data-cs-vue] porte la vue en cours. La vue inactive reste dans le DOM
+   (les images sont deja chargees quand on bascule) mais elle est invisible,
+   inerte, et ne recoit plus aucun evenement. */
+
+/* ---- Fondu entre les deux vues ---- */
+.cs-page-projets .cs-collage,
+.cs-liste {
+  transition: opacity 250ms var(--cs-ease-out), visibility 0s linear 0s;
+}
+html[data-cs-vue="liste"] .cs-collage,
+html[data-cs-vue="grille"] .cs-liste,
+html:not([data-cs-vue]) .cs-liste {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 250ms var(--cs-ease-out), visibility 0s linear 250ms;
+}
+
+/* ---- Bande de cartes ---- */
+.cs-liste {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--cs-blanc);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.cs-liste.is-tire { cursor: grabbing; }
+
+.cs-liste__carte {
+  position: absolute;
+  left: 0;
+  bottom: var(--cs-liste-bas, 14px);
+  width: var(--cs-carte-w);
+  color: var(--cs-noir);
+  text-decoration: none;
+  will-change: transform;
+  -webkit-user-drag: none;
+}
+.cs-liste__int { display: block; }
+
+/* Nom au-dessus de la carte : 8 px, comme la navigation */
+.cs-liste__nom {
+  display: block;
+  padding: 0 0 9px 2px;
+  font-size: 8px;
+  line-height: 15px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cs-liste__cadre {
+  display: block;
+  height: var(--cs-carte-h);
+  overflow: hidden;
+  background-color: #f4f4f4;
+}
+.cs-liste__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  transition: transform 900ms var(--cs-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .cs-liste__cadre { cursor: none; }
+  .cs-liste.is-tire .cs-liste__cadre { cursor: grabbing; }
+  .cs-liste__carte:hover .cs-liste__img { transform: scale(1.03); }
+}
+
+/* Entree des cartes a l'ouverture de la vue : elles montent de quelques pixels,
+   l'une apres l'autre de gauche a droite. Le transform de position est sur la
+   carte, celui d'entree sur son contenu : les deux ne se marchent pas dessus. */
+.cs-liste[data-etat="avant"] .cs-liste__int {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.cs-liste[data-etat="entree"] .cs-liste__int {
+  transition:
+    opacity 400ms var(--cs-ease-out) calc(var(--cs-i, 0) * 50ms),
+    transform 700ms var(--cs-ease-out) calc(var(--cs-i, 0) * 50ms);
+}
+
+/* ---- Bouton de bascule, fixe a droite, a mi-hauteur ---- */
+.cs-vue-bascule {
+  position: fixed;
+  top: 50%;
+  right: 29px;
+  transform: translateY(-50%);
+  z-index: 900;
+  margin: 0;
+  padding: 12px 0 12px 12px;      /* zone de clic plus large que le texte */
+  border: 0;
+  background: none;
+  color: #fff;
+  mix-blend-mode: difference;
+  font: inherit;
+  font-size: 8px;
+  line-height: 16px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+}
+.cs-vue-bascule:focus-visible { outline: 1px solid currentColor; outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .cs-vue-bascule:hover { opacity: 0.5; }
+}
+
+/* ---- Curseur « Decouvrir » ----
+   L'element suit le pointeur (transform pose par le JS) ; l'apparition est
+   jouee sur son contenu pour ne pas se melanger au suivi. */
+.cs-curseur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 950;
+  pointer-events: none;
+  color: #fff;
+  mix-blend-mode: difference;
+}
+.cs-curseur__int {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -8px 0 0 -8px;          /* centre le rond de 16 px sur le pointeur */
+  font-size: 7px;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  transform: scale(0.9);
+  transform-origin: 8px 8px;
+  transition: opacity 150ms var(--cs-ease-out), transform 150ms var(--cs-ease-out);
+}
+.cs-curseur.is-visible .cs-curseur__int { opacity: 1; transform: scale(1); }
+.cs-curseur__rond { display: block; flex: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-liste__img { transition: none; }
+  .cs-curseur__int { transition: opacity 150ms ease; transform: none; }
+}

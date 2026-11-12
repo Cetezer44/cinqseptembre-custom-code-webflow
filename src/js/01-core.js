@@ -35,9 +35,11 @@ CS.config = {
        liste soit liee a « Projets », l'image au champ « Image mosaique 1 »,
        le lien a la page du projet, et que le lien porte un attribut
        data-nom contenant le Name. */
-    source: '.canvas-content, .cs-source',
-    item: '.canvas-item__link, .cs-source__item',
-    logo: true,                    // logo fixe au centre (false sur la page Projets)
+    source: '.canvas-content, .collection-list-projet, .cs-source',
+    item: '.canvas-item__link, .item-projet, .cs-source__item',
+    nom: '.projet-name-cat, [data-cs-nom]',   // element portant le nom, a defaut de data-nom
+    cadre: '.infinite-canvas, .container-projets',  // bloc d'origine a masquer
+    logoPages: ['accueil'],        // logo fixe au centre : accueil seulement
 
     motif: { w: 1206, h: 3249 },
     /* Espace vertical ajoute entre deux repetitions. Sans lui, la derniere
@@ -67,8 +69,29 @@ CS.config = {
       { x: 965, y: 2664, w: 164, h: 227 },
       { x: 166, y: 2957, w: 259, h: 292 }
     ]
+  },
+
+  /* ---- Page Projets : vue liste + bascule grille / liste ----
+     Bande horizontale de grandes cartes, en defilement infini, calee en bas
+     de l'ecran. Mesures reprises de la maquette (cadre de 1440 x 1024). */
+  liste: {
+    pages: ['projets'],
+    vueParDefaut: 'grille',        // 'grille' ou 'liste'
+    memoriser: true,               // retient la vue le temps de la session
+    carte: { w: 436, h: 628 },     // proportions d'une carte
+    partHauteur: 0.6133,           // 628 / 1024 : hauteur de carte / hauteur d'ecran
+    ecart: 10,                     // px entre deux cartes
+    bas: 14,                       // px sous les cartes
+    decalage: -0.28,               // la premiere carte depasse a gauche de 28 % de sa largeur
+    vitesse: 1,
+    vitesseTactile: 1.6,
+    souplesse: 0.1,
+    seuilClic: 8,
+    libelles: { versListe: 'Vue liste', versGrille: 'Vue grille', curseur: 'D\u00e9couvrir' }
   }
 };
+
+
 
 /* ---- Utilitaires ---- */
 CS.reduit = function () {
@@ -101,3 +124,6 @@ CS.page = (function () {
 })();
 
 document.documentElement.setAttribute('data-cs-page', CS.page);
+
+/* Classe de page sur <html> : permet a la CSS de cibler une page precise. */
+document.documentElement.classList.add('cs-page-' + CS.page);

@@ -40,9 +40,11 @@ CS.config = {
        liste soit liee a « Projets », l'image au champ « Image mosaique 1 »,
        le lien a la page du projet, et que le lien porte un attribut
        data-nom contenant le Name. */
-    source: '.canvas-content, .cs-source',
-    item: '.canvas-item__link, .cs-source__item',
-    logo: true,                    // logo fixe au centre (false sur la page Projets)
+    source: '.canvas-content, .collection-list-projet, .cs-source',
+    item: '.canvas-item__link, .item-projet, .cs-source__item',
+    nom: '.projet-name-cat, [data-cs-nom]',   // element portant le nom, a defaut de data-nom
+    cadre: '.infinite-canvas, .container-projets',  // bloc d'origine a masquer
+    logoPages: ['accueil'],        // logo fixe au centre : accueil seulement
 
     motif: { w: 1206, h: 3249 },
     /* Espace vertical ajoute entre deux repetitions. Sans lui, la derniere
@@ -72,8 +74,29 @@ CS.config = {
       { x: 965, y: 2664, w: 164, h: 227 },
       { x: 166, y: 2957, w: 259, h: 292 }
     ]
+  },
+
+  /* ---- Page Projets : vue liste + bascule grille / liste ----
+     Bande horizontale de grandes cartes, en defilement infini, calee en bas
+     de l'ecran. Mesures reprises de la maquette (cadre de 1440 x 1024). */
+  liste: {
+    pages: ['projets'],
+    vueParDefaut: 'grille',        // 'grille' ou 'liste'
+    memoriser: true,               // retient la vue le temps de la session
+    carte: { w: 436, h: 628 },     // proportions d'une carte
+    partHauteur: 0.6133,           // 628 / 1024 : hauteur de carte / hauteur d'ecran
+    ecart: 10,                     // px entre deux cartes
+    bas: 14,                       // px sous les cartes
+    decalage: -0.28,               // la premiere carte depasse a gauche de 28 % de sa largeur
+    vitesse: 1,
+    vitesseTactile: 1.6,
+    souplesse: 0.1,
+    seuilClic: 8,
+    libelles: { versListe: 'Vue liste', versGrille: 'Vue grille', curseur: 'D\u00e9couvrir' }
   }
 };
+
+
 
 /* ---- Utilitaires ---- */
 CS.reduit = function () {
@@ -106,6 +129,9 @@ CS.page = (function () {
 })();
 
 document.documentElement.setAttribute('data-cs-page', CS.page);
+
+/* Classe de page sur <html> : permet a la CSS de cibler une page precise. */
+document.documentElement.classList.add('cs-page-' + CS.page);
 
 /* ---------- 04-loader.js ---------- */
 /* ===== Loader =====
@@ -215,7 +241,8 @@ document.documentElement.setAttribute('data-cs-page', CS.page);
         src: img ? (img.currentSrc || img.src) : '',
         srcset: img ? img.getAttribute('srcset') : null,
         alt: img ? (img.getAttribute('alt') || '') : '',
-        nom: (el.dataset.nom || el.getAttribute('aria-label') || '').trim()
+        nom: (el.dataset.nom || el.getAttribute('aria-label') ||
+              ((C.nom && el.querySelector(C.nom)) || {}).textContent || '').trim()
       };
     }).filter(function (p) { return p.src; });
   }
@@ -323,6 +350,7 @@ document.documentElement.setAttribute('data-cs-page', CS.page);
     }, true);
 
     window.addEventListener('keydown', function (e) {
+      if (!CS.collage.actif) return;
       var pas = { ArrowUp: -120, ArrowDown: 120, PageUp: -600, PageDown: 600 }[e.key];
       if (pas === undefined) return;
       e.preventDefault(); cible += pas; relancer();
@@ -336,7 +364,7 @@ document.documentElement.setAttribute('data-cs-page', CS.page);
 
   /* ---- Logo fixe au centre, en difference ---- */
   function poserLogo() {
-    if (!C.logo) return;
+    if (!C.logoPages || C.logoPages.indexOf(CS.page) === -1) return;
     var d = document.createElement('div');
     d.className = 'cs-collage-logo';
     d.innerHTML =
@@ -353,7 +381,7 @@ document.documentElement.setAttribute('data-cs-page', CS.page);
        l'affichage, ainsi que l'ancien cadre de mosaique s'il est encore la. */
     var src = document.querySelector(C.source);
     if (src) {
-      var cadre = src.closest('.infinite-canvas') || src;
+      var cadre = (C.cadre && src.closest(C.cadre)) || src;
       cadre.style.display = 'none';
       cadre.setAttribute('aria-hidden', 'true');
     }
@@ -374,7 +402,232 @@ document.documentElement.setAttribute('data-cs-page', CS.page);
     mesurer();
     brancher();
     poserLogo();
+
+    /* Expose aux autres modules (vue liste de la page Projets) */
+    CS.collage.racine = racine;
+    CS.collage.projets = projets;
+    document.dispatchEvent(new CustomEvent('cs:collage-pret'));
   }
 
+  /* actif = false quand une autre vue a la main : le clavier ne pilote plus la grille */
+  CS.collage = { actif: true, racine: null, projets: [] };
+
   CS.pret(demarrer);
+})();
+
+/* ---------- 06-liste.js ---------- */
+/* ===== Page Projets : vue liste et bascule grille / liste =====
+   La vue liste est une bande horizontale de grandes cartes, en defilement
+   infini, alimentee par les memes projets que la grille (lus une seule fois
+   par le moteur de collage). Un bouton fixe a droite passe d'une vue a l'autre.
+
+   Les cartes sont posees une a une par transform : la bande n'a pas de largeur
+   reelle, chaque carte reboucle de l'autre cote quand elle sort de l'ecran.
+
+   Reglages : CS.config.liste (01-core.js). */
+(function () {
+  var L = CS.config.liste;
+  if (!L || L.pages.indexOf(CS.page) === -1) return;
+
+  var racine, cartes = [], projets = [], bouton, curseur;
+  var cible = 0, courant = 0, anime = false;
+  var largeur = 0, pas = 0, total = 0;
+  var vue = 'grille';
+  var CLE = 'cs-vue-projets';
+
+  /* ---- Memoire de la vue (le temps de la session) ---- */
+  function lireVue() {
+    if (L.memoriser) {
+      try { var v = sessionStorage.getItem(CLE); if (v === 'grille' || v === 'liste') return v; } catch (e) {}
+    }
+    return L.vueParDefaut === 'liste' ? 'liste' : 'grille';
+  }
+  function retenirVue(v) {
+    if (!L.memoriser) return;
+    try { sessionStorage.setItem(CLE, v); } catch (e) {}
+  }
+
+  /* ---- Construction ---- */
+  function creerCarte(p) {
+    var a = document.createElement('a');
+    a.className = 'cs-liste__carte';
+    a.href = p.href;
+    a.draggable = false;
+    a.innerHTML =
+      '<span class="cs-liste__int">' +
+        '<span class="cs-liste__nom"></span>' +
+        '<span class="cs-liste__cadre"><img class="cs-liste__img" alt="" loading="lazy" draggable="false"></span>' +
+      '</span>';
+    a.querySelector('.cs-liste__nom').textContent = p.nom;
+    var img = a.querySelector('img');
+    img.src = p.src;
+    if (p.srcset) img.srcset = p.srcset;
+    img.alt = p.alt || p.nom;
+    racine.appendChild(a);
+    return a;
+  }
+
+  /* Assez de cartes pour couvrir l'ecran plus une de marge de chaque cote :
+     avec peu de projets, la liste est repetee. */
+  function mesurer() {
+    var h = Math.round(window.innerHeight * L.partHauteur);
+    largeur = Math.round(h * L.carte.w / L.carte.h);
+    pas = largeur + L.ecart;
+    racine.style.setProperty('--cs-carte-w', largeur + 'px');
+    racine.style.setProperty('--cs-carte-h', h + 'px');
+    racine.style.setProperty('--cs-liste-bas', L.bas + 'px');
+
+    var besoin = Math.ceil((window.innerWidth + 2 * pas) / pas);
+    while (cartes.length < besoin || cartes.length % projets.length !== 0) {
+      cartes.push(creerCarte(projets[cartes.length % projets.length]));
+    }
+    total = cartes.length * pas;
+    placer();
+  }
+
+  function placer() {
+    var depart = L.decalage * largeur;
+    for (var i = 0; i < cartes.length; i++) {
+      var x = ((i * pas - courant) % total + total) % total;   // 0 .. total
+      if (x > total - pas) x -= total;                         // la derniere repasse a gauche
+      cartes[i]._x = x + depart;
+      cartes[i].style.transform = 'translate3d(' + (x + depart).toFixed(1) + 'px,0,0)';
+    }
+  }
+
+  function boucle() {
+    courant += (cible - courant) * L.souplesse;
+    if (Math.abs(cible - courant) < 0.1) { courant = cible; anime = false; }
+    placer();
+    if (anime) requestAnimationFrame(boucle);
+  }
+  function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
+
+  /* ---- Entrees ---- */
+  function brancher() {
+    racine.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      /* molette verticale ou geste horizontal du trackpad : le plus marque l'emporte */
+      var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      cible += d * (e.deltaMode === 1 ? 16 : 1) * L.vitesse;
+      relancer();
+    }, { passive: false });
+
+    var tireDepuis = null, deplace = 0;
+    racine.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      tireDepuis = e.clientX; deplace = 0;
+      racine.classList.add('is-tire');
+    });
+    racine.addEventListener('pointermove', function (e) {
+      if (tireDepuis === null) return;
+      var d = e.clientX - tireDepuis;
+      deplace += Math.abs(d);
+      cible -= d * L.vitesseTactile;
+      tireDepuis = e.clientX;
+      relancer();
+    });
+    function relacher() { tireDepuis = null; racine.classList.remove('is-tire'); }
+    racine.addEventListener('pointerup', relacher);
+    racine.addEventListener('pointercancel', relacher);
+    racine.addEventListener('click', function (e) {
+      if (deplace > L.seuilClic) { e.preventDefault(); e.stopPropagation(); }
+      deplace = 0;
+    }, true);
+    racine.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+    window.addEventListener('keydown', function (e) {
+      if (vue !== 'liste') return;
+      var d = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -1, ArrowDown: 1, PageUp: -3, PageDown: 3 }[e.key];
+      if (d === undefined) return;
+      e.preventDefault(); cible += d * pas; relancer();
+    });
+
+    var t;
+    window.addEventListener('resize', function () {
+      clearTimeout(t); t = setTimeout(mesurer, 150);
+    }, { passive: true });
+  }
+
+  /* ---- Curseur « Decouvrir » (souris uniquement) ---- */
+  function poserCurseur() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    curseur = document.createElement('div');
+    curseur.className = 'cs-curseur';
+    curseur.setAttribute('aria-hidden', 'true');
+    curseur.innerHTML =
+      '<span class="cs-curseur__int">' +
+        '<svg class="cs-curseur__rond" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor">' +
+          '<circle cx="8" cy="8" r="7" stroke-opacity=".35"/>' +
+          '<path d="M8 1a7 7 0 0 1 7 7" stroke-linecap="round"/>' +
+        '</svg>' +
+        '<span class="cs-curseur__texte"></span>' +
+      '</span>';
+    curseur.querySelector('.cs-curseur__texte').textContent = L.libelles.curseur;
+    document.body.appendChild(curseur);
+
+    /* Le transform est pose sur l'element lui-meme, a chaque mouvement : le
+       curseur doit coller au pointeur, sans lissage. */
+    racine.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      curseur.style.transform = 'translate3d(' + e.clientX + 'px,' + e.clientY + 'px,0)';
+      var sur = !!(e.target.closest && e.target.closest('.cs-liste__cadre'));
+      curseur.classList.toggle('is-visible', sur && !racine.classList.contains('is-tire'));
+    });
+    racine.addEventListener('pointerleave', function () { curseur.classList.remove('is-visible'); });
+  }
+
+  /* ---- Bascule ---- */
+  function entreeCartes() {
+    if (CS.reduit()) return;
+    /* Decalage d'entree de gauche a droite, sur les seules cartes visibles */
+    var visibles = cartes.filter(function (c) { return c._x < window.innerWidth && c._x + largeur > 0; })
+                         .sort(function (a, b) { return a._x - b._x; });
+    cartes.forEach(function (c) { c.style.removeProperty('--cs-i'); });
+    visibles.forEach(function (c, i) { c.style.setProperty('--cs-i', i); });
+    racine.dataset.etat = 'avant';
+    void racine.offsetWidth;            // fige l'etat de depart avant de lancer la transition
+    racine.dataset.etat = 'entree';
+  }
+
+  function appliquer(v, immediat) {
+    vue = v;
+    var grille = CS.collage && CS.collage.racine;
+    document.documentElement.setAttribute('data-cs-vue', v);
+    if (CS.collage) CS.collage.actif = (v === 'grille');
+    if (grille) { grille.inert = (v !== 'grille'); grille.setAttribute('aria-hidden', v !== 'grille'); }
+    racine.inert = (v !== 'liste');
+    racine.setAttribute('aria-hidden', v !== 'liste');
+    bouton.textContent = v === 'grille' ? L.libelles.versListe : L.libelles.versGrille;
+    if (curseur) curseur.classList.remove('is-visible');
+    if (v === 'liste' && !immediat) entreeCartes();
+  }
+
+  function demarrer() {
+    projets = (CS.collage && CS.collage.projets) || [];
+    if (!projets.length) return;
+
+    racine = document.createElement('div');
+    racine.className = 'cs-liste';
+    document.body.appendChild(racine);
+
+    bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'cs-vue-bascule';
+    bouton.addEventListener('click', function () {
+      var v = vue === 'grille' ? 'liste' : 'grille';
+      retenirVue(v);
+      appliquer(v, false);
+    });
+    document.body.appendChild(bouton);
+
+    mesurer();
+    brancher();
+    poserCurseur();
+    appliquer(lireVue(), true);
+  }
+
+  /* Le collage lit la liste CMS : on attend qu'il ait fini. */
+  if (CS.collage && CS.collage.racine) demarrer();
+  else document.addEventListener('cs:collage-pret', demarrer, { once: true });
 })();

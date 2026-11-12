@@ -29,7 +29,8 @@
         src: img ? (img.currentSrc || img.src) : '',
         srcset: img ? img.getAttribute('srcset') : null,
         alt: img ? (img.getAttribute('alt') || '') : '',
-        nom: (el.dataset.nom || el.getAttribute('aria-label') || '').trim()
+        nom: (el.dataset.nom || el.getAttribute('aria-label') ||
+              ((C.nom && el.querySelector(C.nom)) || {}).textContent || '').trim()
       };
     }).filter(function (p) { return p.src; });
   }
@@ -137,6 +138,7 @@
     }, true);
 
     window.addEventListener('keydown', function (e) {
+      if (!CS.collage.actif) return;
       var pas = { ArrowUp: -120, ArrowDown: 120, PageUp: -600, PageDown: 600 }[e.key];
       if (pas === undefined) return;
       e.preventDefault(); cible += pas; relancer();
@@ -150,7 +152,7 @@
 
   /* ---- Logo fixe au centre, en difference ---- */
   function poserLogo() {
-    if (!C.logo) return;
+    if (!C.logoPages || C.logoPages.indexOf(CS.page) === -1) return;
     var d = document.createElement('div');
     d.className = 'cs-collage-logo';
     d.innerHTML =
@@ -167,7 +169,7 @@
        l'affichage, ainsi que l'ancien cadre de mosaique s'il est encore la. */
     var src = document.querySelector(C.source);
     if (src) {
-      var cadre = src.closest('.infinite-canvas') || src;
+      var cadre = (C.cadre && src.closest(C.cadre)) || src;
       cadre.style.display = 'none';
       cadre.setAttribute('aria-hidden', 'true');
     }
@@ -188,7 +190,15 @@
     mesurer();
     brancher();
     poserLogo();
+
+    /* Expose aux autres modules (vue liste de la page Projets) */
+    CS.collage.racine = racine;
+    CS.collage.projets = projets;
+    document.dispatchEvent(new CustomEvent('cs:collage-pret'));
   }
+
+  /* actif = false quand une autre vue a la main : le clavier ne pilote plus la grille */
+  CS.collage = { actif: true, racine: null, projets: [] };
 
   CS.pret(demarrer);
 })();
