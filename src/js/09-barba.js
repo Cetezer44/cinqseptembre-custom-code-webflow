@@ -24,9 +24,13 @@
 
   function fondre(el, de, vers, duree) {
     if (!el.animate) { el.style.opacity = vers; return Promise.resolve(); }
+    var d = CS.reduit() ? Math.min(duree, 150) : duree;
     var a = el.animate([{ opacity: de }, { opacity: vers }],
-      { duration: CS.reduit() ? Math.min(duree, 150) : duree, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'forwards' });
-    return a.finished.catch(function () {}).then(function () { el.style.opacity = vers; a.cancel(); });
+      { duration: d, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'forwards' });
+    /* Garde-fou : dans un onglet en arriere-plan les animations sont en pause
+       et « finished » n'arriverait jamais — la navigation ne doit pas en dependre. */
+    return Promise.race([a.finished.catch(function () {}), CS.attendre(d + 150)])
+      .then(function () { el.style.opacity = vers; a.cancel(); });
   }
 
   /* Ce que Webflow fait a chaque chargement et qu'il faut refaire a la main */
