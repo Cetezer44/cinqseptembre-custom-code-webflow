@@ -68,8 +68,12 @@ CS.config = {
        160 px correspond a l'ecart le plus serre a l'interieur du motif : le
        raccord n'est donc pas plus serre qu'ailleurs. */
     margeRaccord: 160,
-    partLargeur: 0.8375,           // 1206 / 1440 : le motif occupe 83,75 % de la largeur
-    largeurMax: 1600,              // px — au-dela, les images cesseraient de grandir
+    partLargeur: 0.8375,           // 1206 / 1440 : le motif occupe 83,75 % de la largeur (maquette)
+    /* Grands ecrans : la part de largeur monte progressivement, pour que les
+       marges blanches ne grandissent pas avec l'ecran. 83,75 % jusqu'a 1440 px,
+       92 % a partir de 1920 px, en pente douce entre les deux. */
+    grandEcran: { de: 1440, a: 1920, part: 0.92 },
+    largeurMax: 3200,              // px — plafond de la mosaique (ecrans tres larges)
 
     vitesse: 1,                    // molette
     vitesseTactile: 1.6,           // glissement au doigt
@@ -190,6 +194,18 @@ CS.config = {
     amplitude: 12,                 // px — decalage maximal, pointeur au bord de l'ecran
     souplesse: 0.06,               // amorti : 0,03 tres flottant, 0,15 nerveux
     profondeurs: [0.55, 1, 0.8, 0.45, 0.7, 1, 0.6, 0.9, 0.5, 0.85, 0.65]   // part de l'amplitude, image par image
+  },
+
+  /* ---- Survol des liens texte ----
+     Chaque lettre descend et sort par le bas de sa ligne pendant que sa jumelle
+     entre par le haut, avec un decalage d'une lettre a la suivante. Souris
+     uniquement. Le texte reste un vrai texte (lisible, selectionnable) : la
+     jumelle est dessinee par la CSS, elle n'existe pas dans la page. */
+  lettres: {
+    actif: true,
+    selecteur: '.cs-nav__lien, .cs-contact a, .cs-vue-bascule',
+    duree: 420,                    // ms — course d'une lettre
+    decalage: 16                   // ms — ecart entre deux lettres
   },
 
   /* ---- Transitions de page (Barba) ---- */

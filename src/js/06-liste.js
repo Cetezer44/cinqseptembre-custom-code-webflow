@@ -136,6 +136,7 @@ CS.module('liste', CS.config.liste.pages, function (ctx) {
     racine.inert = (v !== 'liste');
     racine.setAttribute('aria-hidden', v !== 'liste');
     bouton.textContent = v === 'grille' ? L.libelles.versListe : L.libelles.versGrille;
+    if (CS.lettres) CS.lettres(bouton);       // le texte vient de changer : on redecoupe
     if (curseur) curseur.classList.remove('is-visible');
     if (v === 'liste' && !immediat) entreeCartes();
   }

@@ -114,12 +114,8 @@ html:not([data-cs-vue]) .cs-liste {
   text-transform: uppercase;
   white-space: nowrap;
   cursor: pointer;
-  transition: opacity 200ms ease;
 }
 .cs-vue-bascule:focus-visible { outline: 1px solid currentColor; outline-offset: 2px; }
-@media (hover: hover) and (pointer: fine) {
-  .cs-vue-bascule:hover { opacity: 0.5; }
-}
 
 /* ---- Curseur « Decouvrir » ----
    L'element suit le pointeur (transform pose par le JS) ; l'apparition est

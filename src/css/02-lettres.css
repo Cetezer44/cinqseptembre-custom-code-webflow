@@ -1,0 +1,45 @@
+/* ===== Survol des liens texte : lettres en roulement =====
+   Structure posee par 02-lettres.js. Au survol du lien, la lettre reelle
+   (.cs-l__a) descend hors de son masque (.cs-l) et sa jumelle (::after) entre
+   par le haut ; --cs-n, le rang de la lettre, decale chaque depart. En quittant
+   le lien, le mouvement se rejoue a l'envers.
+
+   Le masque deborde un peu en haut et en bas (padding compense par une marge
+   negative) pour ne pas rogner les accents des capitales ni les jambages. */
+.cs-lettres__ligne { display: inline-block; white-space: normal; }
+.cs-mot { display: inline-block; white-space: nowrap; }
+
+.cs-l {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.18em 0;
+  margin: -0.18em 0;
+}
+/* inline-block et non block : un bloc introduirait un retour a la ligne entre
+   chaque lettre dans le texte selectionne ou copie (l'adresse e-mail !). */
+.cs-l__a { display: inline-block; vertical-align: top; }
+.cs-l::after { display: block; }
+.cs-l__a,
+.cs-l::after {
+  transition: transform var(--cs-lettres-duree, 420ms) var(--cs-ease-in-out);
+  transition-delay: calc(var(--cs-n, 0) * var(--cs-lettres-decalage, 16ms));
+  will-change: transform;
+}
+.cs-l::after {
+  content: attr(data-l);
+  position: absolute;
+  left: 0;
+  top: 0.18em;
+  transform: translateY(-130%);       /* en attente au-dessus du masque */
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cs-lettres:hover .cs-l__a { transform: translateY(130%); }      /* sort par le bas */
+  .cs-lettres:hover .cs-l::after { transform: translateY(0); }     /* entre par le haut */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-l__a, .cs-l::after { transition: none; }
+}

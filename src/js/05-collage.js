@@ -82,7 +82,10 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
 
   /* ---- Mise en page ---- */
   function mesurer() {
-    var large = Math.min(window.innerWidth * C.partLargeur, C.largeurMax);
+    /* part de la largeur d'ecran : celle de la maquette, puis un peu plus sur grand ecran */
+    var vw = window.innerWidth, part = C.partLargeur, G = C.grandEcran;
+    if (G && vw > G.de) part += (G.part - C.partLargeur) * Math.min(1, (vw - G.de) / (G.a - G.de));
+    var large = Math.min(vw * part, C.largeurMax);
     racine.style.setProperty('--cs-motif-w', large + 'px');
     hMotif = large * (C.motif.h / C.motif.w);
     hPas = hMotif + large * (C.margeRaccord / C.motif.w);

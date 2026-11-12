@@ -12,7 +12,6 @@
    la lecture du Head (court script en ligne dans Webflow) : la barre est deja
    en place au premier rendu. */
 .cs-page-contact .fixed-nav {
-  opacity: 0.5;
   transform: translateY(calc(40vh - 35px));       /* 35 px = milieu de la barre */
 }
 
@@ -42,8 +41,6 @@
 @media (hover: hover) and (pointer: fine) {
   .cs-curseur-fermer .cs-contact { cursor: none; }
   .cs-curseur-fermer .cs-contact a { cursor: pointer; }
-  .cs-contact a { transition: opacity 200ms ease; }
-  .cs-contact a:hover { opacity: 0.5; }
 }
 
 @media (prefers-reduced-motion: reduce) {

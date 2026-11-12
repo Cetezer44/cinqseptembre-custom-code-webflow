@@ -77,8 +77,12 @@ CS.config = {
        160 px correspond a l'ecart le plus serre a l'interieur du motif : le
        raccord n'est donc pas plus serre qu'ailleurs. */
     margeRaccord: 160,
-    partLargeur: 0.8375,           // 1206 / 1440 : le motif occupe 83,75 % de la largeur
-    largeurMax: 1600,              // px — au-dela, les images cesseraient de grandir
+    partLargeur: 0.8375,           // 1206 / 1440 : le motif occupe 83,75 % de la largeur (maquette)
+    /* Grands ecrans : la part de largeur monte progressivement, pour que les
+       marges blanches ne grandissent pas avec l'ecran. 83,75 % jusqu'a 1440 px,
+       92 % a partir de 1920 px, en pente douce entre les deux. */
+    grandEcran: { de: 1440, a: 1920, part: 0.92 },
+    largeurMax: 3200,              // px — plafond de la mosaique (ecrans tres larges)
 
     vitesse: 1,                    // molette
     vitesseTactile: 1.6,           // glissement au doigt
@@ -199,6 +203,18 @@ CS.config = {
     amplitude: 12,                 // px — decalage maximal, pointeur au bord de l'ecran
     souplesse: 0.06,               // amorti : 0,03 tres flottant, 0,15 nerveux
     profondeurs: [0.55, 1, 0.8, 0.45, 0.7, 1, 0.6, 0.9, 0.5, 0.85, 0.65]   // part de l'amplitude, image par image
+  },
+
+  /* ---- Survol des liens texte ----
+     Chaque lettre descend et sort par le bas de sa ligne pendant que sa jumelle
+     entre par le haut, avec un decalage d'une lettre a la suivante. Souris
+     uniquement. Le texte reste un vrai texte (lisible, selectionnable) : la
+     jumelle est dessinee par la CSS, elle n'existe pas dans la page. */
+  lettres: {
+    actif: true,
+    selecteur: '.cs-nav__lien, .cs-contact a, .cs-vue-bascule',
+    duree: 420,                    // ms — course d'une lettre
+    decalage: 16                   // ms — ecart entre deux lettres
   },
 
   /* ---- Transitions de page (Barba) ---- */
@@ -368,6 +384,82 @@ CS.curseur = function (ctx, zone, texte, icone, estDessus) {
   ctx.ecoute(zone, 'pointerleave', function () { c.classList.remove('is-visible'); });
   return c;
 };
+
+/* ---------- 02-lettres.js ---------- */
+/* ===== Survol des liens texte : lettres en roulement =====
+   Au survol, chaque lettre descend et sort par le bas de sa ligne pendant que
+   sa jumelle entre par le haut, avec un decalage d'une lettre a la suivante.
+
+   CS.lettres(element) decoupe le texte d'un element en lettres :
+
+     <a class="cs-lettres" aria-label="Contact">
+       <span class="cs-lettres__ligne" aria-hidden="true">
+         <span class="cs-mot"><span class="cs-l" data-l="C" style="--cs-n:0"><span class="cs-l__a">C</span></span>...</span>
+       </span>
+     </a>
+
+   - .cs-l est le masque d'une lettre (overflow hidden) ;
+   - .cs-l__a est la lettre reelle, qui sort par le bas ;
+   - la jumelle est le ::after de .cs-l (content: attr(data-l)) : elle n'existe
+     pas dans le document, donc le texte selectionne ou copie reste propre ;
+   - les lettres sont groupees par mot, pour qu'un retour a la ligne ne coupe
+     jamais un mot en deux.
+   Le nom accessible du lien est conserve par aria-label.
+
+   Reglages : CS.config.lettres (01-core.js). Le mouvement est en CSS
+   (02-lettres.css) ; rien n'est decoupe sans souris ou en mouvement reduit. */
+(function () {
+  var K = CS.config.lettres;
+
+  CS.lettres = function (el) {
+    if (!K || !K.actif || !CS.sourisFine() || CS.reduit()) return;
+    /* uniquement du texte simple : on ne touche pas a un lien qui contient autre chose */
+    if (el.children.length && !el.querySelector(':scope > .cs-lettres__ligne')) return;
+    var texte = (el.getAttribute('data-cs-texte') && el.querySelector('.cs-lettres__ligne'))
+      ? el.getAttribute('data-cs-texte') : el.textContent;
+    texte = texte.replace(/\s+/g, ' ').trim();
+    if (!texte) return;
+
+    var ligne = document.createElement('span');
+    ligne.className = 'cs-lettres__ligne';
+    ligne.setAttribute('aria-hidden', 'true');
+    var n = 0;
+    texte.split(' ').forEach(function (mot, i) {
+      if (i) ligne.appendChild(document.createTextNode(' '));
+      var m = document.createElement('span');
+      m.className = 'cs-mot';
+      Array.from(mot).forEach(function (c) {
+        var l = document.createElement('span');
+        l.className = 'cs-l';
+        l.setAttribute('data-l', c);
+        l.style.setProperty('--cs-n', n++);
+        var a = document.createElement('span');
+        a.className = 'cs-l__a';
+        a.textContent = c;
+        l.appendChild(a);
+        m.appendChild(l);
+      });
+      ligne.appendChild(m);
+    });
+
+    el.textContent = '';
+    el.appendChild(ligne);
+    el.classList.add('cs-lettres');
+    el.setAttribute('data-cs-texte', texte);
+    if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', texte);
+    else if (el.getAttribute('data-cs-aria') !== 'non') el.setAttribute('aria-label', texte);
+    el.style.setProperty('--cs-lettres-duree', K.duree + 'ms');
+    el.style.setProperty('--cs-lettres-decalage', K.decalage + 'ms');
+  };
+
+  /* A chaque page : les liens de la page, et ceux de la navigation la premiere fois */
+  CS.module('lettres', null, function () {
+    if (!K || !K.actif) return;
+    Array.prototype.forEach.call(document.querySelectorAll(K.selecteur), function (el) {
+      if (!el.classList.contains('cs-lettres')) CS.lettres(el);
+    });
+  });
+})();
 
 /* ---------- 03-deformation.js ---------- */
 /* ===== Deformation des images au defilement (WebGL) =====
@@ -717,7 +809,10 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
 
   /* ---- Mise en page ---- */
   function mesurer() {
-    var large = Math.min(window.innerWidth * C.partLargeur, C.largeurMax);
+    /* part de la largeur d'ecran : celle de la maquette, puis un peu plus sur grand ecran */
+    var vw = window.innerWidth, part = C.partLargeur, G = C.grandEcran;
+    if (G && vw > G.de) part += (G.part - C.partLargeur) * Math.min(1, (vw - G.de) / (G.a - G.de));
+    var large = Math.min(vw * part, C.largeurMax);
     racine.style.setProperty('--cs-motif-w', large + 'px');
     hMotif = large * (C.motif.h / C.motif.w);
     hPas = hMotif + large * (C.margeRaccord / C.motif.w);
@@ -1107,6 +1202,7 @@ CS.module('liste', CS.config.liste.pages, function (ctx) {
     racine.inert = (v !== 'liste');
     racine.setAttribute('aria-hidden', v !== 'liste');
     bouton.textContent = v === 'grille' ? L.libelles.versListe : L.libelles.versGrille;
+    if (CS.lettres) CS.lettres(bouton);       // le texte vient de changer : on redecoupe
     if (curseur) curseur.classList.remove('is-visible');
     if (v === 'liste' && !immediat) entreeCartes();
   }
