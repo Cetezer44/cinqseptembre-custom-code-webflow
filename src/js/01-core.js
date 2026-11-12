@@ -61,7 +61,7 @@ CS.config = {
        Elle monte vite et retombe lentement, pour que l'effet « s'attarde ». */
     deformation: {
       pages: ['accueil'],          // ajouter 'projets' pour l'avoir aussi sur la grille des projets
-      force: 0.0486,               // etirement maximal aux bords haut et bas : 4,86 %
+      force: 0.032,                // etirement maximal aux bords haut et bas : 3,2 % (bybang.co : 4,86 %)
       vitessePleine: 800,          // px/s
       montee: 25,                  // ms
       descente: 175,               // ms
@@ -146,6 +146,10 @@ CS.config = {
     actif: true,
     sortie: 300,                   // ms — fondu de la page qui part
     entree: 450,                   // ms — fondu de la page qui arrive
+    /* Contact : le panneau noir descend du haut comme un rideau, et remonte
+       quand on quitte la page. Meme duree et meme courbe que la descente de
+       la barre de navigation (01-base.css), pour qu'ils bougent ensemble. */
+    rideau: 900,                   // ms
     /* Pages chargees normalement, sans transition : les pages de projet
        embarquent encore leur propre script, que Barba n'executerait pas. */
     exclure: [/^\/projets\/.+/]
@@ -201,7 +205,10 @@ CS.page = CS.quellePage(location.pathname);
    ctx.ecoute(...)   addEventListener retire automatiquement au depart
    ctx.aLaSortie(fn) nettoyage libre (arreter une boucle, retirer une classe) */
 CS._modules = [];
-CS._nettoyages = [];
+/* Une file de pages, et non une seule : pendant certaines transitions (le
+   rideau de Contact) la page qui arrive s'installe alors que celle qui part
+   est encore a l'ecran. CS.sortir() demonte toujours la plus ancienne. */
+CS._pages = [];
 
 CS.module = function (nom, pages, init) {
   CS._modules.push({ nom: nom, pages: pages, init: init });
@@ -213,14 +220,16 @@ CS.entrer = function (conteneur) {
   h.className = h.className.replace(/(^|\s)cs-page-\S+/g, ' ').replace(/\s+/g, ' ').trim();
   h.classList.add('cs-page-' + CS.page);
 
+  var nettoyages = [];
+  CS._pages.push(nettoyages);
   var ctx = {
     page: CS.page,
     conteneur: conteneur || document.body,
     ecoute: function (cible, type, fn, options) {
       cible.addEventListener(type, fn, options);
-      CS._nettoyages.push(function () { cible.removeEventListener(type, fn, options); });
+      nettoyages.push(function () { cible.removeEventListener(type, fn, options); });
     },
-    aLaSortie: function (fn) { CS._nettoyages.push(fn); }
+    aLaSortie: function (fn) { nettoyages.push(fn); }
   };
   CS._modules.forEach(function (m) {
     if (m.pages && m.pages.indexOf(CS.page) === -1) return;
@@ -229,7 +238,7 @@ CS.entrer = function (conteneur) {
 };
 
 CS.sortir = function () {
-  var n = CS._nettoyages; CS._nettoyages = [];
+  var n = CS._pages.shift() || [];
   n.forEach(function (fn) { try { fn(); } catch (e) {} });
 };
 

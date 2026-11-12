@@ -23,6 +23,10 @@ html, body { background-color: var(--cs-blanc); }
 html.cs-page-contact, html.cs-page-contact body,
 html.cs-page-archives, html.cs-page-archives body { background-color: var(--cs-noir); }
 body { transition: background-color 400ms ease; }
+/* Contact arrive en rideau par-dessus la page en place : le fond de page ne
+   doit passer au noir qu'une fois le rideau descendu, sinon tout noircirait
+   d'un coup derriere lui. */
+html.cs-page-contact, html.cs-page-contact body { transition: background-color 0s linear 900ms; }
 
 /* La barre de navigation reste en place d'une page a l'autre (elle est hors du
    conteneur Barba). Sur Contact elle descend au milieu de l'ecran : la

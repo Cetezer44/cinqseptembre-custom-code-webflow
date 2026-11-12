@@ -33,6 +33,17 @@
       .then(function () { el.style.opacity = vers; a.cancel(); });
   }
 
+  /* Rideau : le panneau se devoile ou se referme par le haut. clip-path ne
+     touche ni a la mise en page ni au contenu, qui reste immobile dessous. */
+  var FERME = 'inset(0 0 100% 0)', OUVERT = 'inset(0 0 0% 0)';
+  function rideau(el, de, vers) {
+    if (CS.reduit() || !el.animate) return fondre(el, de === FERME ? 0 : 1, vers === FERME ? 0 : 1, 150);
+    var a = el.animate([{ clipPath: de }, { clipPath: vers }],
+      { duration: T.rideau, easing: 'cubic-bezier(0.77, 0, 0.175, 1)', fill: 'forwards' });
+    return Promise.race([a.finished.catch(function () {}), CS.attendre(T.rideau + 150)])
+      .then(function () { el.style.clipPath = vers === OUVERT ? '' : vers; a.cancel(); });
+  }
+
   /* Ce que Webflow fait a chaque chargement et qu'il faut refaire a la main */
   function majDocument(data) {
     /* identifiant de page, lu par les interactions Webflow */
@@ -75,6 +86,42 @@
           return T.exclure.some(function (r) { return r.test(a.pathname); });
         },
         transitions: [{
+          /* Vers Contact : la page en place ne bouge pas, le noir descend dessus.
+             sync = les deux pages coexistent le temps du mouvement. */
+          name: 'contact-ouvre',
+          sync: true,
+          to: { namespace: ['contact'] },
+          leave: function () {},
+          beforeEnter: function (data) {
+            CS.navigationInterne = true;
+            if (!CS.reduit()) data.next.container.style.clipPath = FERME;
+            else data.next.container.style.opacity = 0;
+            majDocument(data);
+            CS.entrer(data.next.container);
+          },
+          enter: function (data) { return rideau(data.next.container, FERME, OUVERT); },
+          after: function (data) {
+            CS.sortir();                               // la page restee dessous
+            data.next.container.style.opacity = '';
+            relancerWebflow();
+          }
+        }, {
+          /* Depuis Contact : la page suivante s'installe dessous, le rideau remonte. */
+          name: 'contact-ferme',
+          sync: true,
+          from: { namespace: ['contact'] },
+          beforeEnter: function (data) {
+            CS.navigationInterne = true;
+            majDocument(data);
+            CS.entrer(data.next.container);
+          },
+          leave: function (data) { return rideau(data.current.container, OUVERT, FERME); },
+          enter: function () {},
+          after: function () {
+            CS.sortir();                               // Contact
+            relancerWebflow();
+          }
+        }, {
           name: 'fondu',
           leave: function (data) { return fondre(data.current.container, 1, 0, T.sortie); },
           afterLeave: function () { CS.sortir(); },

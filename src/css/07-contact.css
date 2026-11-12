@@ -3,6 +3,9 @@
    (composant Navigation du Designer), y descend a 40 % de la hauteur d'ecran
    et se pose sur un filet. Le contenu apparait ensuite.
 
+   Le panneau noir lui-meme descend du haut comme un rideau (clip-path anime
+   par 09-barba.js) et remonte quand on quitte la page.
+
    La descente est une transition (declaree sur .fixed-nav dans 01-base.css) :
    en arrivant d'une autre page la barre glisse vers le bas, en repartant elle
    remonte. En arrivee directe sur /contact, html.cs-page-contact est pose des
