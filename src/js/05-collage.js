@@ -54,7 +54,7 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
       a.style.top    = (c.y / C.motif.h * 100) + '%';
       a.style.width  = (c.w / C.motif.w * 100) + '%';
       a.style.height = (c.h / C.motif.h * 100) + '%';
-      a.innerHTML = '<img class="cs-collage__img" alt=""><span class="cs-collage__nom"></span>';
+      a.innerHTML = '<img class="cs-collage__img" alt="">';
       m.appendChild(a);
     });
     piste.appendChild(m);
@@ -76,7 +76,7 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
       }
       a.href = p.href;
       a._src = p.src;              // lu par le calque de deformation
-      a.querySelector('.cs-collage__nom').textContent = p.nom;
+      if (p.nom) a.setAttribute('aria-label', p.nom);   // le nom n'est plus affiche, il reste lu
     });
   }
 

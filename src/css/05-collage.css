@@ -30,7 +30,7 @@
 /* Calque WebGL de deformation au defilement (03-deformation.js), sous les
    cases. Une case prise en charge par le calque (data-gl) devient transparente
    et cache son <img> : c'est le calque qui dessine l'image, le lien, lui,
-   reste cliquable et garde son nom au survol. */
+   reste cliquable. */
 .cs-collage__gl {
   position: absolute;
   inset: 0;
@@ -77,37 +77,6 @@
 @media (hover: hover) and (pointer: fine) {
   .cs-collage.a-curseur .cs-collage__case { cursor: none; }
   .cs-collage.a-curseur.is-tire .cs-collage__case { cursor: grabbing; }
-}
-
-/* Nom du projet au survol. En difference pour rester lisible sur n'importe
-   quelle image, claire comme sombre. */
-.cs-collage__nom {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 4px;
-  color: #fff;
-  mix-blend-mode: difference;
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 200ms var(--cs-ease-out);
-}
-.cs-collage__nom::before {
-  content: "";
-  width: 14px;
-  height: 1px;
-  background-color: currentColor;
-}
-@media (hover: hover) and (pointer: fine) {
-  .cs-collage__case:hover .cs-collage__nom { opacity: 1; }
 }
 
 /* Logo fixe au centre, en difference : blanc sur sombre, noir sur clair */
