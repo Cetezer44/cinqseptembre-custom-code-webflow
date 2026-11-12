@@ -136,7 +136,7 @@ CS.config = {
     focus: {
       w: 344, h: 477,              // proportions de l'image agrandie
       duree: 600,                  // ms — agrandissement / retour
-      delaiSuivant: 450            // ms mini entre deux references a la molette
+      delaiSuivant: 450            // ms mini entre deux references (fleches du clavier)
     },
     libelleFermer: 'Fermer'
   },

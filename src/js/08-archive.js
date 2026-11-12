@@ -10,8 +10,8 @@
    revenant au meme endroit.
 
    Un clic sur une tuile l'agrandit au centre ; les autres s'effacent, les
-   informations apparaissent dessous. En focus, la molette et les fleches
-   passent a la reference suivante ou precedente.
+   informations apparaissent dessous. En focus, les fleches du clavier passent
+   a la reference suivante ou precedente.
 
    Reglages : CS.config.archive (01-core.js). */
 CS.module('archive', CS.config.archive.pages, function (ctx) {
@@ -173,7 +173,7 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
   ctx.ecoute(racine, 'wheel', function (e) {
     e.preventDefault();
     var k = (e.deltaMode === 1 ? 16 : 1) * A.vitesse;
-    if (focusOuvert) { molletteFocus(e.deltaY * k + e.deltaX * k); return; }
+    if (focusOuvert) return;                       // en focus, la molette ne fait rien
     if (e.shiftKey && !e.deltaX) cibleX += e.deltaY * k;
     else { cibleX += e.deltaX * k; cibleY += e.deltaY * k; }
     relancer();
@@ -285,8 +285,10 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
     if (curseur) curseur.classList.remove('is-visible');
   }
 
-  /* Reference suivante / precedente : fondu enchaine de l'image et du texte */
-  var dernier = 0, cumul = 0;
+  /* Reference suivante / precedente (fleches du clavier) : fondu enchaine de
+     l'image et du texte. Ni la molette ni le glissement au doigt ne changent
+     de reference : en focus, on regarde une image, on ne defile pas. */
+  var dernier = 0;
   function suivant(sens) {
     var maintenant = Date.now();
     if (maintenant - dernier < F.delaiSuivant) return;
@@ -300,13 +302,6 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
       panneau.classList.remove('est-change');
     }, 180);
   }
-  function molletteFocus(d) {
-    cumul += d;
-    if (Math.abs(cumul) < 30) return;
-    var sens = cumul > 0 ? 1 : -1; cumul = 0;
-    suivant(sens);
-  }
-
   /* Clic : sur une tuile -> ouvre ; en focus -> ferme. Un deplacement n'est pas un clic. */
   ctx.ecoute(racine, 'click', function (e) {
     if (deplace > A.seuilClic) { deplace = 0; return; }
@@ -314,15 +309,6 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
     if (focusOuvert) { fermer(); return; }
     var t = e.target.closest('.cs-archive__tuile');
     if (t) ouvrir(t);
-  });
-
-  /* En focus, au doigt : glisser vers le haut ou le bas change de reference */
-  var touche = null;
-  ctx.ecoute(panneau, 'pointerdown', function (e) { if (e.pointerType !== 'mouse') touche = e.clientY; });
-  ctx.ecoute(panneau, 'pointerup', function (e) {
-    if (touche === null) return;
-    var d = e.clientY - touche; touche = null;
-    if (Math.abs(d) > 50) { deplace = A.seuilClic + 1; suivant(d < 0 ? 1 : -1); }
   });
 
   ctx.ecoute(window, 'keydown', function (e) {
