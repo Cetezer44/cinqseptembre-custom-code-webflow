@@ -309,6 +309,14 @@ html:not([data-cs-vue]) .cs-liste {
   -webkit-user-drag: none;
 }
 .cs-liste__int { display: block; }
+/* Dezoom au defilement : l'echelle est posee ici par le JS, autour du centre
+   de la carte. Trois niveaux, un par mouvement, pour qu'aucun ne partage sa
+   propriete transform : la carte (position), __int (entree), __echelle (dezoom). */
+.cs-liste__echelle {
+  display: block;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
 
 /* Nom au-dessus de la carte : 12 px, comme la navigation */
 .cs-liste__nom {

@@ -38,15 +38,16 @@ CS.module('liste', CS.config.liste.pages, function (ctx) {
     a.href = p.href;
     a.draggable = false;
     a.innerHTML =
-      '<span class="cs-liste__int">' +
+      '<span class="cs-liste__int"><span class="cs-liste__echelle">' +
         '<span class="cs-liste__nom"></span>' +
         '<span class="cs-liste__cadre"><img class="cs-liste__img" alt="" loading="lazy" draggable="false"></span>' +
-      '</span>';
+      '</span></span>';
     a.querySelector('.cs-liste__nom').textContent = p.nom;
     var img = a.querySelector('img');
     img.src = p.src;
     if (p.srcset) img.srcset = p.srcset;
     img.alt = p.alt || p.nom;
+    a._echelle = a.querySelector('.cs-liste__echelle');
     racine.appendChild(a);
     return a;
   }
@@ -79,12 +80,37 @@ CS.module('liste', CS.config.liste.pages, function (ctx) {
     }
   }
 
-  function boucle() {
+  /* Dezoom au defilement. La vitesse est mesuree en pixels par image a 60 i/s ;
+     n ramene chaque image a cette base, pour que l'effet soit le meme sur un
+     ecran a 120 Hz ou quand une image saute. */
+  var Z = L.dezoom, dezoomActif = Z && Z.actif && !CS.reduit();
+  var echelle = 1, echelleAppliquee = 1, tPrec = 0;
+  function amorti(k, n) { return 1 - Math.pow(1 - k, n); }
+
+  function boucle(t) {
     if (!vivant) return;
-    courant += (cible - courant) * L.souplesse;
-    if (Math.abs(cible - courant) < 0.1) { courant = cible; anime = false; }
+    var n = tPrec ? Math.min(4, Math.max(0.25, (t - tPrec) / (1000 / 60))) : 1;
+    tPrec = t;
+
+    var avant = courant;
+    if (Math.abs(cible - courant) < 0.1) courant = cible;
+    else courant += (cible - courant) * amorti(L.souplesse, n);
     placer();
-    if (anime) requestAnimationFrame(boucle);
+
+    if (dezoomActif) {
+      var vitesse = Math.abs(courant - avant) / n;
+      var visee = Math.max(Z.echelleMin, 1 - vitesse * Z.parPixel);
+      echelle += (visee - echelle) * amorti(Z.souplesse, n);
+      if (visee === 1 && 1 - echelle < 0.0002) echelle = 1;
+      if (echelle !== echelleAppliquee) {
+        echelleAppliquee = echelle;
+        var tr = echelle === 1 ? '' : 'scale(' + echelle.toFixed(4) + ')';
+        for (var i = 0; i < cartes.length; i++) cartes[i]._echelle.style.transform = tr;
+      }
+    }
+
+    if (courant !== cible || echelle !== 1) requestAnimationFrame(boucle);
+    else { anime = false; tPrec = 0; }
   }
   function relancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
 

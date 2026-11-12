@@ -114,6 +114,15 @@ CS.config = {
     vitesseTactile: 1.6,
     souplesse: 0.1,
     seuilClic: 8,
+    /* Dezoom au defilement : chaque carte retrecit autour de son centre, d'autant
+       plus que l'on defile vite, et reprend sa taille a l'arret. Les espaces
+       entre les cartes s'ouvrent : la bande semble reculer. */
+    dezoom: {
+      actif: true,
+      parPixel: 0.003,             // retrecissement par pixel parcouru en une image (a 60 i/s)
+      echelleMin: 0.8,             // les cartes ne descendent jamais sous 80 %
+      souplesse: 0.06              // amorti du retrecissement et du retour
+    },
     libelles: { versListe: 'Vue liste', versGrille: 'Vue grille', curseur: 'D\u00e9couvrir' }
   },
 
