@@ -255,6 +255,16 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
     deplace = 0;
   }, true);
 
+  /* Clic sur un projet : on retient d'ou part l'image, pour la transition
+     vers la page projet (09-barba.js). */
+  ctx.ecoute(racine, 'click', function (e) {
+    if (e.defaultPrevented) return;
+    var a = e.target.closest ? e.target.closest('.cs-collage__case') : null;
+    if (!a) return;
+    var r = a.getBoundingClientRect();
+    CS.origineProjet = { x: r.left, y: r.top, w: r.width, h: r.height, src: a._src, quand: Date.now() };
+  });
+
   ctx.ecoute(window, 'keydown', function (e) {
     if (!CS.collage || !CS.collage.actif) return;
     var pas = { ArrowUp: -120, ArrowDown: 120, PageUp: -600, PageDown: 600 }[e.key];

@@ -83,7 +83,7 @@ CS.config = {
        L'intensite suit la vitesse : nulle a l'arret, pleine a vitessePleine.
        Elle monte vite et retombe lentement, pour que l'effet « s'attarde ». */
     deformation: {
-      pages: ['accueil'],          // ajouter 'projets' pour l'avoir aussi sur la grille des projets
+      pages: ['accueil', 'projets'], // accueil et grille des projets
       force: 0.032,                // etirement maximal aux bords haut et bas : 3,2 % (bybang.co : 4,86 %)
       vitessePleine: 800,          // px/s
       montee: 25,                  // ms
@@ -198,6 +198,21 @@ CS.config = {
     decalage: 16                   // ms — ecart entre deux lettres
   },
 
+  /* ---- Page projet ----
+     Le haut de page (image, titre, credits) et le Rich Text des photos sont
+     dans le Designer. Ici : leur entree, le devoilement des blocs de photos
+     au defilement et le leger glissement des images dans leur cadre. */
+  projet: {
+    pages: ['projet'],
+    hero: '.cs-projet-hero',
+    image: '.cs-projet-hero__image',           // cadre d'arrivee de l'image qui s'envole
+    blocs: '.rt-composants-photos .composant-photo',   // blocs de photos devoiles au defilement
+    seuil: 0.12,                   // part du bloc visible avant qu'il se devoile
+    decalage: 140,                 // ms — ecart entre deux images d'un meme bloc
+    cadre: '.photo-slot',          // cadre des images a parallaxe
+    amplitude: 0.05                // glissement : part de la hauteur du cadre, de part et d'autre
+  },
+
   /* ---- Transitions de page (Barba) ---- */
   transitions: {
     actif: true,
@@ -208,9 +223,10 @@ CS.config = {
        la barre de navigation (01-base.css), pour qu'ils bougent ensemble. */
     rideau: 900,                   // ms
     logo: 200,                     // ms — le logo central de l'accueil s'efface avant le rideau
-    /* Pages chargees normalement, sans transition : les pages de projet
-       embarquent encore leur propre script, que Barba n'executerait pas. */
-    exclure: [/^\/projets\/.+/]
+    /* Vers une page projet : l'image cliquee s'envole de sa place dans la
+       mosaique (ou la liste) jusqu'a sa place en haut de la page projet. */
+    vol: 900,                      // ms — trajet de l'image
+    exclure: []                    // expressions regulieres de chemins a charger sans transition
   }
 };
 

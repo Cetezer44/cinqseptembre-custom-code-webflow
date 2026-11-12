@@ -92,7 +92,7 @@ CS.config = {
        L'intensite suit la vitesse : nulle a l'arret, pleine a vitessePleine.
        Elle monte vite et retombe lentement, pour que l'effet « s'attarde ». */
     deformation: {
-      pages: ['accueil'],          // ajouter 'projets' pour l'avoir aussi sur la grille des projets
+      pages: ['accueil', 'projets'], // accueil et grille des projets
       force: 0.032,                // etirement maximal aux bords haut et bas : 3,2 % (bybang.co : 4,86 %)
       vitessePleine: 800,          // px/s
       montee: 25,                  // ms
@@ -207,6 +207,21 @@ CS.config = {
     decalage: 16                   // ms — ecart entre deux lettres
   },
 
+  /* ---- Page projet ----
+     Le haut de page (image, titre, credits) et le Rich Text des photos sont
+     dans le Designer. Ici : leur entree, le devoilement des blocs de photos
+     au defilement et le leger glissement des images dans leur cadre. */
+  projet: {
+    pages: ['projet'],
+    hero: '.cs-projet-hero',
+    image: '.cs-projet-hero__image',           // cadre d'arrivee de l'image qui s'envole
+    blocs: '.rt-composants-photos .composant-photo',   // blocs de photos devoiles au defilement
+    seuil: 0.12,                   // part du bloc visible avant qu'il se devoile
+    decalage: 140,                 // ms — ecart entre deux images d'un meme bloc
+    cadre: '.photo-slot',          // cadre des images a parallaxe
+    amplitude: 0.05                // glissement : part de la hauteur du cadre, de part et d'autre
+  },
+
   /* ---- Transitions de page (Barba) ---- */
   transitions: {
     actif: true,
@@ -217,9 +232,10 @@ CS.config = {
        la barre de navigation (01-base.css), pour qu'ils bougent ensemble. */
     rideau: 900,                   // ms
     logo: 200,                     // ms — le logo central de l'accueil s'efface avant le rideau
-    /* Pages chargees normalement, sans transition : les pages de projet
-       embarquent encore leur propre script, que Barba n'executerait pas. */
-    exclure: [/^\/projets\/.+/]
+    /* Vers une page projet : l'image cliquee s'envole de sa place dans la
+       mosaique (ou la liste) jusqu'a sa place en haut de la page projet. */
+    vol: 900,                      // ms — trajet de l'image
+    exclure: []                    // expressions regulieres de chemins a charger sans transition
   }
 };
 
@@ -949,6 +965,16 @@ CS.module('collage', CS.config.collage.pages, function (ctx) {
     deplace = 0;
   }, true);
 
+  /* Clic sur un projet : on retient d'ou part l'image, pour la transition
+     vers la page projet (09-barba.js). */
+  ctx.ecoute(racine, 'click', function (e) {
+    if (e.defaultPrevented) return;
+    var a = e.target.closest ? e.target.closest('.cs-collage__case') : null;
+    if (!a) return;
+    var r = a.getBoundingClientRect();
+    CS.origineProjet = { x: r.left, y: r.top, w: r.width, h: r.height, src: a._src, quand: Date.now() };
+  });
+
   ctx.ecoute(window, 'keydown', function (e) {
     if (!CS.collage || !CS.collage.actif) return;
     var pas = { ArrowUp: -120, ArrowDown: 120, PageUp: -600, PageDown: 600 }[e.key];
@@ -1232,6 +1258,15 @@ CS.module('liste', CS.config.liste.pages, function (ctx) {
     deplace = 0;
   }, true);
   ctx.ecoute(racine, 'dragstart', function (e) { e.preventDefault(); });
+
+  /* Clic sur une carte : on retient d'ou part l'image (transition vers la page projet) */
+  ctx.ecoute(racine, 'click', function (e) {
+    if (e.defaultPrevented) return;
+    var carte = e.target.closest ? e.target.closest('.cs-liste__carte') : null;
+    if (!carte) return;
+    var r = carte.querySelector('.cs-liste__cadre').getBoundingClientRect();
+    CS.origineProjet = { x: r.left, y: r.top, w: r.width, h: r.height, src: carte.querySelector('img').currentSrc || carte.querySelector('img').src, quand: Date.now() };
+  });
 
   ctx.ecoute(window, 'keydown', function (e) {
     if (vue !== 'liste') return;
@@ -1631,6 +1666,88 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
   var curseur = CS.curseur(ctx, racine, A.libelleFermer, 'croix', function () { return focusOuvert; });
 });
 
+/* ---------- 08b-projet.js ---------- */
+/* ===== Page projet =====
+   La structure est dans le Designer : .cs-projet-hero (image, titre, credits),
+   puis la description et le Rich Text des photos. Ce module ajoute :
+
+   1. l'entree du haut de page — l'image se devoile en masque, sauf si elle
+      vient d'arriver en volant depuis la mosaique (09-barba.js) ; le titre et
+      les credits montent ensuite ;
+   2. le devoilement des blocs de photos du Rich Text, au defilement ;
+   3. un leger glissement des images dans leur cadre pendant le defilement.
+
+   Il remplace le script qui vivait dans le code personnalise de la page :
+   avec Barba, un script de page n'est pas execute quand on arrive par une
+   transition. Reglages : CS.config.projet (01-core.js). */
+CS.module('projet', CS.config.projet.pages, function (ctx) {
+  var P = CS.config.projet, page = ctx.conteneur, reduit = CS.reduit();
+
+  /* ---- 1. Haut de page ---- */
+  var hero = page.querySelector(P.hero);
+  if (hero && !reduit) {
+    hero.setAttribute('data-entree', CS.arriveeParImage ? 'vol' : 'masque');
+    void hero.offsetWidth;
+    hero.classList.add('est-entre');
+  }
+
+  if (reduit) return;
+  page.classList.add('cs-projet-anime');
+
+  /* ---- 2. Blocs de photos : devoiles quand ils entrent a l'ecran ---- */
+  var blocs = Array.prototype.slice.call(page.querySelectorAll(P.blocs));
+  if (blocs.length && 'IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entrees) {
+      entrees.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        /* decalage entre les images d'un meme bloc, dans l'ordre de lecture */
+        var enfants = Array.prototype.slice.call(e.target.children);
+        enfants.sort(function (a, b) {
+          var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+          return (ra.top - rb.top) || (ra.left - rb.left);
+        });
+        enfants.forEach(function (k, i) { k.style.setProperty('--cs-d', (i * P.decalage) + 'ms'); });
+        e.target.classList.add('est-devoile');
+        obs.unobserve(e.target);
+      });
+    }, { threshold: P.seuil });
+    blocs.forEach(function (b) { obs.observe(b); });
+    ctx.aLaSortie(function () { obs.disconnect(); });
+  } else {
+    blocs.forEach(function (b) { b.classList.add('est-devoile'); });
+  }
+
+  /* ---- 3. Glissement des images dans leur cadre ----
+     Le cadre ne bouge pas ; l'image, legerement agrandie, se deplace dedans
+     selon la position du cadre a l'ecran. */
+  var cadres = Array.prototype.slice.call(page.querySelectorAll(P.cadre))
+    .filter(function (el) { var c = el.firstElementChild; return c && c.tagName === 'IMG'; });
+  if (cadres.length) {
+    page.style.setProperty('--cs-zoom', (1 + 2 * P.amplitude + 0.012).toFixed(3));
+    page.classList.add('cs-projet-parallaxe');
+    var enAttente = false;
+    var image = function () {
+      enAttente = false;
+      var h = window.innerHeight;
+      for (var i = 0; i < cadres.length; i++) {
+        var r = cadres[i].getBoundingClientRect();
+        if (r.bottom < -200 || r.top > h + 200) continue;
+        /* +1 quand le cadre arrive par le bas, -1 quand il sort par le haut */
+        var p = ((r.top + r.height / 2) - h / 2) / ((h + r.height) / 2);
+        p = Math.max(-1, Math.min(1, p));
+        cadres[i].firstElementChild.style.transform =
+          'translate3d(0,' + (-p * P.amplitude * r.height).toFixed(1) + 'px,0) scale(var(--cs-zoom))';
+      }
+    };
+    var demander = function () { if (!enAttente) { enAttente = true; requestAnimationFrame(image); } };
+    ctx.ecoute(window, 'scroll', demander, { passive: true });
+    ctx.ecoute(window, 'resize', demander, { passive: true });
+    image();
+    var t = setTimeout(image, 400);       // la mise en page bouge encore pendant le chargement des images
+    ctx.aLaSortie(function () { clearTimeout(t); });
+  }
+});
+
 /* ---------- 09-barba.js ---------- */
 /* ===== Demarrage et transitions de page (Barba) =====
    Barba remplace le contenu de la page sans recharger : la barre de
@@ -1678,6 +1795,41 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
       .then(function () { el.style.clipPath = vers === OUVERT ? '' : vers; a.cancel(); });
   }
 
+  /* ---- Image qui s'envole vers la page projet ----
+     Une copie de l'image cliquee, posee en position fixe par-dessus les deux
+     pages, va de sa place d'origine a celle de l'image de la page projet.
+     Les deux cadres n'ont pas les memes proportions : on anime donc la boite
+     elle-meme (position et taille) et l'image dedans reste en object-fit:
+     cover — un transform la deformerait. Un seul element, hors du flux :
+     le cout de mise en page est negligeable. */
+  var vol = null;
+  function decoller() {
+    var o = CS.origineProjet; CS.origineProjet = null;
+    if (!o || !o.src || CS.reduit() || Date.now() - o.quand > 4000) return null;
+    var v = document.createElement('div');
+    v.className = 'cs-vol';
+    v.style.cssText = 'left:' + o.x + 'px;top:' + o.y + 'px;width:' + o.w + 'px;height:' + o.h + 'px';
+    v.innerHTML = '<img alt="">';
+    v.firstChild.src = o.src;
+    document.body.appendChild(v);
+    return v;
+  }
+  function atterrir(v, cadre) {
+    var r = cadre.getBoundingClientRect();
+    var de = { left: v.style.left, top: v.style.top, width: v.style.width, height: v.style.height };
+    var a = { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' };
+    var anim = v.animate([de, a], { duration: T.vol, easing: 'cubic-bezier(0.77, 0, 0.175, 1)', fill: 'forwards' });
+    return Promise.race([anim.finished.catch(function () {}), CS.attendre(T.vol + 150)]).then(function () {
+      /* l'image de la page prend le relais une fois chargee (au plus 1 s d'attente) */
+      var img = cadre.querySelector('img');
+      var prete = img && !img.complete && img.decode ? Promise.race([img.decode().catch(function () {}), CS.attendre(1000)]) : Promise.resolve();
+      return prete.then(function () {
+        cadre.classList.remove('cs-en-vol');
+        requestAnimationFrame(function () { if (v.parentNode) v.parentNode.removeChild(v); });
+      });
+    });
+  }
+
   /* Ce que Webflow fait a chaque chargement et qu'il faut refaire a la main */
   function majDocument(data) {
     /* identifiant de page, lu par les interactions Webflow */
@@ -1720,6 +1872,40 @@ CS.module('archive', CS.config.archive.pages, function (ctx) {
           return T.exclure.some(function (r) { return r.test(a.pathname); });
         },
         transitions: [{
+          /* Vers une page projet : l'image cliquee s'envole jusqu'a sa place en
+             haut de la page. sync = la page projet s'installe pendant le vol. */
+          name: 'projet-ouvre',
+          sync: true,
+          to: { namespace: ['projet'] },
+          beforeLeave: function (data) {
+            if (data.next && data.next.container) data.next.container.style.opacity = 0;
+            vol = decoller();
+          },
+          leave: function (data) { return fondre(data.current.container, 1, 0, T.sortie); },
+          beforeEnter: function (data) {
+            CS.navigationInterne = true;
+            CS.arriveeParImage = !!vol;
+            data.next.container.style.opacity = 0;
+            majDocument(data);
+            CS.entrer(data.next.container);
+          },
+          enter: function (data) {
+            var page = data.next.container;
+            var cadre = vol && page.querySelector(CS.config.projet.image);
+            if (!cadre) {
+              if (vol && vol.parentNode) vol.parentNode.removeChild(vol);
+              return fondre(page, 0, 1, T.entree);
+            }
+            cadre.classList.add('cs-en-vol');           // le cadre d'arrivee reste vide pendant le vol
+            return Promise.all([atterrir(vol, cadre), fondre(page, 0, 1, T.entree)]);
+          },
+          after: function (data) {
+            CS.sortir();
+            vol = null; CS.arriveeParImage = false;
+            data.next.container.style.opacity = '';
+            relancerWebflow();
+          }
+        }, {
           /* Vers Contact : la page en place ne bouge pas, le noir descend dessus.
              sync = les deux pages coexistent le temps du mouvement. */
           name: 'contact-ouvre',

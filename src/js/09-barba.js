@@ -44,6 +44,41 @@
       .then(function () { el.style.clipPath = vers === OUVERT ? '' : vers; a.cancel(); });
   }
 
+  /* ---- Image qui s'envole vers la page projet ----
+     Une copie de l'image cliquee, posee en position fixe par-dessus les deux
+     pages, va de sa place d'origine a celle de l'image de la page projet.
+     Les deux cadres n'ont pas les memes proportions : on anime donc la boite
+     elle-meme (position et taille) et l'image dedans reste en object-fit:
+     cover — un transform la deformerait. Un seul element, hors du flux :
+     le cout de mise en page est negligeable. */
+  var vol = null;
+  function decoller() {
+    var o = CS.origineProjet; CS.origineProjet = null;
+    if (!o || !o.src || CS.reduit() || Date.now() - o.quand > 4000) return null;
+    var v = document.createElement('div');
+    v.className = 'cs-vol';
+    v.style.cssText = 'left:' + o.x + 'px;top:' + o.y + 'px;width:' + o.w + 'px;height:' + o.h + 'px';
+    v.innerHTML = '<img alt="">';
+    v.firstChild.src = o.src;
+    document.body.appendChild(v);
+    return v;
+  }
+  function atterrir(v, cadre) {
+    var r = cadre.getBoundingClientRect();
+    var de = { left: v.style.left, top: v.style.top, width: v.style.width, height: v.style.height };
+    var a = { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' };
+    var anim = v.animate([de, a], { duration: T.vol, easing: 'cubic-bezier(0.77, 0, 0.175, 1)', fill: 'forwards' });
+    return Promise.race([anim.finished.catch(function () {}), CS.attendre(T.vol + 150)]).then(function () {
+      /* l'image de la page prend le relais une fois chargee (au plus 1 s d'attente) */
+      var img = cadre.querySelector('img');
+      var prete = img && !img.complete && img.decode ? Promise.race([img.decode().catch(function () {}), CS.attendre(1000)]) : Promise.resolve();
+      return prete.then(function () {
+        cadre.classList.remove('cs-en-vol');
+        requestAnimationFrame(function () { if (v.parentNode) v.parentNode.removeChild(v); });
+      });
+    });
+  }
+
   /* Ce que Webflow fait a chaque chargement et qu'il faut refaire a la main */
   function majDocument(data) {
     /* identifiant de page, lu par les interactions Webflow */
@@ -86,6 +121,40 @@
           return T.exclure.some(function (r) { return r.test(a.pathname); });
         },
         transitions: [{
+          /* Vers une page projet : l'image cliquee s'envole jusqu'a sa place en
+             haut de la page. sync = la page projet s'installe pendant le vol. */
+          name: 'projet-ouvre',
+          sync: true,
+          to: { namespace: ['projet'] },
+          beforeLeave: function (data) {
+            if (data.next && data.next.container) data.next.container.style.opacity = 0;
+            vol = decoller();
+          },
+          leave: function (data) { return fondre(data.current.container, 1, 0, T.sortie); },
+          beforeEnter: function (data) {
+            CS.navigationInterne = true;
+            CS.arriveeParImage = !!vol;
+            data.next.container.style.opacity = 0;
+            majDocument(data);
+            CS.entrer(data.next.container);
+          },
+          enter: function (data) {
+            var page = data.next.container;
+            var cadre = vol && page.querySelector(CS.config.projet.image);
+            if (!cadre) {
+              if (vol && vol.parentNode) vol.parentNode.removeChild(vol);
+              return fondre(page, 0, 1, T.entree);
+            }
+            cadre.classList.add('cs-en-vol');           // le cadre d'arrivee reste vide pendant le vol
+            return Promise.all([atterrir(vol, cadre), fondre(page, 0, 1, T.entree)]);
+          },
+          after: function (data) {
+            CS.sortir();
+            vol = null; CS.arriveeParImage = false;
+            data.next.container.style.opacity = '';
+            relancerWebflow();
+          }
+        }, {
           /* Vers Contact : la page en place ne bouge pas, le noir descend dessus.
              sync = les deux pages coexistent le temps du mouvement. */
           name: 'contact-ouvre',

@@ -12,11 +12,10 @@
   overflow: hidden;
   background-color: var(--cs-blanc);
   touch-action: none;          /* le navigateur ne defile pas : on s'en charge */
-  cursor: grab;
+  cursor: default;             /* curseur normal : ni main, ni poing ferme */
   user-select: none;
   -webkit-user-select: none;
 }
-.cs-collage.is-tire { cursor: grabbing; }
 
 .cs-collage__piste {
   position: absolute;
@@ -76,7 +75,7 @@
    (classe posee par le JS seulement si le curseur personnalise existe). */
 @media (hover: hover) and (pointer: fine) {
   .cs-collage.a-curseur .cs-collage__case { cursor: none; }
-  .cs-collage.a-curseur.is-tire .cs-collage__case { cursor: grabbing; }
+  .cs-collage.a-curseur.is-tire .cs-collage__case { cursor: default; }
 }
 
 /* Logo fixe au centre, en difference : blanc sur sombre, noir sur clair */

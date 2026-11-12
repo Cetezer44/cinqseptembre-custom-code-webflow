@@ -195,6 +195,15 @@ CS.module('liste', CS.config.liste.pages, function (ctx) {
   }, true);
   ctx.ecoute(racine, 'dragstart', function (e) { e.preventDefault(); });
 
+  /* Clic sur une carte : on retient d'ou part l'image (transition vers la page projet) */
+  ctx.ecoute(racine, 'click', function (e) {
+    if (e.defaultPrevented) return;
+    var carte = e.target.closest ? e.target.closest('.cs-liste__carte') : null;
+    if (!carte) return;
+    var r = carte.querySelector('.cs-liste__cadre').getBoundingClientRect();
+    CS.origineProjet = { x: r.left, y: r.top, w: r.width, h: r.height, src: carte.querySelector('img').currentSrc || carte.querySelector('img').src, quand: Date.now() };
+  });
+
   ctx.ecoute(window, 'keydown', function (e) {
     if (vue !== 'liste') return;
     var d = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -1, ArrowDown: 1, PageUp: -3, PageDown: 3 }[e.key];

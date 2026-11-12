@@ -108,17 +108,19 @@ des pages listees ; tout ce qui est branche par `ctx.ecoute(...)` ou declare
 par `ctx.aLaSortie(...)` est defait au depart, et tout element ajoute dans
 `ctx.conteneur` disparait avec la page.
 
-Les pages de projet (`/projets/...`) sont exclues des transitions
-(`CS.config.transitions.exclure`) tant qu'elles embarquent leur propre script.
+Vers une page de projet (`/projets/...`), l'image cliquee s'envole de la
+mosaique (ou de la liste) jusqu'en haut de la page (`CS.config.transitions.vol`).
+Une page peut etre sortie des transitions avec `CS.config.transitions.exclure`.
 
 ## Modules
 
 | Fichier | Pages | Role |
 |---|---|---|
-| `03-deformation` | accueil | Calque WebGL : images courbees en haut et en bas pendant le defilement |
+| `03-deformation` | accueil, projets | Calque WebGL : images courbees en haut et en bas pendant le defilement |
 | `04-loader` | accueil | Loader au premier chargement de la session |
 | `05-collage` | accueil, projets | Collage vertical infini (11 emplacements) |
 | `06-liste` | projets | Vue liste horizontale + bascule grille / liste |
 | `07-contact` | contact | Curseur « Fermer », fermeture |
 | `08-archive` | archive | Mosaique infinie (collection Bibliotheque) + focus |
+| `08b-projet` | projet | Entree du haut de page, devoilement et glissement des photos |
 | `09-barba` | toutes | Demarrage et transitions de page |

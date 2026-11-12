@@ -1,0 +1,65 @@
+/* ===== Page projet =====
+   Mise en page : classes du Designer. Ici, les mouvements. Tout est conditionne
+   par des classes posees par le JS (08b-projet.js) : sans lui, la page est
+   simplement affichee. */
+
+/* ---- Image qui s'envole depuis la mosaique (09-barba.js) ---- */
+.cs-vol {
+  position: fixed;
+  z-index: 990;                 /* au-dessus des pages, sous la navigation */
+  overflow: hidden;
+  pointer-events: none;
+  will-change: left, top, width, height;
+}
+.cs-vol img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* cadre d'arrivee, vide le temps du vol : la copie volante en tient lieu */
+.cs-en-vol { visibility: hidden; }
+
+/* ---- Haut de page ----
+   data-entree="masque" : arrivee directe, l'image se devoile de bas en haut.
+   data-entree="vol"    : l'image est deja la (elle vient d'atterrir) ; seuls
+                          le titre et les credits entrent, un peu plus tard. */
+.cs-projet-hero[data-entree="masque"] .cs-projet-hero__image { clip-path: inset(100% 0 0 0); }
+.cs-projet-hero[data-entree="masque"] .cs-projet-hero__img { transform: scale(1.12); }
+.cs-projet-hero[data-entree="masque"].est-entre .cs-projet-hero__image {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1000ms var(--cs-ease-in-out) 150ms;
+}
+.cs-projet-hero[data-entree="masque"].est-entre .cs-projet-hero__img {
+  transform: scale(1);
+  transition: transform 1300ms var(--cs-ease-out) 150ms;
+}
+
+.cs-projet-hero[data-entree] .cs-projet-hero__titre,
+.cs-projet-hero[data-entree] .cs-projet-hero__credits {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.cs-projet-hero[data-entree].est-entre .cs-projet-hero__titre,
+.cs-projet-hero[data-entree].est-entre .cs-projet-hero__credits {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 600ms var(--cs-ease-out) var(--cs-t, 600ms), transform 900ms var(--cs-ease-out) var(--cs-t, 600ms);
+}
+.cs-projet-hero[data-entree].est-entre .cs-projet-hero__credits { --cs-t: 720ms; }
+.cs-projet-hero[data-entree="vol"].est-entre .cs-projet-hero__titre { --cs-t: 650ms; }
+.cs-projet-hero[data-entree="vol"].est-entre .cs-projet-hero__credits { --cs-t: 770ms; }
+
+/* ---- Description et blocs de photos du Rich Text ---- */
+.cs-projet-anime .projet-description { animation: cs-projet-monte 900ms var(--cs-ease-out) 900ms both; }
+@keyframes cs-projet-monte { from { opacity: 0; transform: translateY(18px); } }
+
+/* le masque s'ouvre de haut en bas, image par image (--cs-d pose par le JS) */
+.cs-projet-anime .rt-composants-photos .composant-photo > * {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1100ms var(--cs-ease-in-out) var(--cs-d, 0ms);
+}
+.cs-projet-anime .rt-composants-photos .composant-photo.est-devoile > * { clip-path: inset(0 0 0 0); }
+
+/* ---- Glissement des images dans leur cadre (transform pose par le JS) ---- */
+.cs-projet-parallaxe .photo-slot { overflow: hidden; }
+.cs-projet-parallaxe .photo-slot > img { will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-projet-anime .projet-description { animation: none; }
+}
