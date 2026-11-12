@@ -88,6 +88,12 @@ CS.config = {
     souplesse: 0.1,
     seuilClic: 8,
     libelles: { versListe: 'Vue liste', versGrille: 'Vue grille', curseur: 'D\u00e9couvrir' }
+  },
+
+  /* ---- Page Contact ---- */
+  contact: {
+    retour: '/',                   // ou aller a la fermeture si l'on n'arrive pas du site
+    libelleFermer: 'Fermer'
   }
 };
 

@@ -1,0 +1,61 @@
+/* ===== Page Contact =====
+   La page est un panneau noir ; la barre de navigation, la meme que partout
+   (composant Navigation du Designer), y descend a 40 % de la hauteur d'ecran
+   et se pose sur un filet. Le contenu apparait ensuite.
+
+   html.cs-page-contact est pose des la lecture du Head (court script en ligne
+   dans Webflow), donc avant le premier rendu : les animations partent de
+   l'etat de depart sans a-coup. Sans JS, la barre reste en haut et le contenu
+   est simplement visible. */
+.cs-page-contact .fixed-nav {
+  opacity: 0.5;
+  transform: translateY(calc(40vh - 35px));       /* 35 px = milieu de la barre */
+  animation: cs-contact-nav 900ms var(--cs-ease-in-out) both;
+}
+@keyframes cs-contact-nav {
+  from { opacity: 1; transform: translateY(0); }
+}
+
+.cs-page-contact .cs-contact__filet {
+  transform-origin: left center;
+  animation: cs-contact-filet 900ms var(--cs-ease-in-out) 250ms both;
+}
+@keyframes cs-contact-filet {
+  from { transform: scaleX(0); }
+}
+
+/* Le contenu monte de quelques pixels, bloc apres bloc */
+.cs-page-contact .cs-contact__reseaux,
+.cs-page-contact .cs-contact__col,
+.cs-page-contact .cs-contact__pied {
+  animation: cs-contact-monte 700ms var(--cs-ease-out) both;
+}
+.cs-page-contact .cs-contact__col:nth-child(1) { animation-delay: 600ms; }
+.cs-page-contact .cs-contact__col:nth-child(2) { animation-delay: 680ms; }
+.cs-page-contact .cs-contact__reseaux          { animation-delay: 760ms; }
+.cs-page-contact .cs-contact__pied             { animation-delay: 840ms; }
+@keyframes cs-contact-monte {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+/* Curseur « Fermer » : le fond n'a plus de curseur natif, les liens gardent le leur */
+@media (hover: hover) and (pointer: fine) {
+  .cs-curseur-fermer .cs-contact { cursor: none; }
+  .cs-curseur-fermer .cs-contact a { cursor: pointer; }
+  .cs-contact a { transition: opacity 200ms ease; }
+  .cs-contact a:hover { opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-page-contact .fixed-nav,
+  .cs-page-contact .cs-contact__filet { animation: none; }
+  .cs-page-contact .cs-contact__reseaux,
+  .cs-page-contact .cs-contact__col,
+  .cs-page-contact .cs-contact__pied { animation: cs-contact-fondu 300ms ease both; animation-delay: 0ms; }
+}
+@keyframes cs-contact-fondu { from { opacity: 0; } }
+
+/* Petit ecran : memes marges que la navigation */
+@media (max-width: 767px) {
+  .cs-vue-bascule { right: 16px; }
+}
